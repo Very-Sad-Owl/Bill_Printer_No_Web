@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.epam:news-JWD_Task03.jar:0.0.1-SNAPSHOT'
+    implementation 'org.projectlombok:lombok:1.18.20'
+    implementation 'org.decimal4j:decimal4j:1.0.3'
+    testImplementation "junit:junit:4.11"
+}
+
+group = "ru.clevertec.tasks.olga"
+version = '1.0-SNAPSHOT'
+description = 'billPinterNoWeb'
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
