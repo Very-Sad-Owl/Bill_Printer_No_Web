@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static ru.clevertec.tasks.olga.util.MessageLocaleService.getMessage;
 
 public class CashierRepositoryImpl extends AbstractRepository implements CashierRepository {
 
