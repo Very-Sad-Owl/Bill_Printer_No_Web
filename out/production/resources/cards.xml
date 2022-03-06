@@ -1,0 +1,6 @@
+<cards>
+    <card id = "1" birthday = "11.11.2011" discount = "NONE">
+    </card>
+    <card id = "2" birthday = "15.03.2001" discount = "GOLD">
+    </card>
+</cards>
