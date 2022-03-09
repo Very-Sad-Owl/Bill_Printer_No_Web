@@ -3,6 +3,7 @@ package ru.clevertec.tasks.olga.util.orm.impl;
 
 import by.epam.training.jwd.task03.entity.Attribute;
 import by.epam.training.jwd.task03.entity.Node;
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.model.Product;
 import ru.clevertec.tasks.olga.model.ProductDiscountType;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
@@ -27,7 +28,7 @@ public class ProductWorker extends NodeWorker<Product> {
 
     @Override
     public Node modelToNode(Product model) {
-        List<Attribute> attributes = new ArrayList<>();
+        List<Attribute> attributes = new ArrayListImpl<>();
         attributes.add(new Attribute(Constant.XML_ID_ATTR, model.getId()+""));
         attributes.add(new Attribute(Constant.XML_TITLE_ATTR, model.getTitle()));
         attributes.add(new Attribute(Constant.XML_PRICE_ATTR, model.getPrice()+""));

@@ -2,6 +2,7 @@ package ru.clevertec.tasks.olga.repository.impl;
 
 import by.epam.training.jwd.task03.entity.Node;
 import by.epam.training.jwd.task03.service.exception.ServiceException;
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.exception.CashierNotFoundException;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.model.Cashier;
@@ -34,7 +35,7 @@ public class CashierRepositoryImpl extends AbstractRepository implements Cashier
     public List<Cashier> getAll(String path) {
         Node node;
         NodeWorker<Cashier> worker = workerFactory.getCashierWorker();
-        List<Cashier> products = new ArrayList<>();
+        List<Cashier> products = new ArrayListImpl<>();
         String fileName = path + ResourceBundle.getBundle("db").getString("path.cashier");
         try {
             node = nodeTreeBuilder.parseXML(fileName);
