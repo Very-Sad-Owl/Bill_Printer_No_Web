@@ -2,6 +2,7 @@ package ru.clevertec.tasks.olga.util.node_converter.impl;
 
 import by.epam.training.jwd.task03.entity.Attribute;
 import by.epam.training.jwd.task03.entity.Node;
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.model.Cashier;
 import ru.clevertec.tasks.olga.util.node_converter.NodeWorker;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,7 @@ public class CashierWorker extends NodeWorker<Cashier> {
 
     @Override
     public Node modelToNode(Cashier model) {
-        List<Attribute> attributes = new ArrayList<>();
+        List<Attribute> attributes = new ArrayListImpl<>();
         attributes.add(new Attribute(XML_ID_ATTR, model.getId()+""));
         attributes.add(new Attribute(XML_NAME_ATTR, model.getName()));
         attributes.add(new Attribute(XML_SURNAME_ATTR, model.getSurname()));

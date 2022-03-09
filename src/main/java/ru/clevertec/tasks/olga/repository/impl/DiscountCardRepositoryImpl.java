@@ -2,6 +2,7 @@ package ru.clevertec.tasks.olga.repository.impl;
 
 import by.epam.training.jwd.task03.entity.Node;
 import by.epam.training.jwd.task03.service.exception.ServiceException;
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.exception.CardNotFoundException;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.model.DiscountCard;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static ru.clevertec.tasks.olga.util.MessageLocaleService.getMessage;
 
 public class DiscountCardRepositoryImpl extends AbstractRepository implements DiscountRepository {
 
@@ -37,7 +37,7 @@ public class DiscountCardRepositoryImpl extends AbstractRepository implements Di
     public List<DiscountCard> getAll() {
         Node node;
         NodeWorker<DiscountCard> worker = workerFactory.getDiscountWorker();
-        List<DiscountCard> products = new ArrayList<>();
+        List<DiscountCard> products = new ArrayListImpl<>();
         try {
             node = nodeTreeBuilder.parseXML(ResourceBundle.getBundle("db").getString("path.card"));
             worker.nodeToList(node, products);

@@ -2,6 +2,7 @@ package ru.clevertec.tasks.olga.repository.impl;
 
 import by.epam.training.jwd.task03.entity.Node;
 import by.epam.training.jwd.task03.service.exception.ServiceException;
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.exception.CartNotFoundException;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
@@ -67,7 +68,7 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
     public List<Cart> getAll(){
         Node node;
         CartWorker worker = (CartWorker) workerFactory.getCartWorker();
-        List<Cart> log = new ArrayList<>();
+        List<Cart> log = new ArrayListImpl<>();
         try {
             node = nodeTreeBuilder.parseXML(ResourceBundle.getBundle("db").getString("path.bill_log"));
             worker.nodeToList(node, log);

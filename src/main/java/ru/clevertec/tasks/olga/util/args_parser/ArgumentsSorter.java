@@ -1,17 +1,14 @@
 package ru.clevertec.tasks.olga.util.args_parser;
 
-
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
 import ru.clevertec.tasks.olga.model.ParamsDTO;
 import ru.clevertec.tasks.olga.util.MessageLocaleService;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static ru.clevertec.tasks.olga.util.Constant.*;
-import static ru.clevertec.tasks.olga.util.MessageLocaleService.getMessage;
 
 public class ArgumentsSorter {
 
@@ -67,7 +64,7 @@ public class ArgumentsSorter {
 
 
     private List<String> formCmdRequiredArgs(String action){
-        List<String> required = new ArrayList<>();
+        List<String> required = new ArrayListImpl<>();
         switch (action){
             case ACTION_PRINT:
                 required.add(CARD_ID_PARAM);

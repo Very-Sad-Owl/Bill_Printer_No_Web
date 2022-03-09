@@ -2,6 +2,7 @@ package ru.clevertec.tasks.olga.util.node_converter.impl;
 
 import by.epam.training.jwd.task03.entity.Attribute;
 import by.epam.training.jwd.task03.entity.Node;
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.model.*;
 import ru.clevertec.tasks.olga.util.node_converter.NodeWorker;
 
@@ -58,9 +59,9 @@ public class CartWorker extends NodeWorker<Cart> {
 
     @Override
     public Node modelToNode(Cart model) {
-        List<Attribute> attributes = new ArrayList<>();
+        List<Attribute> attributes = new ArrayListImpl<>();
         attributes.add(new Attribute(XML_ID_ATTR, model.getId()+""));
-        List<Node> children = new ArrayList<>();
+        List<Node> children = new ArrayListImpl<>();
         children.add(cashierNodeWorker.modelToNode(model.getCashier()));
         children.add(discountCardNodeWorker.modelToNode(model.getDiscountCard()));
         children.add(formSlots(model.getPositions()));
@@ -69,7 +70,7 @@ public class CartWorker extends NodeWorker<Cart> {
                 .withAttributes(attributes)
                 .withChildren(children)
                 .build();
-        List<Node> cartsChildren = new ArrayList<>();
+        List<Node> cartsChildren = new ArrayListImpl<>();
         cartsChildren.add(cart);
         return Node.newBuilder()
                 .withName(CART_COLLECTION_XML_NAME)
@@ -78,11 +79,11 @@ public class CartWorker extends NodeWorker<Cart> {
     }
 
     private Node formSlots(List<Slot> slots){
-        List<Node> nodeSlots = new ArrayList<>();
+        List<Node> nodeSlots = new ArrayListImpl<>();
         for (Slot slot : slots){
-            List<Attribute> attributes = new ArrayList<>();
+            List<Attribute> attributes = new ArrayListImpl<>();
             attributes.add(new Attribute(XML_QUANTITY_ATTR, slot.getQuantity()+""));
-            List<Node> children = new ArrayList<>();
+            List<Node> children = new ArrayListImpl<>();
             children.add(productNodeWorker.modelToNode(slot.getProduct()));
             nodeSlots.add(
                     Node.newBuilder()

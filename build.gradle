@@ -10,6 +10,7 @@ repositories {
 
 dependencies {
     implementation 'com.epam:news-JWD_Task03.jar:0.0.1-SNAPSHOT'
+    implementation 'ru.clevertec.tasks.olga.custom_collection:my_list:1.0-SNAPSHOT'
     implementation 'org.projectlombok:lombok:1.18.20'
     implementation 'org.decimal4j:decimal4j:1.0.3'
     testImplementation "junit:junit:4.11"
