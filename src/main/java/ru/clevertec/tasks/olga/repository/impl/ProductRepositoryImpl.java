@@ -43,7 +43,7 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
             node = nodeTreeBuilder.parseXML(fileName);
             worker.nodeToList(node, products);
         } catch (ServiceException e) {
-            throw new ReadingException(MessageLocaleService.getMessage("error.reading"));
+            throw new ReadingException("error.reading");
         }
         return products;
     }

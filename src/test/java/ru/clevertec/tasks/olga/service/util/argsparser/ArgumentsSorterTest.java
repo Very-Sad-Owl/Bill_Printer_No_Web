@@ -25,9 +25,11 @@ class ArgumentsSorterTest {
         goods.put(1L, 7);
         goods.put(2L, 3);
         expected.setGoods(goods);
+        expected.setDataPath("D:\\botanstvo\\java\\billPinterNoWeb\\db\\");
 
         String[] params = new String[]
-                {"1-7", "2-3", "card_uid-1", "cashier_uid-2", "action-print"};
+                {"1-7", "2-3", "card_uid-1", "cashier_uid-2", "action-print",
+                        "path-D:\\botanstvo\\java\\billPinterNoWeb\\db\\"};
         ParamsDTO actual = sorter.retrieveArgs(params);
 
         assertEquals(expected, actual);
@@ -39,9 +41,10 @@ class ArgumentsSorterTest {
         ParamsDTO expected = new ParamsDTO();
         expected.setAction(ACTION_FIND_BY_ID);
         expected.setBill_id(1L);
+        expected.setDataPath("D:\\botanstvo\\java\\billPinterNoWeb\\db\\");
 
         String[] params = new String[]
-                {"id-1", "action-find"};
+                {"id-1", "action-find", "path-D:\\botanstvo\\java\\billPinterNoWeb\\db\\"};
         ParamsDTO actual = sorter.retrieveArgs(params);
 
         assertEquals(expected, actual);
@@ -49,11 +52,14 @@ class ArgumentsSorterTest {
 
     @Test
     void retrieveArgs_correctCmdArgsForLog_success() {
+        String path = "D:\\botanstvo\\java\\billPinterNoWeb\\db\\";
+
         ParamsDTO expected = new ParamsDTO();
         expected.setAction(ACTION_LOG);
+        expected.setDataPath(path);
 
         String[] params = new String[]
-                {"action-log"};
+                {"action-log", "path-D:\\botanstvo\\java\\billPinterNoWeb\\db\\"};
         ParamsDTO actual = sorter.retrieveArgs(params);
 
         assertEquals(expected, actual);

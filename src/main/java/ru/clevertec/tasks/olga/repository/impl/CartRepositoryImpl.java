@@ -41,9 +41,9 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
             }
             nodeTreeBuilder.writeXML(fileName, cartNode, isAppend);
         } catch (ServiceException e) {
-            throw new WritingException(MessageLocaleService.getMessage("error.writing"));
+            throw new WritingException("error.writing");
         } catch (IOException e) {
-            throw new ReadingException("error while reading");
+            throw new ReadingException("error.writing");
         }
     }
 
@@ -56,7 +56,7 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
                 return cart;
             }
         }
-        throw new CartNotFoundException(MessageLocaleService.getMessage("error.bill_not_found"));
+        throw new CartNotFoundException("error.bill_not_found");
     }
 
     @Override
@@ -69,7 +69,7 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
             node = nodeTreeBuilder.parseXML(fileName);
             worker.nodeToList(node, log);
         } catch (ServiceException e) {
-            throw new ReadingException(MessageLocaleService.getMessage("error.reading"));
+            throw new ReadingException("error.reading");
         }
         return log;
     }
@@ -94,7 +94,7 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
             }
             bfwriter.flush();
         } catch (IOException e) {
-            throw new WritingException(MessageLocaleService.getMessage("error.writing"));
+            throw new WritingException("error.writing");
         }
     }
 

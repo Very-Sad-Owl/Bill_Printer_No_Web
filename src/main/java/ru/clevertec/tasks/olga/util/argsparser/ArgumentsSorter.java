@@ -45,7 +45,7 @@ public class ArgumentsSorter {
         }
         params.setGoods(goods);
         if (params.getAction() != null && !checkRequiredArgs(args, params.getAction())){
-            throw new NoRequiredArgsException(MessageLocaleService.getMessage("error.no_req_args"));
+            throw new NoRequiredArgsException("error.no_req_args");
         }
         return params;
     }

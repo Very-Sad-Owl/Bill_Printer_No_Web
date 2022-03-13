@@ -30,7 +30,7 @@ public class DiscountCardRepositoryImpl extends AbstractRepository implements Di
                 return product;
             }
         }
-        throw new CardNotFoundException(MessageLocaleService.getMessage("error.card_not_found"));
+        throw new CardNotFoundException("error.card_not_found");
     }
 
     @Override
@@ -43,7 +43,7 @@ public class DiscountCardRepositoryImpl extends AbstractRepository implements Di
             node = nodeTreeBuilder.parseXML(fileName);
             worker.nodeToList(node, products);
         } catch (ServiceException e) {
-            throw new ReadingException(MessageLocaleService.getMessage("error.reading"));
+            throw new ReadingException("error.reading");
         }
         return products;
     }

@@ -40,7 +40,7 @@ public class CashierRepositoryImpl extends AbstractRepository implements Cashier
             node = nodeTreeBuilder.parseXML(fileName);
             worker.nodeToList(node, products);
         } catch (ServiceException e) {
-            throw new ReadingException("error reading file");
+            throw new ReadingException("error.reading");
         }
         return products;
     }
