@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'io.freefair.lombok' version '3.8.4'
+    id 'ru.clevertec.tasks.olga.plugin.resource_downloader_plugin' version '1.0-SNAPSHOT'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.epam.training.jwd:JWD_Task03:1.0-SNAPSHOT'
+    implementation 'ru.clevertec.tasks.olga.custom_collection:my_list:1.1-SNAPSHOT'
+    compile "org.slf4j:slf4j-log4j12:1.6.1"
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.2'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.2'
+    implementation 'org.decimal4j:decimal4j:1.0.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+group = "ru.clevertec.tasks.olga"
+version = '1.0-SNAPSHOT'
+description = 'billPinterNoWeb'
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+// for my downloader plugin
+resources{
+    uri = "https://rep.bntu.by/bitstream/handle/data/37608/Optimizaciya_sostava_grupp_programmistov_po_professionalnoj_kvalifikacii.pdf"
+    path = "yourFile"
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}

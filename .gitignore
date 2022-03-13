@@ -5,6 +5,8 @@ target/
 !**/src/test/**/target/
 out/
 build/
+out/**
+build/**
 
 ### IntelliJ IDEA ###
 .idea
@@ -13,7 +15,6 @@ build/
 *.ipr
 
 .gradle
-*.gradle
 **/build/
 !src/**/build/
 
