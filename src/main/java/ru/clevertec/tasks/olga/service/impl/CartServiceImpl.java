@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.service.impl;
 
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.model.Cart;
 import ru.clevertec.tasks.olga.model.Cashier;
 import ru.clevertec.tasks.olga.model.DiscountCard;
@@ -38,7 +39,7 @@ public class CartServiceImpl extends AbstractService<Cart, CartRepository> imple
 
     @Override
     public List<Slot> formSlots(Map<Long, Integer> goods, String dbPath) {
-        List<Slot> slots = new ArrayList<>();
+        List<Slot> slots = new ArrayListImpl<>();
         for(Map.Entry<Long,Integer> entry : goods.entrySet()){
             slots.add(new Slot(productService.findById(entry.getKey(), dbPath), entry.getValue()));
         }

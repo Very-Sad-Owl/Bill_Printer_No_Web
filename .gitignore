@@ -13,6 +13,7 @@ build/
 *.ipr
 
 .gradle
+*.gradle
 **/build/
 !src/**/build/
 

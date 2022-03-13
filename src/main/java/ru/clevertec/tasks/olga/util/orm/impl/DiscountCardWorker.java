@@ -2,6 +2,7 @@ package ru.clevertec.tasks.olga.util.orm.impl;
 
 import by.epam.training.jwd.task03.entity.Attribute;
 import by.epam.training.jwd.task03.entity.Node;
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.model.DiscountCard;
 import ru.clevertec.tasks.olga.model.DiscountType;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
@@ -33,7 +34,7 @@ public class DiscountCardWorker extends NodeWorker<DiscountCard> {
 
     @Override
     public Node modelToNode(DiscountCard model) {
-        List<Attribute> attributes = new ArrayList<>();
+        List<Attribute> attributes = new ArrayListImpl<>();
         attributes.add(new Attribute(XML_ID_ATTR, model.getId()+""));
         attributes.add(new Attribute(XML_BDATE_ATTR,
                 new SimpleDateFormat("dd.MM.yyyy").format(model.getBirthday())));
