@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.util.formatter;
 
+import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.model.Cart;
 import ru.clevertec.tasks.olga.model.Cashier;
 import ru.clevertec.tasks.olga.model.Slot;
@@ -16,7 +17,7 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
 
     @Override
     public List<String> format(Cart cart) {
-        List<String> billBuilder = new ArrayList<>();
+        List<String> billBuilder = new ArrayListImpl<>();
         drawMetaInfo(cart.getId(), billBuilder);
         drawCashierInfo(cart.getCashier(), billBuilder);
         for (Slot slot : cart.getPositions()){
@@ -29,7 +30,7 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
 
     @Override
     public List<String> formatAll(List<Cart> cart) {
-        List<String> billBuilder = new ArrayList<>();
+        List<String> billBuilder = new ArrayListImpl<>();
         for (Cart bill : cart){
             List<String> billList = format(bill);
             billBuilder = Stream.concat(billBuilder.stream(), billList.stream())
