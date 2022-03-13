@@ -2,8 +2,8 @@ package ru.clevertec.tasks.olga.service.impl;
 
 
 import ru.clevertec.tasks.olga.model.Product;
-import ru.clevertec.tasks.olga.repository.models_repo.ProductRepository;
-import ru.clevertec.tasks.olga.service.models_service.ProductService;
+import ru.clevertec.tasks.olga.repository.ProductRepository;
+import ru.clevertec.tasks.olga.service.ProductService;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -14,17 +14,17 @@ public class ProductServiceImpl extends AbstractService<Product, ProductReposito
     private ProductRepository productRepository = repositoryFactory.getProductRepository();
 
     @Override
-    public void save(Product product) {
+    public void save(Product product, String fileName) {
 
     }
 
     @Override
-    public Product findById(long id) {
-        return productRepository.findById(id);
+    public Product findById(long id, String filePath) {
+        return productRepository.findById(id, filePath);
     }
 
     @Override
-    public List<Product> getAll() {
-        return productRepository.getAll();
+    public List<Product> getAll(String filePath) {
+        return productRepository.getAll(filePath);
     }
 }

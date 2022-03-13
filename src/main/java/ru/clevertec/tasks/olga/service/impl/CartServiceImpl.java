@@ -4,9 +4,9 @@ import ru.clevertec.tasks.olga.model.Cart;
 import ru.clevertec.tasks.olga.model.Cashier;
 import ru.clevertec.tasks.olga.model.DiscountCard;
 import ru.clevertec.tasks.olga.model.Slot;
-import ru.clevertec.tasks.olga.repository.models_repo.CartRepository;
-import ru.clevertec.tasks.olga.service.models_service.CartService;
-import ru.clevertec.tasks.olga.service.models_service.ProductService;
+import ru.clevertec.tasks.olga.repository.CartRepository;
+import ru.clevertec.tasks.olga.service.CartService;
+import ru.clevertec.tasks.olga.service.ProductService;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -22,25 +22,25 @@ public class CartServiceImpl extends AbstractService<Cart, CartRepository> imple
 
 
     @Override
-    public void save(Cart cart) {
-        cartRepository.save(cart);
+    public void save(Cart cart, String dbPath) {
+        cartRepository.save(cart, dbPath);
     }
 
     @Override
-    public Cart findById(long id) {
-        return cartRepository.findById(id);
+    public Cart findById(long id, String dbPath) {
+        return cartRepository.findById(id, dbPath);
     }
 
     @Override
-    public List<Cart> getAll() {
-        return cartRepository.getAll();
+    public List<Cart> getAll(String dbPath) {
+        return cartRepository.getAll(dbPath);
     }
 
     @Override
-    public List<Slot> formSlots(Map<Long, Integer> goods) {
+    public List<Slot> formSlots(Map<Long, Integer> goods, String dbPath) {
         List<Slot> slots = new ArrayList<>();
         for(Map.Entry<Long,Integer> entry : goods.entrySet()){
-            slots.add(new Slot(productService.findById(entry.getKey()), entry.getValue()));
+            slots.add(new Slot(productService.findById(entry.getKey(), dbPath), entry.getValue()));
         }
         return slots;
     }

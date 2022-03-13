@@ -1,15 +1,10 @@
 package ru.clevertec.tasks.olga.util;
 
 public interface Constant {
-    String BASE_PACKAGES_TO_SCAN = "ru.clevertec.tasks.olga";
-    String INDEX_PAGE = "index";
-    String ERROR_PAGE = "errorPage";
-    String ERROR_MESSAGE_ATTRIBUTE = "errorMessage";
-    String BILL_ATTRIBUTE = "billView";
     String BILL_ID_PARAM = "id";
     String CARD_ID_PARAM = "card_uid";
     String CASHIER_ID_PARAM = "cashier_uid";
-    String SAVE_PATH_PARAM = "path";
+    String PATH_PARAM = "path";
     String ACTION_PARAM = "action";
     String ACTION_PRINT = "print";
     String ACTION_LOG = "log";

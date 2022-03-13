@@ -1,8 +1,8 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import ru.clevertec.tasks.olga.model.DiscountCard;
-import ru.clevertec.tasks.olga.repository.models_repo.DiscountRepository;
-import ru.clevertec.tasks.olga.service.models_service.DiscountCardService;
+import ru.clevertec.tasks.olga.repository.DiscountRepository;
+import ru.clevertec.tasks.olga.service.DiscountCardService;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -16,17 +16,17 @@ public class DiscountCardServiceImpl
 
 
     @Override
-    public void save(DiscountCard discountCard) {
+    public void save(DiscountCard discountCard, String fileName) {
 
     }
 
     @Override
-    public DiscountCard findById(long id) {
-        return discountRepository.findById(id);
+    public DiscountCard findById(long id, String filePath) {
+        return discountRepository.findById(id, filePath);
     }
 
     @Override
-    public List<DiscountCard> getAll() {
-        return discountRepository.getAll();
+    public List<DiscountCard> getAll(String filePath) {
+        return discountRepository.getAll(filePath);
     }
 }

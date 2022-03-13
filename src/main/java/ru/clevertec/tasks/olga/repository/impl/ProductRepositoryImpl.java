@@ -5,8 +5,8 @@ import by.epam.training.jwd.task03.service.exception.ServiceException;
 import ru.clevertec.tasks.olga.exception.ProductNotFoundException;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.model.Product;
-import ru.clevertec.tasks.olga.repository.models_repo.ProductRepository;
-import ru.clevertec.tasks.olga.util.node_converter.NodeWorker;
+import ru.clevertec.tasks.olga.repository.ProductRepository;
+import ru.clevertec.tasks.olga.util.orm.NodeWorker;
 import ru.clevertec.tasks.olga.util.MessageLocaleService;
 
 import java.util.ArrayList;
@@ -18,13 +18,13 @@ import static ru.clevertec.tasks.olga.util.MessageLocaleService.getMessage;
 public class ProductRepositoryImpl extends AbstractRepository implements ProductRepository {
 
     @Override
-    public void save(Product product) {
+    public void save(Product product, String fileName) {
         
     }
 
     @Override
-    public Product findById(long id) {
-        List<Product> nodes = getAll();
+    public Product findById(long id, String filePath) {
+        List<Product> nodes = getAll(filePath);
         for (Product product : nodes){
             if (product.getId() == id){
                 return product;
@@ -34,12 +34,13 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
     }
 
     @Override
-    public List<Product> getAll() {
+    public List<Product> getAll(String path) {
         Node node;
         NodeWorker<Product> worker = workerFactory.getProductWorker();
         List<Product> products = new ArrayList<>();
+        String fileName = path + ResourceBundle.getBundle("db").getString("path.product");
         try {
-            node = nodeTreeBuilder.parseXML(ResourceBundle.getBundle("db").getString("path.product"));
+            node = nodeTreeBuilder.parseXML(fileName);
             worker.nodeToList(node, products);
         } catch (ServiceException e) {
             throw new ReadingException(MessageLocaleService.getMessage("error.reading"));

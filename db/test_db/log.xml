@@ -1,0 +1,23 @@
+<carts>
+	<cart id = "1">
+	<cashier id = "2" name = "Oleg" surname = "Geosimp"/>
+	<card id = "1" birthday = "15.03.2001" discount = "SILVER"/>
+	<slots>
+		<slot quantity = "1">
+			<product id = "1" title = "milk" price = "1.43" discount = "more_than_five"/>
+		</slot>
+	</slots>
+</cart>
+	<cart id = "2">
+		<cashier id = "2" name = "Olga" surname = "Mailychko"/>
+		<card id = "1" birthday = "11.11.2011" discount = "NONE"/>
+		<slots>
+			<slot quantity = "7">
+				<product id = "1" title = "milk" price = "1.43" discount = "more_than_five"/>
+			</slot>
+			<slot quantity = "3">
+				<product id = "2" title = "bread" price = "1.2" discount = "none"/>
+			</slot>
+		</slots>
+	</cart>
+</carts>

@@ -6,23 +6,18 @@ import ru.clevertec.tasks.olga.exception.CartNotFoundException;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.model.Cart;
-import ru.clevertec.tasks.olga.repository.models_repo.CartRepository;
+import ru.clevertec.tasks.olga.repository.CartRepository;
 import ru.clevertec.tasks.olga.util.formatter.PseudographicBillFormatter;
 import ru.clevertec.tasks.olga.util.formatter.AbstractBillFormatter;
-import ru.clevertec.tasks.olga.util.node_converter.NodeWorker;
-import ru.clevertec.tasks.olga.util.node_converter.impl.CartWorker;
+import ru.clevertec.tasks.olga.util.orm.NodeWorker;
+import ru.clevertec.tasks.olga.util.orm.impl.CartWorker;
 import lombok.AllArgsConstructor;
 import ru.clevertec.tasks.olga.util.MessageLocaleService;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import static ru.clevertec.tasks.olga.util.MessageLocaleService.getMessage;
 
 @AllArgsConstructor
 public class CartRepositoryImpl extends AbstractRepository implements CartRepository {
@@ -35,26 +30,27 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
 
 
     @Override
-    public void save(Cart cart) {
+    public void save(Cart cart, String path) {
         NodeWorker<Cart> worker = workerFactory.getCartWorker();
         Node cartNode = worker.modelToNode(cart);
+        String fileName = path + ResourceBundle.getBundle("db").getString("path.bill_log");
         try {
-            boolean isAppend = !nodeTreeBuilder
-                    .checkFileEmpty(ResourceBundle.getBundle("db").getString("path.bill_log_absolute"));
+            boolean isAppend = !isEmpty(fileName);
             if (isAppend){
                 cartNode = cartNode.getChildNodes().get(0);
             }
-            nodeTreeBuilder.writeXML(ResourceBundle.getBundle("db").getString("path.bill_log_absolute"),
-                    cartNode, isAppend);
+            nodeTreeBuilder.writeXML(fileName, cartNode, isAppend);
         } catch (ServiceException e) {
             throw new WritingException(MessageLocaleService.getMessage("error.writing"));
+        } catch (IOException e) {
+            throw new ReadingException("error while reading");
         }
     }
 
 
     @Override
-    public Cart findById(long id){
-        List<Cart> carts = getAll();
+    public Cart findById(long id, String filePath){
+        List<Cart> carts = getAll(filePath);
         for (Cart cart : carts){
             if (cart.getId() == id){
                 return cart;
@@ -64,12 +60,13 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
     }
 
     @Override
-    public List<Cart> getAll(){
+    public List<Cart> getAll(String path){
         Node node;
         CartWorker worker = (CartWorker) workerFactory.getCartWorker();
         List<Cart> log = new ArrayList<>();
+        String fileName = path + ResourceBundle.getBundle("db").getString("path.bill_log");
         try {
-            node = nodeTreeBuilder.parseXML(ResourceBundle.getBundle("db").getString("path.bill_log"));
+            node = nodeTreeBuilder.parseXML(fileName);
             worker.nodeToList(node, log);
         } catch (ServiceException e) {
             throw new ReadingException(MessageLocaleService.getMessage("error.reading"));
@@ -83,8 +80,8 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
     }
 
     @Override
-    public void printBill(Cart cart, String path) {
-        File file = new File(path);
+    public void printBill(Cart cart, String fileURI) {
+        File file = new File(fileURI);
         try (
                 FileWriter fwriter = new FileWriter(file, false);
                 BufferedWriter bfwriter = new BufferedWriter(fwriter)
@@ -99,5 +96,20 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
         } catch (IOException e) {
             throw new WritingException(MessageLocaleService.getMessage("error.writing"));
         }
+    }
+
+    private boolean isEmpty(String filePath) throws IOException {
+        File file = new File(filePath);
+        FileReader fileReader = new FileReader(file);
+        BufferedReader br = new BufferedReader(fileReader);
+        String line;
+        while ((line = br.readLine()) != null) {
+            if (!line.isEmpty()){
+                br.close();
+                return false;
+            }
+        }
+        br.close();
+        return true;
     }
 }

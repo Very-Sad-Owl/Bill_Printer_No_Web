@@ -11,6 +11,6 @@ public class ParamsDTO {
     private long cashier_id;
     private long card_id;
     private long bill_id;
-    private String destinationPath;
+    private String dataPath;
     private String action;
 }

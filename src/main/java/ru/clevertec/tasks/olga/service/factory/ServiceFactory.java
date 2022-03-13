@@ -4,10 +4,10 @@ import ru.clevertec.tasks.olga.service.impl.CartServiceImpl;
 import ru.clevertec.tasks.olga.service.impl.CashierServiceImpl;
 import ru.clevertec.tasks.olga.service.impl.DiscountCardServiceImpl;
 import ru.clevertec.tasks.olga.service.impl.ProductServiceImpl;
-import ru.clevertec.tasks.olga.service.models_service.CartService;
-import ru.clevertec.tasks.olga.service.models_service.CashierService;
-import ru.clevertec.tasks.olga.service.models_service.DiscountCardService;
-import ru.clevertec.tasks.olga.service.models_service.ProductService;
+import ru.clevertec.tasks.olga.service.CartService;
+import ru.clevertec.tasks.olga.service.CashierService;
+import ru.clevertec.tasks.olga.service.DiscountCardService;
+import ru.clevertec.tasks.olga.service.ProductService;
 import lombok.Getter;
 
 @Getter

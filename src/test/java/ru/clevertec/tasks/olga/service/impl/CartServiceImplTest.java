@@ -1,13 +1,9 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import org.junit.jupiter.api.Test;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.exception.CartNotFoundException;
-import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
 import ru.clevertec.tasks.olga.model.*;
 import ru.clevertec.tasks.olga.service.CartService;
-import ru.clevertec.tasks.olga.service.impl.CartServiceImpl;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CartServiceImplTest {
 
+    private static final String DB_PATH = System.getProperty("user.dir")+"\\db\\test_db\\";
     private CartService cartService = new CartServiceImpl();
 
     @Test
@@ -28,11 +25,11 @@ class CartServiceImplTest {
         goods.put(1L, 5);
         goods.put(2L, 2);
 
-        List<Slot> expected  = new ArrayListImpl<>();
+        List<Slot> expected  = new ArrayList<>();
         expected.add(new Slot(new Product(1, "milk", 1.43, ProductDiscountType.MORE_THAN_FIVE), 5));
         expected.add(new Slot(new Product(2, "bread", 1.20, ProductDiscountType.NONE), 2));
 
-        List<Slot> actual = cartService.formSlots(goods);
+        List<Slot> actual = cartService.formSlots(goods, DB_PATH);
 
         assertEquals(expected, actual);
     }
@@ -64,7 +61,7 @@ class CartServiceImplTest {
 
     @Test
     void getALl(){
-        List<Cart> carts = cartService.getAll();
+        List<Cart> carts = cartService.getAll(DB_PATH);
         System.out.println(carts);
     }
 
@@ -79,7 +76,7 @@ class CartServiceImplTest {
 
         Cart expected = new Cart(id, slots, discountCard, cashier);
 
-        Cart actual = cartService.findById(id);
+        Cart actual = cartService.findById(id, DB_PATH);
 
         assertEquals(expected, actual);
     }
@@ -88,9 +85,8 @@ class CartServiceImplTest {
     void findById_nonexistingNode_exception(){
         int id = -1;
         assertThrows(CartNotFoundException.class, () -> {
-            cartService.findById(id);
+            cartService.findById(id, DB_PATH);
         });
-
     }
 
 }
