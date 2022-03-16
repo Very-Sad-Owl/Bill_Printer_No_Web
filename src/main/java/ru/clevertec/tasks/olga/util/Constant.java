@@ -26,4 +26,7 @@ public interface Constant {
     String XML_PRICE_ATTR = "price";
     String XML_QUANTITY_ATTR = "quantity";
 
+    String CACHE_ALG = "cache.algorithm";
+    String CACHE_CAPACITY = "cache.capacity";
+
 }

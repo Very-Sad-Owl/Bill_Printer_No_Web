@@ -10,7 +10,6 @@ import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.ProductService;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -35,6 +34,16 @@ public class CartServiceImpl extends AbstractService<Cart, CartRepository> imple
     @Override
     public List<Cart> getAll(String dbPath) {
         return cartRepository.getAll(dbPath);
+    }
+
+    @Override
+    public boolean delete(Cart cart, String filePath) {
+        return false;
+    }
+
+    @Override
+    public Cart update(Cart cart, String filePath) {
+        return cart;
     }
 
     @Override

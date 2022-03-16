@@ -27,4 +27,14 @@ public class CashierServiceImpl extends AbstractService<Cashier, CashierReposito
     public List<Cashier> getAll(String filePath) {
         return cashierRepository.getAll(filePath);
     }
+
+    @Override
+    public boolean delete(Cashier cashier, String filePath) {
+        return false;
+    }
+
+    @Override
+    public Cashier update(Cashier cashier, String filePath) {
+        return null;
+    }
 }

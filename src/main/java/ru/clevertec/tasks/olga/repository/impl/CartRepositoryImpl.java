@@ -3,6 +3,7 @@ package ru.clevertec.tasks.olga.repository.impl;
 import by.epam.training.jwd.task03.entity.Node;
 import by.epam.training.jwd.task03.service.exception.ServiceException;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
+import ru.clevertec.tasks.olga.annotation.UseCache;
 import ru.clevertec.tasks.olga.exception.CartNotFoundException;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
@@ -13,10 +14,7 @@ import ru.clevertec.tasks.olga.util.formatter.AbstractBillFormatter;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
 import ru.clevertec.tasks.olga.util.orm.impl.CartWorker;
 import lombok.AllArgsConstructor;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
-
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -29,7 +27,7 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
         this.formatter = new PseudographicBillFormatter();
     }
 
-
+    @UseCache
     @Override
     public void save(Cart cart, String path) {
         NodeWorker<Cart> worker = workerFactory.getCartWorker();
@@ -49,6 +47,7 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
     }
 
 
+    @UseCache
     @Override
     public Cart findById(long id, String filePath){
         List<Cart> carts = getAll(filePath);
@@ -73,6 +72,18 @@ public class CartRepositoryImpl extends AbstractRepository implements CartReposi
             throw new ReadingException("error.reading");
         }
         return log;
+    }
+
+    @UseCache
+    @Override
+    public boolean delete(Cart cart, String filePath) {
+        return false;
+    }
+
+    @UseCache
+    @Override
+    public Cart update(Cart cart, String filePath) {
+        return null;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import org.junit.jupiter.api.Test;
+import ru.clevertec.tasks.olga.annotation.UseCache;
 import ru.clevertec.tasks.olga.exception.CartNotFoundException;
 import ru.clevertec.tasks.olga.model.*;
 import ru.clevertec.tasks.olga.service.CartService;
@@ -81,6 +82,7 @@ class CartServiceImplTest {
         assertEquals(expected, actual);
     }
 
+    @UseCache
     @Test
     void findById_nonexistingNode_exception(){
         int id = -1;

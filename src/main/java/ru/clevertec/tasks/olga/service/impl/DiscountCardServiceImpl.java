@@ -29,4 +29,14 @@ public class DiscountCardServiceImpl
     public List<DiscountCard> getAll(String filePath) {
         return discountRepository.getAll(filePath);
     }
+
+    @Override
+    public boolean delete(DiscountCard discountCard, String filePath) {
+        return false;
+    }
+
+    @Override
+    public DiscountCard update(DiscountCard discountCard, String filePath) {
+        return null;
+    }
 }

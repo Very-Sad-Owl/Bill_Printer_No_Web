@@ -27,4 +27,14 @@ public class ProductServiceImpl extends AbstractService<Product, ProductReposito
     public List<Product> getAll(String filePath) {
         return productRepository.getAll(filePath);
     }
+
+    @Override
+    public boolean delete(Product product, String filePath) {
+        return false;
+    }
+
+    @Override
+    public Product update(Product product, String filePath) {
+        return null;
+    }
 }
