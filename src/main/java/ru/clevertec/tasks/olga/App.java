@@ -5,6 +5,7 @@ import ru.clevertec.tasks.olga.exception.LocalizedException;
 import ru.clevertec.tasks.olga.model.*;
 import ru.clevertec.tasks.olga.printer.AbstractPrinter;
 import ru.clevertec.tasks.olga.printer.impl.ConsolePrinter;
+import ru.clevertec.tasks.olga.printer.impl.PdfPrinter;
 import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
 import ru.clevertec.tasks.olga.util.argsparser.ArgumentsSorter;
 import ru.clevertec.tasks.olga.util.formatter.AbstractBillFormatter;
@@ -25,6 +26,7 @@ public class App
         ArgumentsSorter sorter = new ArgumentsSorter();
         ServiceFactory factory = ServiceFactory.getInstance();
         AbstractPrinter consolePrinter = new ConsolePrinter();
+        AbstractPrinter pdfPrinter = new PdfPrinter();
 
         try {
             log.info(MessageLocaleService.getMessage("label.guide"));
@@ -51,6 +53,7 @@ public class App
                     Cart found = factory.getCartService().findById(params.getBill_id(), params.getDataPath());
                     List<String> billStr = billFormatter.format(found);
                     consolePrinter.print(billStr);
+                    pdfPrinter.print(billStr);
                     break;
             }
         } catch (LocalizedException e){

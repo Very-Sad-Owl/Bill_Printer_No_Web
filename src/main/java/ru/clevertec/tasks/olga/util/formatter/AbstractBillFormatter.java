@@ -14,6 +14,6 @@ public abstract class AbstractBillFormatter {
     protected abstract void drawCashierInfo(Cashier cashier, List<String> destination);
     protected abstract void drawSlotInfo(Slot slot, List<String> destination);
     protected abstract void drawPaymentInfo(Cart cart, List<String> destination);
-    protected abstract String drawLine(char delimiter, int len);
-    protected abstract String centreLine(String line, char delimiter);
+    protected abstract String drawLine(char delimiter);
+    protected abstract String centreLine(String line);
 }
