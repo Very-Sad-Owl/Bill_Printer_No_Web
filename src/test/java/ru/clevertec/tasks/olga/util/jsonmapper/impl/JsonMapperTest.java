@@ -1,8 +1,8 @@
 package ru.clevertec.tasks.olga.util.jsonmapper.impl;
 
-import lombok.Data;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
+import ru.clevertec.tasks.olga.model.Cart;
 import ru.clevertec.tasks.olga.model.Product;
 
 import java.lang.reflect.Field;
@@ -16,16 +16,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JsonMapperTest {
 
-    JsonMapper mapper = new JsonMapper();
+    private JsonMapper mapper = new JsonMapper();
     private TestObj testObj = new TestObj();
+    private Cart sample = new Cart();
 
     @Test
     void parseObject() {
+        String expected = "{ \"positions\" : [ null ],\"discountCard\" : null,\"cashier\" : null,\"price\" : 0.0 }";
+
+        String actual = mapper.parseObject(sample);
+
+        assertEquals(expected, actual);
     }
 
     @Test
     void parsePrimitiveAndWrappers() throws NoSuchFieldException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = mapper.getClass().getDeclaredMethod("parsePrimitiveAndWrappers",
+        Method method = mapper.getClass().getDeclaredMethod("parsePrimitivesAndWrappers",
                 Field.class, Object.class);
         method.setAccessible(true);
 
@@ -42,9 +48,7 @@ class JsonMapperTest {
                 Field.class, Object.class);
         method.setAccessible(true);
 
-        String expected = "\"arr\" : [\n" +
-                "[a,b,,\n" +
-                "]";
+        String expected = "\"arr\" : [ a,b,c ]";
 
         String actual = (String) method.invoke(mapper, testObj.getClass()
                 .getDeclaredField("arr"), testObj);
@@ -58,9 +62,7 @@ class JsonMapperTest {
                 Field.class, Object.class);
         method.setAccessible(true);
 
-        String expected = "\"arr\" : [\n" +
-                "[a,b,,\n" +
-                "]";
+        String expected = "\"map\" : { \"1\" : \"a\",\"2\" : \"b\",\"3\" : \"c\" }";
 
         String actual = (String) method.invoke(mapper, testObj.getClass()
                 .getDeclaredField("map"), testObj);
@@ -74,9 +76,7 @@ class JsonMapperTest {
                 Field.class, Object.class);
         method.setAccessible(true);
 
-        String expected = "\"arr\" : [\n" +
-                "[a,b,,\n" +
-                "]";
+        String expected = "\"objList\" : [ 1,a,{ \"title\" : \"null\",\"price\" : 0.0,\"discountType\" : \"null\" } ]";
 
         String actual = (String) method.invoke(mapper, testObj.getClass()
                 .getDeclaredField("objList"), testObj);
