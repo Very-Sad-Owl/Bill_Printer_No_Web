@@ -2,130 +2,190 @@ package ru.clevertec.tasks.olga.util.jsonmapper.impl;
 
 import org.junit.jupiter.api.Test;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.model.Cart;
-import ru.clevertec.tasks.olga.model.DiscountCard;
-import ru.clevertec.tasks.olga.model.DiscountType;
+import ru.clevertec.custom_collection.my_list.LinkedListImpl;
 import ru.clevertec.tasks.olga.model.Product;
+import ru.clevertec.tasks.olga.model.ProductDiscountType;
+import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JsonMapperTest {
-
-    private JsonMapper mapper = new JsonMapper();
-    private TestObj testObj = new TestObj();
-    private Cart sample = new Cart();
+public class JsonMapperTest {
 
     @Test
-    void parseObject() {
-        String expected = "{ \"positions\" : [ null ],\"discountCard\" : null,\"cashier\" : null,\"price\" : 0.0 }";
+    void parseObject_compositeObject_correctJsonString() {
+        String expected = "{ \"type\" : \"MORE_THAN_FIVE\", \"i\" : 1, " +
+                "\"d\" : 3.5, \"s\" : \"content\", \"arr\" : [ a, b, c ], " +
+                "\"list\" : [ a, b, c ], " +
+                "\"objList\" : [ 1, \"a\", { \"title\" : null, \"price\" : 0.0, \"discountType\" : null } ], " +
+                "\"map\" : { \"1\" : \"a\", \"2\" : \"b\", \"3\" : \"c\" } }";
 
-        String actual = mapper.parseObject(sample);
+        String actual = JsonMapper.parseObject(new TestObj());
 
         assertEquals(expected, actual);
     }
 
     @Test
-    void parsePrimitiveAndWrappers() throws NoSuchFieldException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = mapper.getClass().getDeclaredMethod("parsePrimitivesAndWrappers",
-                Field.class, Object.class);
-        method.setAccessible(true);
+    void isWrapper_wrapperType_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isWrapper", Class.class);
+        Double arg = 3.4;
+        m.setAccessible(true);
 
-        String expected = "\"i\" : 1";
-
-        String actual = (String) method.invoke(mapper, testObj.getClass().getDeclaredField("i"), testObj);
-        method.setAccessible(false);
-
-        assertEquals(expected, actual);
+        assertTrue((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
     }
 
     @Test
-    void parseArray() throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
-        Method method = mapper.getClass().getDeclaredMethod("parseArray",
-                Field.class, Object.class);
-        method.setAccessible(true);
+    void isWrapper_nonWrapperType_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isWrapper", Class.class);
+        String arg = "3.4";
+        m.setAccessible(true);
 
-        String expected = "\"arr\" : [ a,b,c ]";
-
-        String actual = (String) method.invoke(mapper, testObj.getClass()
-                .getDeclaredField("arr"), testObj);
-        method.setAccessible(false);
-
-        assertEquals(expected, actual);
+        assertFalse((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
     }
 
     @Test
-    void parseMap() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Method method = mapper.getClass().getDeclaredMethod("parseMap",
-                Field.class, Object.class);
-        method.setAccessible(true);
+    void isTextOrEnum_string_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isTextOrEnum", Class.class);
+        String arg = "text";
+        m.setAccessible(true);
 
-        String expected = "\"map\" : { \"1\" : \"a\",\"2\" : \"b\",\"3\" : \"c\" }";
-
-        String actual = (String) method.invoke(mapper, testObj.getClass()
-                .getDeclaredField("map"), testObj);
-        method.setAccessible(false);
-
-        assertEquals(expected, actual);
+        assertTrue((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
     }
 
     @Test
-    void parseList() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Method method = mapper.getClass().getDeclaredMethod("parseList",
-                Field.class, Object.class);
-        method.setAccessible(true);
+    void isTextOrEnum_char_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isTextOrEnum", Class.class);
+        Character arg = 'V';
+        m.setAccessible(true);
 
-        String expected = "\"objList\" : [ 1,a,{ \"title\" : \"null\",\"price\" : 0.0,\"discountType\" : \"null\" } ]";
-
-        String actual = (String) method.invoke(mapper, testObj.getClass()
-                .getDeclaredField("objList"), testObj);
-        method.setAccessible(false);
-
-        assertEquals(expected, actual);
+        assertTrue((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
     }
 
     @Test
-    void parseDateObj() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Method method = mapper.getClass().getDeclaredMethod("parseDate",
-                Object.class);
-        method.setAccessible(true);
+    void isTextOrEnum_enum_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isTextOrEnum", Class.class);
+        TestEnum arg = TestEnum.VALUE_TWO;
+        m.setAccessible(true);
 
-        String expected = "21-3-2022";
-
-        String actual = (String) method.invoke(mapper, LocalDate.now());
-        method.setAccessible(false);
-
-        assertEquals(expected, actual);
+        assertTrue((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
     }
 
     @Test
-    void parseDateField() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, NoSuchFieldException {
-        Method method = mapper.getClass().getDeclaredMethod("parseDate",
-                Field.class, Object.class);
-        method.setAccessible(true);
+    void isTextOrEnum_notText_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isTextOrEnum", Class.class);
+        Boolean arg = true;
+        m.setAccessible(true);
 
-        DiscountCard card = DiscountCard.builder()
-                .birthday(LocalDate.now())
-                .id(1)
-                .discountType(DiscountType.BRONZE)
-                .build();
-        String expected = "\"birthday\" : \"21-3-2022\"";
-
-        String actual = (String) method.invoke(mapper, card.getClass()
-                .getDeclaredField("birthday"), card);
-        method.setAccessible(false);
-
-        assertEquals(expected, actual);
+        assertFalse((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
     }
 
-    private class TestObj{
+    @Test
+    void isLocalDate_date_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isLocalDate", Class.class);
+        LocalDate arg = LocalDate.now();
+        m.setAccessible(true);
+
+        assertTrue((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
+    }
+
+    @Test
+    void isLocalDate_notDate_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isLocalDate", Class.class);
+        String arg = "22.03.2022";
+        m.setAccessible(true);
+
+        assertFalse((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
+    }
+
+    @Test
+    void isCollection_listImpl_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isCollection", Class.class);
+        LinkedListImpl<String> arg = new LinkedListImpl<>();
+        m.setAccessible(true);
+
+        assertTrue((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
+    }
+
+    @Test
+    void isCollection_map_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isCollection", Class.class);
+        Map<Integer, String> arg = new HashMap<>();
+        m.setAccessible(true);
+
+        assertFalse((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
+    }
+
+    @Test
+    void isMap_list_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isMap", Class.class);
+        LinkedListImpl<String> arg = new LinkedListImpl<>();
+        m.setAccessible(true);
+
+        assertFalse((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
+    }
+
+    @Test
+    void isMap_map_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isMap", Class.class);
+        Map<Integer, String> arg = new HashMap<>();
+        m.setAccessible(true);
+
+        assertTrue((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
+    }
+
+    @Test
+    void isArray_primitiveArray_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isArray", Class.class);
+        char[] arg = new char[]{'a', 'b', 'c'};
+        m.setAccessible(true);
+
+        assertTrue((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
+    }
+
+    @Test
+    void isArray_objectArray_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isArray", Class.class);
+        TestObj[] arg = new TestObj[2];
+        m.setAccessible(true);
+
+        assertTrue((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
+    }
+
+    @Test
+    void isArray_list_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = JsonMapper.class.getDeclaredMethod("isArray", Class.class);
+        List<Double> arg = new ArrayListImpl<>();
+        m.setAccessible(true);
+
+        assertFalse((boolean)m.invoke(null, arg.getClass()));
+        m.setAccessible(false);
+    }
+
+    private enum TestEnum{
+        VALUE_ONE, VALUE_TWO;
+    }
+
+    private static class TestObj{
+        TestEnum testEnum = TestEnum.VALUE_ONE;
         Integer i = 1;
         double d = 3.5;
         String s = "content";
@@ -146,4 +206,5 @@ class JsonMapperTest {
             objList.add(new Product());
         }
     }
+
 }

@@ -54,7 +54,7 @@ public class App
                     break;
             }
         } catch (LocalizedException e){
-            log.info(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage());
         }
     }
 }
