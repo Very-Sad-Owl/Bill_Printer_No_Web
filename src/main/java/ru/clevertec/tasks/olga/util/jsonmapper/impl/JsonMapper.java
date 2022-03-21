@@ -5,10 +5,9 @@ import ru.clevertec.tasks.olga.util.jsonmapper.Mapper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.*;
 
 public class JsonMapper implements Mapper {
 
@@ -19,6 +18,7 @@ public class JsonMapper implements Mapper {
     private static final String mapPattern = "\"%s\" : { %s }";
     private static final String mapOrObjectContentPattern = "{ %s }";
     private static final String mapPairPattern = "\"%s\" : \"%s\"";
+    private static final String mapDatePattern = "%s-%s-%s";
 
 
     private String parse(Object o) {
@@ -150,7 +150,7 @@ public class JsonMapper implements Mapper {
     @SneakyThrows
     private String parseObjectField(Field field, Object o) {
         if (o == null) {
-            return null;
+            return parseNull();
         }
         field.setAccessible(true);
         Object o1 = field.get(o);
@@ -162,7 +162,7 @@ public class JsonMapper implements Mapper {
     @SneakyThrows
     public String parseObject(Object o) {
         if (o == null) {
-            return null;
+            return parseNull();
         }
         StringBuilder result = new StringBuilder();
         Class<?> oClass = o.getClass();
@@ -176,6 +176,24 @@ public class JsonMapper implements Mapper {
         result.deleteCharAt(result.length() - 1);
 
         return String.format(mapOrObjectContentPattern, result);
+    }
+
+    @SneakyThrows
+    private String parseDate(Field field,  Object o){
+        field.setAccessible(true);
+        Object o1 = field.get(o);
+        String date = parseDate(o1);
+        field.setAccessible(false);
+        return String.format(stringPattern, field.getName(), date);
+    }
+
+    @SneakyThrows
+    private String parseDate(Object o){
+        if (o == null) {
+            return parseNull();
+        }
+        LocalDate date = (LocalDate)o;
+        return String.format(mapDatePattern, date.getDayOfMonth(), date.getMonthValue(), date.getYear());
     }
 
     private String parseNull(){

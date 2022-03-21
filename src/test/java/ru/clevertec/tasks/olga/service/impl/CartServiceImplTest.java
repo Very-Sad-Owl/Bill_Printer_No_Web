@@ -7,6 +7,8 @@ import ru.clevertec.tasks.olga.model.*;
 import ru.clevertec.tasks.olga.service.CartService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +39,6 @@ class CartServiceImplTest {
 
     @Test
     void formCart() throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-
         Map<Long, Integer> goods = new HashMap<>();
         goods.put(1L, 5);
         goods.put(2L, 2);
@@ -47,7 +47,9 @@ class CartServiceImplTest {
         slots.add(new Slot(new Product(1, "milk", 1.43, ProductDiscountType.MORE_THAN_FIVE), 5));
         slots.add(new Slot(new Product(2, "bread", 1.20, ProductDiscountType.NONE), 2));
 
-        DiscountCard discountCard = new DiscountCard(2, formatter.parse("15.03.2001"), DiscountType.GOLD);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate localDate = LocalDate.parse("15.03.2001", formatter);
+        DiscountCard discountCard = new DiscountCard(2, localDate, DiscountType.GOLD);
 
         Cashier cashier = new Cashier(2, "Olga", "Mailychko");
 
@@ -68,11 +70,12 @@ class CartServiceImplTest {
 
     @Test
     void findById_existingNode_cartObj() throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate localDate = LocalDate.parse("15.03.2001", formatter);
         long id = 1;
         List<Slot> slots  = new ArrayList<>();
         slots.add(new Slot(new Product(1, "milk", 1.43, ProductDiscountType.MORE_THAN_FIVE), 1));
-        DiscountCard discountCard = new DiscountCard(1, formatter.parse("15.03.2001"), DiscountType.SILVER);
+        DiscountCard discountCard = new DiscountCard(1, localDate, DiscountType.SILVER);
         Cashier cashier = new Cashier(2, "Oleg", "Geosimp");
 
         Cart expected = new Cart(id, slots, discountCard, cashier);
