@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -13,6 +14,7 @@ public class Cashier extends AbstractModel {
 
     public Cashier(){super();}
 
+    @Builder
     public Cashier(long id, String name, String surname){
         super(id);
         this.name = name;

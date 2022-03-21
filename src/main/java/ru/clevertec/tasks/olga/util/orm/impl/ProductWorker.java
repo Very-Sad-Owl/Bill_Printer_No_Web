@@ -1,42 +1,34 @@
 package ru.clevertec.tasks.olga.util.orm.impl;
 
-
-import by.epam.training.jwd.task03.entity.Attribute;
-import by.epam.training.jwd.task03.entity.Node;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
+import lombok.NoArgsConstructor;
 import ru.clevertec.tasks.olga.model.Product;
 import ru.clevertec.tasks.olga.model.ProductDiscountType;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import lombok.NoArgsConstructor;
-import ru.clevertec.tasks.olga.util.Constant;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @NoArgsConstructor
 public class ProductWorker extends NodeWorker<Product> {
 
+    private static final NodeWorker<ProductDiscountType> discountWorker = new ProductDiscountWorker();
+
     @Override
-    public Product nodeToModel(Node node) {
-        return new Product(
-                Long.parseLong(node.getAttrByName(Constant.XML_ID_ATTR).getContent()),
-                node.getAttrByName(Constant.XML_TITLE_ATTR).getContent(),
-                Double.parseDouble(node.getAttrByName(Constant.XML_PRICE_ATTR).getContent()),
-                ProductDiscountType.valueOf(node.getAttrByName(Constant.XML_DISCOUNT_ATTR).getContent().toUpperCase())
-        );
+    public Product nodeToModel(ResultSet rs, boolean isJoin) throws SQLException {
+        Product found = new Product();
+        found.setId(rs.getLong(!isJoin ? "id" : "product_id"));
+        found.setTitle(rs.getString("title"));
+        found.setDiscountType(discountWorker.nodeToModel(rs, true));
+        found.setPrice(rs.getDouble("price"));
+        return found;
     }
 
     @Override
-    public Node modelToNode(Product model) {
-        List<Attribute> attributes = new ArrayListImpl<>();
-        attributes.add(new Attribute(Constant.XML_ID_ATTR, model.getId()+""));
-        attributes.add(new Attribute(Constant.XML_TITLE_ATTR, model.getTitle()));
-        attributes.add(new Attribute(Constant.XML_PRICE_ATTR, model.getPrice()+""));
-        attributes.add(new Attribute(Constant.XML_DISCOUNT_ATTR, model.getDiscountType().toString().toLowerCase()));
-        return Node.newBuilder()
-                .withName(Constant.PRODUCT_XML_NAME)
-                .withAttributes(attributes)
-                .build();
+    public void modelToNode(Product product, PreparedStatement st) throws SQLException {
+        st.setString(1, product.getTitle());
+        st.setDouble(2, product.getPrice());
+        st.setLong(3, product.getDiscountType().getId());
     }
 
 }

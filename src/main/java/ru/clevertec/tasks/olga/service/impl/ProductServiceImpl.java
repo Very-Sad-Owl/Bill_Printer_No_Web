@@ -1,31 +1,39 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 
+import ru.clevertec.tasks.olga.exception.ProductNotFoundException;
 import ru.clevertec.tasks.olga.model.Product;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
+import ru.clevertec.tasks.olga.repository.impl.ProductRepositoryImpl;
 import ru.clevertec.tasks.olga.service.ProductService;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @NoArgsConstructor
 public class ProductServiceImpl extends AbstractService<Product, ProductRepository> implements ProductService {
 
-    private ProductRepository productRepository = repositoryFactory.getProductRepository();
+    private ProductRepository productRepository = new ProductRepositoryImpl();
 
     @Override
-    public void save(Product product, String fileName) {
-
+    public long save(Product product) {
+        return productRepository.save(product);
     }
 
     @Override
-    public Product findById(long id, String filePath) {
-        return productRepository.findById(id, filePath);
+    public Product findById(long id) {
+        Optional<Product> product = productRepository.findById(id);
+        if(product.isPresent()){
+            return product.get();
+        } else {
+            throw new ProductNotFoundException("error.product_not_found");
+        }
     }
 
     @Override
-    public List<Product> getAll(String filePath) {
-        return productRepository.getAll(filePath);
+    public List<Product> getAll() {
+        return productRepository.getAll();
     }
 
     @Override

@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface CRUDService<E extends AbstractModel> {
 
-    void save(E e, String fileName);
+    long save(E e);
 
-    E findById(long id, String filePath);
+    E findById(long id);
 
-    List<E> getAll(String filePath);
+    List<E> getAll();
 
     boolean delete(E e, String filePath);
 

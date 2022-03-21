@@ -1,64 +1,54 @@
 package ru.clevertec.tasks.olga;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.clevertec.tasks.olga.exception.LocalizedException;
-import ru.clevertec.tasks.olga.model.*;
 import ru.clevertec.tasks.olga.printer.AbstractPrinter;
 import ru.clevertec.tasks.olga.printer.impl.ConsolePrinter;
-import ru.clevertec.tasks.olga.printer.impl.PdfPrinter;
+import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
-import ru.clevertec.tasks.olga.util.argsparser.ArgumentsSorter;
+import ru.clevertec.tasks.olga.util.argsparser.CartArgumentsSorter;
 import ru.clevertec.tasks.olga.util.formatter.AbstractBillFormatter;
 import ru.clevertec.tasks.olga.util.formatter.PseudographicBillFormatter;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
-
-import java.util.List;
-
-import static ru.clevertec.tasks.olga.util.Constant.*;
 
 @Slf4j
-public class App
-{
+public class App {
 
-    public static void main( String[] args )
-    {
+    public static void main(String[] args) {
         AbstractBillFormatter billFormatter = new PseudographicBillFormatter();
-        ArgumentsSorter sorter = new ArgumentsSorter();
+        CartArgumentsSorter sorter = new CartArgumentsSorter();
         ServiceFactory factory = ServiceFactory.getInstance();
         AbstractPrinter consolePrinter = new ConsolePrinter();
-        AbstractPrinter pdfPrinter = new PdfPrinter();
+        CartService cartService = factory.getCartService();
 
-        try {
-            log.info(MessageLocaleService.getMessage("label.guide"));
-            ParamsDTO params = sorter.retrieveArgs(args);
-            switch (params.getAction()) {
-                case ACTION_PRINT:
-                    Cashier cashier = factory.getCashierService()
-                            .findById(params.getCashier_id(), params.getDataPath());
-                    DiscountCard discountCard = factory.getDiscountCardService()
-                            .findById(params.getCard_id(), params.getDataPath());
-                    List<Slot> slots = factory.getCartService()
-                            .formSlots(params.getGoods(), params.getDataPath());
-                    Cart cart = factory.getCartService().formCart(slots, discountCard, cashier);
-//                    factory.getCartService().save(cart, params.getDataPath());
-                    List<String> bill = billFormatter.format(cart);
-                    consolePrinter.print(bill);
-                    break;
-                case ACTION_LOG:
-                    List<Cart> log = factory.getCartService().getAll(params.getDataPath());
-                    List<String> logStr = billFormatter.formatAll(log);
-                    consolePrinter.print(logStr);
-                    break;
-                case ACTION_FIND_BY_ID:
-                    Cart found = factory.getCartService().findById(params.getBill_id(), params.getDataPath());
-                    List<String> billStr = billFormatter.format(found);
-                    consolePrinter.print(billStr);
-                    pdfPrinter.print(billStr);
-                    break;
-            }
-        } catch (LocalizedException e){
-            log.error(e.getLocalizedMessage());
-        }
+//        try {
+//            log.info(MessageLocaleService.getMessage("label.guide"));
+//            CartParamsDTO params = sorter.retrieveArgs(args);
+//            switch (params.getAction()) {
+//                case ACTION_PRINT:
+//                    CartDto cartDto = CartDto.builder().cashierId(params.getCashier_id())
+//                            .discountCardId(params.getCard_id())
+//                            .goods(params.getGoods())
+//                            .build();
+//                    Cart cart = cartService.formCart(cartDto);
+//                    long id = factory.getCartService().save(cart);
+//                    cart.setId(id);
+//                    List<String> bill = billFormatter.format(cart);
+//                    consolePrinter.print(bill);
+//                    break;
+//                case ACTION_LOG:
+//                    List<Cart> log = factory.getCartService().getAll();
+//                    List<String> logStr = billFormatter.formatAll(log);
+//                    consolePrinter.print(logStr);
+//                    break;
+//                case ACTION_FIND_BY_ID:
+//                    Cart found = factory.getCartService().findById(params.getBill_id());
+//                    List<String> billStr = billFormatter.format(found);
+//                    consolePrinter.print(billStr);
+//                    break;
+//            }
+//        } catch (LocalizedException e) {
+//            log.error(e.getLocalizedMessage());
+//        }
+
     }
 }
 //ResourceBundle.getBundle("db").getString("path.bill_log")

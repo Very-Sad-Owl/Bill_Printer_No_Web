@@ -6,7 +6,4 @@ import ru.clevertec.tasks.olga.util.formatter.AbstractBillFormatter;
 
 public interface CartRepository extends CRUDRepository<Cart> {
 
-    void setFormatter(AbstractBillFormatter formatter);
-    void printBill(Cart cart, String path);
-
 }

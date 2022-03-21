@@ -4,8 +4,8 @@ public interface Constant {
     String BILL_ID_PARAM = "id";
     String CARD_ID_PARAM = "card_uid";
     String CASHIER_ID_PARAM = "cashier_uid";
-    String PATH_PARAM = "path";
-    String ACTION_PARAM = "action";
+    String PRODUCTS = "products";
+    String ACTION_PARAM = "command";
     String ACTION_PRINT = "print";
     String ACTION_LOG = "log";
     String ACTION_FIND_BY_ID = "find";

@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.model;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -14,6 +15,14 @@ public class Slot extends AbstractModel {
     private double totalPrice;
 
     public Slot(){super();}
+
+    @Builder
+    public Slot(long id, Product product, int quantity, double totalPrice) {
+        super(id);
+        this.product = product;
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
+    }
 
     public Slot(Product product, int quantity){
         this.product = product;

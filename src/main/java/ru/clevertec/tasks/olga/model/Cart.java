@@ -1,14 +1,12 @@
 package ru.clevertec.tasks.olga.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.decimal4j.util.DoubleRounder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+@Data
 @ToString(callSuper=true)
 @EqualsAndHashCode(callSuper=true)
 public class Cart extends AbstractModel {
@@ -19,28 +17,37 @@ public class Cart extends AbstractModel {
 
     public Cart(){super();}
 
+    @Builder
+    public Cart(long id, List<Slot> positions, DiscountCard discountCard, Cashier cashier, double price){
+        super(id);
+        this.positions = positions;
+        this.discountCard = discountCard;
+        this.cashier = cashier;
+        this.price = price;
+    }
+
     public Cart(long id, List<Slot> positions, DiscountCard discountCard, Cashier cashier){
         super(id);
         this.positions = positions;
         this.discountCard = discountCard;
         this.cashier = cashier;
-        calculatePrice();
+//        calculatePrice();
     }
 
     public Cart(List<Slot> positions, DiscountCard discountCard, Cashier cashier){
         this.positions = positions;
         this.discountCard = discountCard;
         this.cashier = cashier;
-        calculatePrice();
+//        calculatePrice();
     }
 
-    private void calculatePrice(){
+    public void calculatePrice(){
         price = 0;
         if (positions != null) {
             for (Slot slot : positions) {
                 price += slot.getTotalPrice();
             }
-            price = (price * (100 - discountCard.getDiscountType().getDiscount())) / 100;
+            price = (price * (100 - discountCard.getCardDiscountType().getDiscount())) / 100;
         }
     }
 
@@ -50,12 +57,12 @@ public class Cart extends AbstractModel {
 
     public void setPositions(List<Slot> positions) {
         this.positions = positions;
-        calculatePrice();
+//        calculatePrice();
     }
 
     public void setDiscountCard(DiscountCard discountCard) {
         this.discountCard = discountCard;
-        calculatePrice();
+//        calculatePrice();
     }
 
     public void setCashier(Cashier cashier) {
@@ -79,7 +86,7 @@ public class Cart extends AbstractModel {
             positions = new ArrayList<>();
         }
         positions.add(slot);
-        calculatePrice();
+//        calculatePrice();
     }
 
     public double getRawPrice(){

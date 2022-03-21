@@ -1,19 +1,30 @@
 package ru.clevertec.tasks.olga.model;
 
-public enum ProductDiscountType {
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-    NONE(0., 0), MORE_THAN_FIVE(10., 5), TWO_AS_ONE(50., 2);
-
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper=true)
+public class ProductDiscountType extends AbstractModel {
     private double discount;
     private int requiredMinQuantity;
+    private String title;
 
-    ProductDiscountType(double discount, int requiredMinQuantity){
+    public ProductDiscountType(double discount, int requiredMinQuantity, String title) {
         this.discount = discount;
         this.requiredMinQuantity = requiredMinQuantity;
+        this.title = title;
     }
 
-    public double getDiscount(){
-        return discount;
+    @Builder
+    public ProductDiscountType(long id, double discount, int requiredMinQuantity, String title) {
+        super(id);
+        this.discount = discount;
+        this.requiredMinQuantity = requiredMinQuantity;
+        this.title = title;
     }
 
     public boolean isActive(int quantity){

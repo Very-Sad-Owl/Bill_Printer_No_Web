@@ -1,33 +1,36 @@
 package ru.clevertec.tasks.olga.service.impl;
 
+import ru.clevertec.tasks.olga.exception.CardNotFoundException;
 import ru.clevertec.tasks.olga.model.DiscountCard;
-import ru.clevertec.tasks.olga.repository.DiscountRepository;
+import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
+import ru.clevertec.tasks.olga.repository.impl.DiscountCardRepositoryImpl;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
-@NoArgsConstructor
-public class DiscountCardServiceImpl
-        extends AbstractService<DiscountCard, DiscountRepository>
-        implements DiscountCardService {
+public class DiscountCardServiceImpl implements DiscountCardService {
 
-    private DiscountRepository discountRepository = repositoryFactory.getDiscountCardRepository();
-
+    private static final DiscountCardRepository cardRepo = new DiscountCardRepositoryImpl();
 
     @Override
-    public void save(DiscountCard discountCard, String fileName) {
-
+    public long save(DiscountCard discountCard) {
+        return cardRepo.save(discountCard);
     }
 
     @Override
-    public DiscountCard findById(long id, String filePath) {
-        return discountRepository.findById(id, filePath);
+    public DiscountCard findById(long id) {
+        Optional<DiscountCard> card = cardRepo.findById(id);
+        if (card.isPresent()){
+            return card.get();
+        } else {
+            throw new CardNotFoundException("error.card_not_found");
+        }
     }
 
     @Override
-    public List<DiscountCard> getAll(String filePath) {
-        return discountRepository.getAll(filePath);
+    public List<DiscountCard> getAll() {
+        return null;
     }
 
     @Override

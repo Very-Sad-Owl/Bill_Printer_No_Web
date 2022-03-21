@@ -1,65 +1,74 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import by.epam.training.jwd.task03.entity.Node;
-import by.epam.training.jwd.task03.service.exception.ServiceException;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.CardNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.exception.ReadingException;
+import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.model.DiscountCard;
-import ru.clevertec.tasks.olga.repository.DiscountRepository;
+import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
+import ru.clevertec.tasks.olga.repository.common.DbHelper;
+import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
+import ru.clevertec.tasks.olga.util.orm.WorkerFactory;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Optional;
+
+import static ru.clevertec.tasks.olga.repository.Query.*;
 
 
-public class DiscountCardRepositoryImpl extends AbstractRepository implements DiscountRepository {
+@Slf4j
+public class DiscountCardRepositoryImpl implements DiscountCardRepository {
 
-    @UseCache
-    @Override
-    public void save(DiscountCard discountCard, String fileName) {
-
-    }
-
-    @UseCache
-    @Override
-    public DiscountCard findById(long id, String path) {
-        List<DiscountCard> nodes = getAll(path);
-        for (DiscountCard product : nodes){
-            if (product.getId() == id){
-                return product;
-            }
-        }
-        throw new CardNotFoundException("error.card_not_found");
-    }
+    private static final NodeWorker<DiscountCard> discountWorker = WorkerFactory.getInstance().getDiscountWorker();
 
     @Override
-    public List<DiscountCard> getAll(String path) {
-        Node node;
-        NodeWorker<DiscountCard> worker = workerFactory.getDiscountWorker();
-        List<DiscountCard> products = new ArrayListImpl<>();
-        String fileName = path + ResourceBundle.getBundle("db").getString("path.card");
+    public long save(DiscountCard discountCard) {
         try {
-            node = nodeTreeBuilder.parseXML(fileName);
-            worker.nodeToList(node, products);
-        } catch (ServiceException e) {
+            return DbHelper.save(discountCard, INSERT_DISCOUNT, discountWorker);
+        } catch (ConnectionPoolException | SQLException e) {
+            log.error(e.getMessage());
+            throw new WritingException("error.writing");
+        }
+    }
+
+    @Override
+    public Optional<DiscountCard> findById(long id) {
+        try {
+            return DbHelper.findById(FIND_DISCOUNT_BY_ID, id, discountWorker);
+        } catch (ConnectionPoolException | SQLException e) {
+            log.error(e.getMessage());
             throw new ReadingException("error.reading");
         }
-        return products;
     }
 
-    @UseCache
     @Override
-    public boolean delete(DiscountCard discountCard, String filePath) {
-        return false;
+    public List<DiscountCard> getAll() {
+        try {
+            return DbHelper.getAll(GET_DISCOUNTS, discountWorker);
+        } catch (ConnectionPoolException | SQLException e) {
+            log.error(e.getMessage());
+            throw new ReadingException("error.reading");
+        }
     }
 
-    @UseCache
     @Override
-    public DiscountCard update(DiscountCard discountCard, String filePath) {
-        return null;
+    public boolean update(DiscountCard discountCard) {
+        try {
+            return DbHelper.update(discountCard, UPDATE_DISCOUNT, discountWorker);
+        } catch (SQLException | ConnectionPoolException e) {
+            log.error(e.getMessage());
+            throw new WritingException("error.writing");
+        }
+    }
+
+    @Override
+    public boolean delete(long id) {
+        try {
+            return DbHelper.delete(DELETE_DISCOUNT, id);
+        } catch (SQLException | ConnectionPoolException e) {
+            log.error(e.getMessage());
+            throw new WritingException("error.writing");
+        }
     }
 }

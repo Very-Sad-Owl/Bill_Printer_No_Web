@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -15,14 +13,14 @@ import java.util.Date;
 @ToString(callSuper=true)
 public class DiscountCard extends AbstractModel {
     private LocalDate birthday;
-    private DiscountType discountType;
+    private CardDiscountType cardDiscountType;
 
     public DiscountCard(){super();}
 
     @Builder
-    public DiscountCard(long id, LocalDate birthday, DiscountType discountType){
+    public DiscountCard(long id, LocalDate birthday, CardDiscountType cardDiscountType){
         super(id);
         this.birthday = birthday;
-        this.discountType = discountType;
+        this.cardDiscountType = cardDiscountType;
     }
 }

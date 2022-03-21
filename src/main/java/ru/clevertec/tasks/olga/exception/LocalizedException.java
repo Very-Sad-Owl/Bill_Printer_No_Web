@@ -6,19 +6,23 @@ import java.util.Locale;
 
 public class LocalizedException extends RuntimeException {
 
-    private final String messageKey;
-    private final Locale locale;
-
-    public LocalizedException(String messageKey) {
-        this(messageKey, Locale.getDefault());
+    public LocalizedException() {
+        super();
     }
 
-    public LocalizedException(String messageKey, Locale locale) {
-        this.messageKey = messageKey;
-        this.locale = locale;
+    public LocalizedException(String message) {
+        super(message);
     }
 
-    public String getLocalizedMessage() {
-        return MessageLocaleService.getMessage(messageKey, locale);
+    public LocalizedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public LocalizedException(Throwable cause) {
+        super(cause);
+    }
+
+    protected LocalizedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

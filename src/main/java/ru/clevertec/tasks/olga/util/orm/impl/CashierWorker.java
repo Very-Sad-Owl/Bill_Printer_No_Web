@@ -1,38 +1,27 @@
 package ru.clevertec.tasks.olga.util.orm.impl;
 
-import by.epam.training.jwd.task03.entity.Attribute;
-import by.epam.training.jwd.task03.entity.Node;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.model.Cashier;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static ru.clevertec.tasks.olga.util.Constant.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @NoArgsConstructor
 public class CashierWorker extends NodeWorker<Cashier> {
 
     @Override
-    public Cashier nodeToModel(Node node) {
-        return new Cashier(
-                Long.parseLong(node.getAttrByName(XML_ID_ATTR).getContent()),
-                node.getAttrByName(XML_NAME_ATTR).getContent(),
-                node.getAttrByName(XML_SURNAME_ATTR).getContent()
-        );
+    public Cashier nodeToModel(ResultSet rs, boolean isJoin) throws SQLException {
+        return Cashier.builder()
+                .id(rs.getLong(!isJoin ? "id" : "cashier_id"))
+                .name(rs.getString("name"))
+                .surname(rs.getString("surname"))
+                .build();
     }
 
     @Override
-    public Node modelToNode(Cashier model) {
-        List<Attribute> attributes = new ArrayListImpl<>();
-        attributes.add(new Attribute(XML_ID_ATTR, model.getId()+""));
-        attributes.add(new Attribute(XML_NAME_ATTR, model.getName()));
-        attributes.add(new Attribute(XML_SURNAME_ATTR, model.getSurname()));
-        return Node.newBuilder()
-                .withName(CASHIER_XML_NAME)
-                .withAttributes(attributes)
-                .build();
+    public void modelToNode(Cashier model, PreparedStatement st) throws SQLException {
+        st.setString(1, model.getName());
+        st.setString(2, model.getSurname());
     }
 }

@@ -21,9 +21,9 @@ class ProductServiceImplTest {
     void findById_existingNode_productObj() {
         int  id = 1;
         Product expected = new Product(id, "milk", 1.43,
-                ProductDiscountType.valueOf("more_than_five".toUpperCase()));
+                ProductDiscountType.builder().title("MORE_THAN_FIVE").discount(10).requiredMinQuantity(5).build());
 
-        Product actual = productService.findById(id, DB_PATH);
+        Product actual = productService.findById(id);
 
         assertEquals(expected, actual);
     }
@@ -32,19 +32,20 @@ class ProductServiceImplTest {
     void findBuId_nonexistingNode_exception(){
         int id = -1;
         assertThrows(ProductNotFoundException.class, () -> {
-            productService.findById(id, DB_PATH);
+            productService.findById(id);
         });
     }
 
     @Test
     void getAll() {
         List<Product> expected = new ArrayList<>();
-        expected.add(new Product(1, "milk", 1.43,
-                ProductDiscountType.valueOf("more_than_five".toUpperCase())));
-        expected.add(new Product(2, "bread", 1.20,
-                ProductDiscountType.valueOf("none".toUpperCase())));
-
-        List<Product> actual = productService.getAll(DB_PATH);
+        expected.add(new Product(1, "bread", 1.43,
+                ProductDiscountType.builder().title("NONE").discount(0).requiredMinQuantity(0).id(1).build()));
+        expected.add(new Product(2, "milk", 1.2,
+                ProductDiscountType.builder().title("MORE_THAN_FIVE").discount(10).requiredMinQuantity(5).id(2).build()));
+        expected.add(new Product(3, "sblrok", 0.5,
+                ProductDiscountType.builder().title("TWO_AS_ONE").discount(50).requiredMinQuantity(2).id(3).build()));
+        List<Product> actual = productService.getAll();
 
         assertEquals(expected, actual);
     }

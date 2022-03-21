@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CashierServiceImplTest {
 
-    private static final String DB_PATH = System.getProperty("user.dir")+"\\db\\test_db\\";
     private CashierService cashierService = new CashierServiceImpl();
 
     @Test
@@ -21,7 +20,7 @@ class CashierServiceImplTest {
         expected.add(new Cashier(1, "Oleg", "Geosimp"));
         expected.add(new Cashier(2, "Olga", "Mailychko"));
 
-        List<Cashier> actual = cashierService.getAll(DB_PATH);
+        List<Cashier> actual = cashierService.getAll();
 
         assertEquals(expected, actual);
     }
@@ -32,7 +31,7 @@ class CashierServiceImplTest {
 
         Cashier excpected = new Cashier(id, "Olga", "Mailychko");
 
-        Cashier actual = cashierService.findById(id, DB_PATH);
+        Cashier actual = cashierService.findById(id);
 
         assertEquals(excpected, actual);
     }
@@ -42,7 +41,7 @@ class CashierServiceImplTest {
         int id = -2;
 
         assertThrows(CashierNotFoundException.class, () -> {
-            cashierService.findById(id, DB_PATH);
+            cashierService.findById(id);
         });
     }
 
