@@ -17,59 +17,33 @@ public class JsonMapper {
     public static final String DELIMITER = ", ";
 
     public static String parseObject(Object o) {
-        if (isNull(o)) {
+        if (TypeIdentifier.isNull(o)) {
             return parseNull();
-        } else if (isWrapper(o.getClass())) {
+        } else if (TypeIdentifier.isWrapper(o.getClass())) {
             return wrapperToString(o);
-        } else if (isTextOrEnum(o.getClass())) {
+        } else if (TypeIdentifier.isTextOrEnum(o.getClass())) {
             return stringAndEnumToString(o);
-        } else if (isLocalDate(o.getClass())) {
+        } else if (TypeIdentifier.isLocalDate(o.getClass())) {
             return localDateToString(o);
-        } else if (isCollection(o.getClass())) {
+        } else if (TypeIdentifier.isCollection(o.getClass())) {
             return collectionToString(o);
-        } else if (isMap(o.getClass())) {
+        } else if (TypeIdentifier.isMap(o.getClass())) {
             return mapToString(o);
-        } else if (isArray(o.getClass())) {
+        } else if (TypeIdentifier.isArray(o.getClass())) {
             return arrayToString(o);
         } else return objectToJsonString(o);
     }
 
-    /** null field **/
-
-    private static boolean isNull(Object o) {
-        return o == null;
-    }
-
     private static String parseNull() {
-        return "null";
-    }
-
-    /** wrappers&primitives **/
-
-    private static boolean isWrapper(Class<?> type) {
-        return ClassUtils.isPrimitiveOrWrapper(type);
+        return null + "";
     }
 
     private static String wrapperToString(Object o) {
         return o.toString();
     }
 
-    /** string&char&enum types **/
-
-    private static boolean isTextOrEnum(Class<?> type) {
-        return type.isEnum()
-                || String.class.isAssignableFrom(type)
-                || Character.class.isAssignableFrom(type);
-    }
-
     private static String stringAndEnumToString(Object o) {
-        return textContentToJsonString(o.toString());
-    }
-
-    /** date **/
-
-    private static boolean isLocalDate(Class<?> type) {
-        return type == LocalDate.class;
+        return JsonFormatter.textContentToJsonString(o.toString());
     }
 
     private static String localDateToString(Object o) {
@@ -80,34 +54,12 @@ public class JsonMapper {
                 localDate.getDayOfMonth());
     }
 
-    /** collection **/
-
-    private static boolean isCollection(Class<?> type) {
-        for (Class<?> typeInterface : type.getInterfaces()) {
-            if (List.class.isAssignableFrom(typeInterface)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private static String collectionToString(Object object) {
         List<String> jsonString = new ArrayListImpl<>();
         for (Object o : (Iterable<?>) object) {
             jsonString.add(parseObject(o));
         }
-        return arrayOrListToJsonString(String.join(DELIMITER, jsonString));
-    }
-
-    /** map **/
-
-    private static boolean isMap(Class<?> type) {
-        for (Class<?> typeInterface : type.getInterfaces()) {
-            if (typeInterface == Map.class) {
-                return true;
-            }
-        }
-        return false;
+        return JsonFormatter.arrayOrListToJsonString(String.join(DELIMITER, jsonString));
     }
 
     private static String mapToString(Object object) {
@@ -120,13 +72,7 @@ public class JsonMapper {
                     )
             );
         }
-        return mapOrObjectToJsonString(String.join(DELIMITER, jsonString));
-    }
-
-    /** arrays **/
-
-    private static boolean isArray(Class<?> type) {
-        return type.isArray();
+        return JsonFormatter.mapOrObjectToJsonString(String.join(DELIMITER, jsonString));
     }
 
     private static String arrayToString(Object o) {
@@ -170,8 +116,7 @@ public class JsonMapper {
         return parseObject(jsonString);
     }
 
-    /** inner objects **/
-
+    /** for composite objects **/
     @SneakyThrows
     private static String objectToJsonString(Object o) {
         List<String> jsonString = new ArrayListImpl<>();
@@ -185,18 +130,65 @@ public class JsonMapper {
         return String.format(MAP_OR_OBJECT, String.join(DELIMITER, jsonString));
     }
 
-    /** toJsonString **/
+    /** util inner classes **/
 
-    private static String textContentToJsonString(String string) {
-        return String.format(TEXT, string);
+    private static final class TypeIdentifier {
+
+        private static boolean isNull(Object o) {
+            return o == null;
+        }
+
+        private static boolean isWrapper(Class<?> type) {
+            return ClassUtils.isPrimitiveOrWrapper(type);
+        }
+
+        private static boolean isTextOrEnum(Class<?> type) {
+            return type.isEnum()
+                    || String.class.isAssignableFrom(type)
+                    || Character.class.isAssignableFrom(type);
+        }
+
+        private static boolean isLocalDate(Class<?> type) {
+            return type == LocalDate.class;
+        }
+
+        private static boolean isCollection(Class<?> type) {
+            for (Class<?> typeInterface : type.getInterfaces()) {
+                if (List.class.isAssignableFrom(typeInterface)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static boolean isMap(Class<?> type) {
+            for (Class<?> typeInterface : type.getInterfaces()) {
+                if (typeInterface == Map.class) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static boolean isArray(Class<?> type) {
+            return type.isArray();
+        }
+
     }
 
-    private static String arrayOrListToJsonString(String string) {
-        return String.format(ARRAY_OR_LIST, string);
-    }
+    private static final class JsonFormatter {
 
-    private static String mapOrObjectToJsonString(String string) {
-        return String.format(MAP_OR_OBJECT, string);
+        private static String textContentToJsonString(String string) {
+            return String.format(TEXT, string);
+        }
+
+        private static String arrayOrListToJsonString(String string) {
+            return String.format(ARRAY_OR_LIST, string);
+        }
+
+        private static String mapOrObjectToJsonString(String string) {
+            return String.format(MAP_OR_OBJECT, string);
+        }
     }
 
 }

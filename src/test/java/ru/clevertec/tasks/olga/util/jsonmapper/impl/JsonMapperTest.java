@@ -4,22 +4,33 @@ import org.junit.jupiter.api.Test;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.custom_collection.my_list.LinkedListImpl;
 import ru.clevertec.tasks.olga.model.Product;
-import ru.clevertec.tasks.olga.model.ProductDiscountType;
 import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonMapperTest {
+    private static Class<?> identifierClass;
+
+    static {
+        final Class<?>[] declaredClasses = JsonMapper.class.getDeclaredClasses();
+        for (Class<?> el : declaredClasses){
+            if (el.getSimpleName().equals("TypeIdentifier")) {
+                identifierClass = JsonMapper.class.getDeclaredClasses()[1];
+                break;
+            }
+        }
+        if (identifierClass == null){
+            throw new NoSuchClassException("inner class not found");
+        }
+    }
 
     @Test
     void parseObject_compositeObject_correctJsonString() {
-        String expected = "{ \"type\" : \"MORE_THAN_FIVE\", \"i\" : 1, " +
+        String expected = "{ \"testEnum\" : \"VALUE_ONE\", \"i\" : 1, " +
                 "\"d\" : 3.5, \"s\" : \"content\", \"arr\" : [ a, b, c ], " +
                 "\"list\" : [ a, b, c ], " +
                 "\"objList\" : [ 1, \"a\", { \"title\" : null, \"price\" : 0.0, \"discountType\" : null } ], " +
@@ -32,7 +43,7 @@ public class JsonMapperTest {
 
     @Test
     void isWrapper_wrapperType_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isWrapper", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isWrapper", Class.class);
         Double arg = 3.4;
         m.setAccessible(true);
 
@@ -42,7 +53,7 @@ public class JsonMapperTest {
 
     @Test
     void isWrapper_nonWrapperType_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isWrapper", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isWrapper", Class.class);
         String arg = "3.4";
         m.setAccessible(true);
 
@@ -52,7 +63,7 @@ public class JsonMapperTest {
 
     @Test
     void isTextOrEnum_string_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isTextOrEnum", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isTextOrEnum", Class.class);
         String arg = "text";
         m.setAccessible(true);
 
@@ -62,7 +73,7 @@ public class JsonMapperTest {
 
     @Test
     void isTextOrEnum_char_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isTextOrEnum", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isTextOrEnum", Class.class);
         Character arg = 'V';
         m.setAccessible(true);
 
@@ -72,7 +83,7 @@ public class JsonMapperTest {
 
     @Test
     void isTextOrEnum_enum_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isTextOrEnum", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isTextOrEnum", Class.class);
         TestEnum arg = TestEnum.VALUE_TWO;
         m.setAccessible(true);
 
@@ -82,7 +93,7 @@ public class JsonMapperTest {
 
     @Test
     void isTextOrEnum_notText_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isTextOrEnum", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isTextOrEnum", Class.class);
         Boolean arg = true;
         m.setAccessible(true);
 
@@ -92,7 +103,7 @@ public class JsonMapperTest {
 
     @Test
     void isLocalDate_date_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isLocalDate", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isLocalDate", Class.class);
         LocalDate arg = LocalDate.now();
         m.setAccessible(true);
 
@@ -102,7 +113,7 @@ public class JsonMapperTest {
 
     @Test
     void isLocalDate_notDate_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isLocalDate", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isLocalDate", Class.class);
         String arg = "22.03.2022";
         m.setAccessible(true);
 
@@ -112,7 +123,7 @@ public class JsonMapperTest {
 
     @Test
     void isCollection_listImpl_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isCollection", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isCollection", Class.class);
         LinkedListImpl<String> arg = new LinkedListImpl<>();
         m.setAccessible(true);
 
@@ -122,7 +133,7 @@ public class JsonMapperTest {
 
     @Test
     void isCollection_map_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isCollection", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isCollection", Class.class);
         Map<Integer, String> arg = new HashMap<>();
         m.setAccessible(true);
 
@@ -132,7 +143,7 @@ public class JsonMapperTest {
 
     @Test
     void isMap_list_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isMap", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isMap", Class.class);
         LinkedListImpl<String> arg = new LinkedListImpl<>();
         m.setAccessible(true);
 
@@ -142,7 +153,7 @@ public class JsonMapperTest {
 
     @Test
     void isMap_map_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isMap", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isMap", Class.class);
         Map<Integer, String> arg = new HashMap<>();
         m.setAccessible(true);
 
@@ -152,7 +163,7 @@ public class JsonMapperTest {
 
     @Test
     void isArray_primitiveArray_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isArray", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isArray", Class.class);
         char[] arg = new char[]{'a', 'b', 'c'};
         m.setAccessible(true);
 
@@ -162,7 +173,7 @@ public class JsonMapperTest {
 
     @Test
     void isArray_objectArray_true() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isArray", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isArray", Class.class);
         TestObj[] arg = new TestObj[2];
         m.setAccessible(true);
 
@@ -172,7 +183,7 @@ public class JsonMapperTest {
 
     @Test
     void isArray_list_false() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method m = JsonMapper.class.getDeclaredMethod("isArray", Class.class);
+        Method m = identifierClass.getDeclaredMethod("isArray", Class.class);
         List<Double> arg = new ArrayListImpl<>();
         m.setAccessible(true);
 
@@ -204,6 +215,16 @@ public class JsonMapperTest {
             objList.add(1);
             objList.add("a");
             objList.add(new Product());
+        }
+    }
+
+    private static class NoSuchClassException extends RuntimeException {
+        public NoSuchClassException() {
+            super();
+        }
+
+        public NoSuchClassException(String message) {
+            super(message);
         }
     }
 
