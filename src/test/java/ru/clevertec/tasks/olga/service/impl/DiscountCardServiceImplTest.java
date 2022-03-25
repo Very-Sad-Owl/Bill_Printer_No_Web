@@ -26,7 +26,7 @@ class DiscountCardServiceImplTest {
         int id = 1;
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate localDate = LocalDate.parse("15.03.2001", formatter);
+        LocalDate localDate = LocalDate.parse("11.11.2011", formatter);
         DiscountCard expected = new DiscountCard(id, localDate,
                 DiscountType.NONE);
 
