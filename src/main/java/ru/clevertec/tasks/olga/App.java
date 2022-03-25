@@ -40,7 +40,7 @@ public class App
                     List<Slot> slots = factory.getCartService()
                             .formSlots(params.getGoods(), params.getDataPath());
                     Cart cart = factory.getCartService().formCart(slots, discountCard, cashier);
-                    factory.getCartService().save(cart, params.getDataPath());
+//                    factory.getCartService().save(cart, params.getDataPath());
                     List<String> bill = billFormatter.format(cart);
                     consolePrinter.print(bill);
                     break;
