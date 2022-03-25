@@ -30,4 +30,7 @@ public interface Constant {
 
     String FILENAME_PDF_FORMAT = "%s-%s.pdf";
 
+    String CACHE_ALG = "cache.algorithm";
+    String CACHE_CAPACITY = "cache.capacity";
+
 }

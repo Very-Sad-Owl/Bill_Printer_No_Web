@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,16 +22,13 @@ public class DiscountCardWorker extends NodeWorker<DiscountCard> {
 
     @Override
     public DiscountCard nodeToModel(Node node) {
-        try {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate localDate = LocalDate.parse(node.getAttrByName("birthday").getContent(), formatter);
             return new DiscountCard(
                     Long.parseLong(node.getAttrByName("id").getContent()),
-                    new SimpleDateFormat("dd.MM.yyyy").parse(node.getAttrByName("birthday").getContent()),
+                    localDate,
                     DiscountType.valueOf(node.getAttrByName("discount").getContent().toUpperCase())
             );
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override

@@ -11,4 +11,8 @@ public interface CRUDRepository<E extends AbstractModel> {
     E findById(long id, String filePath);
 
     List<E> getAll(String filePath);
+
+    boolean delete(E e, String filePath);
+
+    E update(E e, String filePath);
 }
