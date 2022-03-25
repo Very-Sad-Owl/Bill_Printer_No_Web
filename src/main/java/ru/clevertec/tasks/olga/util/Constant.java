@@ -25,6 +25,10 @@ public interface Constant {
     String XML_TITLE_ATTR = "title";
     String XML_PRICE_ATTR = "price";
     String XML_QUANTITY_ATTR = "quantity";
+    String CACHE_ALG = "cache.algorithm";
+    String CACHE_CAPACITY = "cache.capacity";
+
+    String FILENAME_PDF_FORMAT = "%s-%s.pdf";
 
     String CACHE_ALG = "cache.algorithm";
     String CACHE_CAPACITY = "cache.capacity";

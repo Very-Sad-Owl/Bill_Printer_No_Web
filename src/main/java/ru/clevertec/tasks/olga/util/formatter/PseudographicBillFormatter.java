@@ -13,8 +13,6 @@ import java.util.stream.Stream;
 
 public class PseudographicBillFormatter extends AbstractBillFormatter {
 
-    private final int SYMBOL_LIMIT_PER_LINE = 48;
-
     @Override
     public List<String> format(Cart cart) {
         List<String> billBuilder = new ArrayListImpl<>();
@@ -40,50 +38,46 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
     }
 
     @Override
-    public String drawLine(char delimiter, int len) {
-        StringBuilder line = new StringBuilder();
-        for (int i = 0; i < len; i++){
-            line.append(delimiter);
-        }
-        return line.toString();
+    public String drawLine(char delimiter) {
+        return delimiter+"";
     }
 
     @Override
-    public String centreLine(String line, char delimiter) {
-        StringBuilder offsetLine = new StringBuilder();
-        int offset = (SYMBOL_LIMIT_PER_LINE - line.length()) / 2;
-        offsetLine.append(drawLine(delimiter, offset));
-        offsetLine.append(line);
-        offsetLine.append(drawLine(delimiter, offset));
-        return offsetLine.toString();
+    public String centreLine(String line) {
+        return "%s"+line+"%s";
     }
 
     @Override
     public void drawMetaInfo(long cartId, List<String> billBuilder) {
-        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char").charAt(0), SYMBOL_LIMIT_PER_LINE));
-        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.shop_title"), ' '));
-        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.address"), ' '));
-        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char").charAt(0), SYMBOL_LIMIT_PER_LINE));
+        billBuilder.add((MessageLocaleService.getMessage("label.pseudographics_char")));
+        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.shop_title")));
+        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.address")));
+        billBuilder.add(MessageLocaleService.getMessage("label.pseudographics_char"));
         billBuilder.add(centreLine(
-                MessageLocaleService.getMessage("label.receipt_uid") + " " + cartId, ' '));
-        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter").charAt(0), SYMBOL_LIMIT_PER_LINE));
+                MessageLocaleService.getMessage("label.receipt_uid") + " " + cartId));
+        billBuilder.add(MessageLocaleService.getMessage("label.pseudographics_char"));
     }
 
     @Override
     public void drawCashierInfo(Cashier cashier, List<String> billBuilder) {
-        billBuilder.add(
-                MessageLocaleService.getMessage("label.cashier_uid") +
-                        MessageLocaleService.getMessage("label.definition") +
-                        cashier.getId()
+                billBuilder.add(
+                        drawSplittedLine(MessageLocaleService.getMessage("label.cashier_uid") +
+                                        MessageLocaleService.getMessage("label.definition"),
+                                cashier.getId()+"")
         );
         billBuilder.add(
+                drawSplittedLine(
                 MessageLocaleService.getMessage("label.cashier") +
-                        MessageLocaleService.getMessage("label.definition") +
+                        MessageLocaleService.getMessage("label.definition"),
                             cashier.getFullName()
+                )
         );
-        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter").charAt(0),
-                SYMBOL_LIMIT_PER_LINE));
+        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char").charAt(0)));
 
+    }
+
+    public String drawSplittedLine(String firstHalf, String secondHalf){
+        return firstHalf + "%s" + secondHalf;
     }
 
     @Override
@@ -94,39 +88,176 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
                         slot.getQuantity()
 
         );
-        billBuilder.add(
+        billBuilder.add(drawSplittedLine(
                 MessageLocaleService.getMessage("label.original_price") +
                         MessageLocaleService.getMessage("label.definition") +
-                        slot.getTotalPrice() + " " +
+                        slot.getTotalPrice(),
                         MessageLocaleService.getMessage("label.total_price") +
                         MessageLocaleService.getMessage("label.definition") +
                         slot.getRawPrice()
+                )
         );
-        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter").charAt(0),
-                SYMBOL_LIMIT_PER_LINE));
+        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char").charAt(0)));
     }
 
     @Override
     public void drawPaymentInfo(Cart cart, List<String> billBuilder) {
         billBuilder.add(MessageLocaleService.getMessage("label.discount_card_uid") + cart.getDiscountCard().getId());
-        billBuilder.add(
+        billBuilder.add(drawSplittedLine(
                 MessageLocaleService.getMessage("label.original_price") +
-                        MessageLocaleService.getMessage("label.definition") +
-                        cart.getRawPrice()
+                        MessageLocaleService.getMessage("label.definition"),
+                        cart.getRawPrice() + ""
+                )
         );
-        billBuilder.add(
+        billBuilder.add(drawSplittedLine(
                 MessageLocaleService.getMessage("label.tottal_discount") +
-                        MessageLocaleService.getMessage("label.definition") +
+                        MessageLocaleService.getMessage("label.definition"),
                         cart.getTotalDiscount() +
-                        MessageLocaleService.getMessage("label.discount_percentage")
+                        MessageLocaleService.getMessage("label.discount_percentage") +
+                                MessageLocaleService.getMessage("label.discount_percentage")
+                )
         );
-        billBuilder.add(
+        billBuilder.add(drawSplittedLine(
                 MessageLocaleService.getMessage("label.total_price") +
-                        MessageLocaleService.getMessage("label.definition") +
-                        cart.getPrice()
+                        MessageLocaleService.getMessage("label.definition"),
+                        cart.getPrice() + ""
+                )
         );
-        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter").charAt(0),
-                SYMBOL_LIMIT_PER_LINE));
+        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char").charAt(0)));
 
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @Override
+//    public List<String> format(Cart cart) {
+//        List<String> billBuilder = new ArrayListImpl<>();
+//        drawMetaInfo(cart.getId(), billBuilder);
+//        drawCashierInfo(cart.getCashier(), billBuilder);
+//        for (Slot slot : cart.getPositions()){
+//            drawSlotInfo(slot, billBuilder);
+//        }
+//        drawPaymentInfo(cart, billBuilder);
+//
+//        return billBuilder;
+//    }
+//
+//    @Override
+//    public List<String> formatAll(List<Cart> cart) {
+//        List<String> billBuilder = new ArrayListImpl<>();
+//        for (Cart bill : cart){
+//            List<String> billList = format(bill);
+//            billBuilder = Stream.concat(billBuilder.stream(), billList.stream())
+//                    .collect(Collectors.toList());
+//        }
+//        return billBuilder;
+//    }
+//
+//    @Override
+//    public String drawLine(char delimiter, int len) {
+//        StringBuilder line = new StringBuilder();
+//        for (int i = 0; i < len; i++){
+//            line.append(delimiter);
+//        }
+//        return line.toString();
+//    }
+//
+//    @Override
+//    public String centreLine(String line, char delimiter) {
+//        StringBuilder offsetLine = new StringBuilder();
+//        int offset = (SYMBOL_LIMIT_PER_LINE - line.length()) / 2;
+//        offsetLine.append(drawLine(delimiter, offset));
+//        offsetLine.append(line);
+//        offsetLine.append(drawLine(delimiter, offset));
+//        return offsetLine.toString();
+//    }
+//
+//    @Override
+//    public void drawMetaInfo(long cartId, List<String> billBuilder) {
+//        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter")
+//                .charAt(0), SYMBOL_LIMIT_PER_LINE));
+//        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.shop_title"), ' '));
+//        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.address"), ' '));
+//        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter")
+//                .charAt(0), SYMBOL_LIMIT_PER_LINE));
+//        billBuilder.add(centreLine(
+//                MessageLocaleService.getMessage("label.receipt_uid") + " " + cartId, ' '));
+//        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter")
+//                .charAt(0), SYMBOL_LIMIT_PER_LINE));
+//    }
+//
+//    @Override
+//    public void drawCashierInfo(Cashier cashier, List<String> billBuilder) {
+//        billBuilder.add(
+//                MessageLocaleService.getMessage("label.cashier_uid") +
+//                        MessageLocaleService.getMessage("label.definition") +
+//                        cashier.getId()
+//        );
+//        billBuilder.add(
+//                MessageLocaleService.getMessage("label.cashier") +
+//                        MessageLocaleService.getMessage("label.definition") +
+//                        cashier.getFullName()
+//        );
+//        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter").charAt(0),
+//                SYMBOL_LIMIT_PER_LINE));
+//
+//    }
+//
+//    @Override
+//    public void drawSlotInfo(Slot slot, List<String>billBuilder) {
+//        billBuilder.add(
+//                slot.getProduct().getId() + " " +
+//                        slot.getProduct().getTitle() + " " +
+//                        slot.getQuantity()
+//
+//        );
+//        billBuilder.add(
+//                MessageLocaleService.getMessage("label.original_price") +
+//                        MessageLocaleService.getMessage("label.definition") +
+//                        slot.getTotalPrice() + " " +
+//                        MessageLocaleService.getMessage("label.total_price") +
+//                        MessageLocaleService.getMessage("label.definition") +
+//                        slot.getRawPrice()
+//        );
+//        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter").charAt(0),
+//                SYMBOL_LIMIT_PER_LINE));
+//    }
+//
+//    @Override
+//    public void drawPaymentInfo(Cart cart, List<String> billBuilder) {
+//        billBuilder.add(MessageLocaleService.getMessage("label.discount_card_uid") + cart.getDiscountCard().getId());
+//        billBuilder.add(
+//                MessageLocaleService.getMessage("label.original_price") +
+//                        MessageLocaleService.getMessage("label.definition") +
+//                        cart.getRawPrice()
+//        );
+//        billBuilder.add(
+//                MessageLocaleService.getMessage("label.tottal_discount") +
+//                        MessageLocaleService.getMessage("label.definition") +
+//                        cart.getTotalDiscount() +
+//                        MessageLocaleService.getMessage("label.discount_percentage")
+//        );
+//        billBuilder.add(
+//                MessageLocaleService.getMessage("label.total_price") +
+//                        MessageLocaleService.getMessage("label.definition") +
+//                        cart.getPrice()
+//        );
+//        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_delimiter").charAt(0),
+//                SYMBOL_LIMIT_PER_LINE));
+//
+//    }
