@@ -9,7 +9,8 @@ public interface CRUDRepository<E extends AbstractModel> {
 
     long save(E e);
     Optional<E> findById(long id);
-    List<E> getAll();
+//    List<E> getAll();
+    List<E> getAll(int limit, int offset);
     boolean update(E e);
     boolean delete(long id);
 }

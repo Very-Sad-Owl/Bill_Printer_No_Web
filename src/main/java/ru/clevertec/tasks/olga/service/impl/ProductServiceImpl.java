@@ -3,6 +3,7 @@ package ru.clevertec.tasks.olga.service.impl;
 
 import ru.clevertec.tasks.olga.exception.ProductNotFoundException;
 import ru.clevertec.tasks.olga.model.Product;
+import ru.clevertec.tasks.olga.model.dto.ProductParamsDto;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
 import ru.clevertec.tasks.olga.repository.impl.ProductRepositoryImpl;
 import ru.clevertec.tasks.olga.service.ProductService;
@@ -32,8 +33,8 @@ public class ProductServiceImpl extends AbstractService<Product, ProductReposito
     }
 
     @Override
-    public List<Product> getAll() {
-        return productRepository.getAll();
+    public List<Product> getAll(int limit, int offset) {
+        return productRepository.getAll(limit, offset);
     }
 
     @Override
@@ -43,6 +44,15 @@ public class ProductServiceImpl extends AbstractService<Product, ProductReposito
 
     @Override
     public Product update(Product product, String filePath) {
+        return null;
+    }
+
+    @Override
+    public Product formProduct(ProductParamsDto params) {
+//        Product.builder()
+//                .title(params.title)
+//                .price(params.price)
+//                .discountType()
         return null;
     }
 }

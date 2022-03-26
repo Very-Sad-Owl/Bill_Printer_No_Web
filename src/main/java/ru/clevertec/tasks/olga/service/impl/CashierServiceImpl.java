@@ -2,6 +2,7 @@ package ru.clevertec.tasks.olga.service.impl;
 
 import ru.clevertec.tasks.olga.exception.CashierNotFoundException;
 import ru.clevertec.tasks.olga.model.Cashier;
+import ru.clevertec.tasks.olga.model.dto.CashierParamsDTO;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.repository.impl.CashierRepositoryImpl;
 import ru.clevertec.tasks.olga.service.CashierService;
@@ -13,8 +14,7 @@ import java.util.Optional;
 @NoArgsConstructor
 public class CashierServiceImpl extends AbstractService<Cashier, CashierRepository> implements CashierService {
 
-    private CashierRepository cashierRepository = new CashierRepositoryImpl();
-
+    private static final CashierRepository cashierRepository = new CashierRepositoryImpl();
 
     @Override
     public long save(Cashier cashier) {
@@ -32,8 +32,13 @@ public class CashierServiceImpl extends AbstractService<Cashier, CashierReposito
     }
 
     @Override
-    public List<Cashier> getAll() {
-        return null;
+    public List<Cashier> getAll(int limit, int offset) {
+        List<Cashier> found = cashierRepository.getAll(limit, offset);
+        if (found.isEmpty()){
+            throw new CashierNotFoundException();
+        } else {
+            return found;
+        }
     }
 
     @Override
@@ -44,5 +49,13 @@ public class CashierServiceImpl extends AbstractService<Cashier, CashierReposito
     @Override
     public Cashier update(Cashier cashier, String filePath) {
         return null;
+    }
+
+    @Override
+    public Cashier formCashier(CashierParamsDTO params) {
+        return Cashier.builder()
+                .name(params.name)
+                .surname(params.surname)
+                .build();
     }
 }

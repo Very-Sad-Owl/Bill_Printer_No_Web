@@ -29,8 +29,8 @@ public class DiscountCardServiceImpl implements DiscountCardService {
     }
 
     @Override
-    public List<DiscountCard> getAll() {
-        return null;
+    public List<DiscountCard> getAll(int limit, int offset) {
+        return cardRepo.getAll(limit, offset);
     }
 
     @Override

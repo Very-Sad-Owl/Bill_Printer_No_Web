@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,6 +16,7 @@ public class Product extends AbstractModel {
 
     public Product(){super();}
 
+    @Builder
     public Product(long id, String title, double price, ProductDiscountType discountType){
         super(id);
         this.title = title;

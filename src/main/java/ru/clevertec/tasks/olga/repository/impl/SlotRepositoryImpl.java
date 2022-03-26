@@ -46,9 +46,9 @@ public class SlotRepositoryImpl implements SlotRepository {
     }
 
     @Override
-    public List<Slot> getAll() {
+    public List<Slot> getAll(int limit, int offset) {
         try {
-            return DbHelper.getAll(GET_SLOTS, slotWorker);
+            return DbHelper.getAll(GET_SLOTS, slotWorker, limit, offset);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
             throw new ReadingException("error.connection");

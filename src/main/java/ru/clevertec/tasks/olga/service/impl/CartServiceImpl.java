@@ -43,12 +43,22 @@ public class CartServiceImpl extends AbstractService<Cart, CartRepository> imple
     }
 
     @Override
-    public List<Cart> getAll() {
-        List<Cart> bills = cartRepository.getAll();
+    public List<Cart> getAll(int limit, int offset) {
+        List<Cart> bills = cartRepository.getAll(limit, offset);
         if (bills.isEmpty()){
             throw new CartNotFoundException("error.cart_not_found");
         }
         return bills;
+    }
+
+    @Override
+    public boolean delete(Cart cart, String filePath) {
+        return false;
+    }
+
+    @Override
+    public Cart update(Cart cart, String filePath) {
+        return null;
     }
 
     @Override
@@ -63,9 +73,9 @@ public class CartServiceImpl extends AbstractService<Cart, CartRepository> imple
     @Override
     public Cart formCart(CartParamsDTO cartParamsDTO) {
         Cart cart =  Cart.builder()
-                .positions(formSlots(cartParamsDTO.getGoods()))
-                .discountCard(cardService.findById(cartParamsDTO.getCard_id()))
-                .cashier(cashierService.findById(cartParamsDTO.getCashier_id()))
+                .positions(formSlots(cartParamsDTO.goods))
+                .discountCard(cardService.findById(cartParamsDTO.card_id))
+                .cashier(cashierService.findById(cartParamsDTO.cashier_id))
                 .build();
         cart.calculatePrice();
         return cart;

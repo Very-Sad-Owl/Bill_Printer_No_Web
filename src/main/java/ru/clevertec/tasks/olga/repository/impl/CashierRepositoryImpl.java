@@ -42,9 +42,9 @@ public class CashierRepositoryImpl implements CashierRepository {
     }
 
     @Override
-    public List<Cashier> getAll() {
+    public List<Cashier> getAll(int limit, int offset) {
         try {
-            return DbHelper.getAll(GET_CASHIERS, cashierWorker);
+            return DbHelper.getAll(GET_CASHIERS, cashierWorker, limit, offset);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");

@@ -48,9 +48,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> getAll() {
+    public List<Product> getAll(int limit, int offset) {
         try {
-            return DbHelper.getAll(GET_PRODUCTS, productWorker);
+            return DbHelper.getAll(GET_PRODUCTS, productWorker, limit, offset);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new ReadingException("error.connection");

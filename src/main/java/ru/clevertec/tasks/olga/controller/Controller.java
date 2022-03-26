@@ -1,12 +1,8 @@
 package ru.clevertec.tasks.olga.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.Logger;
 import ru.clevertec.tasks.olga.controller.command.Command;
 import ru.clevertec.tasks.olga.controller.command.CommandProvider;
-import ru.clevertec.tasks.olga.controller.command.resource.CommandUrlPath;
-
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

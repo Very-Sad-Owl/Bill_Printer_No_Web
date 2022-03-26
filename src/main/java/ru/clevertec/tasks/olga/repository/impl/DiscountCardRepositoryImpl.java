@@ -43,9 +43,9 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     }
 
     @Override
-    public List<DiscountCard> getAll() {
+    public List<DiscountCard> getAll(int limit, int offset) {
         try {
-            return DbHelper.getAll(GET_DISCOUNTS, discountWorker);
+            return DbHelper.getAll(GET_DISCOUNTS, discountWorker, limit, offset);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
             throw new ReadingException("error.reading");

@@ -38,7 +38,7 @@ public class CartRepositoryImpl implements CartRepository {
     @Override
     public long save(Cart cart) {
         PreparedStatement st = null;
-        PreparedStatement slotSt = null;
+        PreparedStatement slotSt;
         ConnectionPool pool = null;
         Connection con = null;
         try {
@@ -46,12 +46,14 @@ public class CartRepositoryImpl implements CartRepository {
             con = pool.takeConnection();
             con.setAutoCommit(false);
             st = DbHelper.save(cart, INSERT_CART, cartWorker, con);
+            long insertedId = DbHelper.getGeneratedKey(st);
             for (Slot el : cart.getPositions()){
                 slotSt = DbHelper.save(el, INSERT_SLOT, slotWorker, con);
-                setSlotCartId(el.getId(), cart.getId(), con, slotSt);
+                long insertedSlotId = DbHelper.getGeneratedKey(slotSt);
+                setSlotCartId(insertedSlotId, insertedId, con, slotSt);
             }
             con.commit();
-            return DbHelper.getGeneratedKey(st);
+            return insertedId;
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");
@@ -74,7 +76,7 @@ public class CartRepositoryImpl implements CartRepository {
             con = pool.takeConnection();
             con.setAutoCommit(false);
             cart = DbHelper.findById(FIND_CART_BY_ID, id, cartWorker, con, ps, rs);
-            List<Slot> slots = DbHelper.getAll(GET_SLOTS, slotWorker, con, ps, rs);
+            List<Slot> slots = DbHelper.getAll(GET_SLOTS, slotWorker, con, ps, rs, 0, 0);
             if (cart.isPresent()) cart.get().setPositions(slots);
             con.commit();
         } catch (ConnectionPoolException | SQLException e) {
@@ -89,18 +91,18 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
-    public List<Cart> getAll() {
+    public List<Cart> getAll(int limit, int offset) {
         PreparedStatement ps = null;
         ConnectionPool pool = null;
         Connection con = null;
         ResultSet rs = null;
-        List<Cart> bills = new ArrayListImpl<>();
-        List<Slot> slots = new ArrayListImpl<>();
+        List<Cart> bills;
+        List<Slot> slots;
         try {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
             con.setAutoCommit(false);
-            bills = DbHelper.getAll(GET_CARTS, cartWorker, con, ps, rs);
+            bills = DbHelper.getAll(GET_CARTS, cartWorker, con, ps, rs, limit, offset);
             for (Cart cart : bills){
                 slots = DbHelper.findAllById(FIND_SLOTS_BY_CART_ID, cart.getId(), slotWorker, con, ps, rs);
                 cart.setPositions(slots);
@@ -115,6 +117,7 @@ public class CartRepositoryImpl implements CartRepository {
         }
         return bills;
     }
+
 
     @Override
     public boolean update(Cart cart) {
@@ -151,9 +154,9 @@ public class CartRepositoryImpl implements CartRepository {
         }
     }
 
-    private void setSlotCartId(long slotId, long catId, Connection con, PreparedStatement ps) throws SQLException {
+    private void setSlotCartId(long slotId, long cartId, Connection con, PreparedStatement ps) throws SQLException {
         ps = con.prepareStatement(SET_SLOT_CART_ID);
-        ps.setLong(1, catId);
+        ps.setLong(1, cartId);
         ps.setLong(2, slotId);
         ps.executeUpdate();
     }

@@ -1,7 +1,6 @@
 package ru.clevertec.tasks.olga.controller.command.impl.action;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.Logger;
 import ru.clevertec.tasks.olga.controller.command.Command;
 
 import javax.servlet.ServletException;

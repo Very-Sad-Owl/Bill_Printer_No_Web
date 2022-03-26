@@ -1,8 +1,6 @@
 package ru.clevertec.tasks.olga.controller.listener;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.Logger;
-import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
 

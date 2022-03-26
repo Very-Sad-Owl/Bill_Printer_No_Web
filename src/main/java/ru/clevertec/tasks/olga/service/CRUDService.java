@@ -10,7 +10,7 @@ public interface CRUDService<E extends AbstractModel> {
 
     E findById(long id);
 
-    List<E> getAll();
+    List<E> getAll(int limit, int offset);
 
     boolean delete(E e, String filePath);
 

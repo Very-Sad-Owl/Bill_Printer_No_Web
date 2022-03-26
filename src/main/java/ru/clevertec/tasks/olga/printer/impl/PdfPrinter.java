@@ -52,6 +52,65 @@ public class PdfPrinter extends AbstractPrinter {
 
     @Override
     public void print(List<String> content) {
+//        try {
+//            PdfFont font = PdfFontFactory.createFont(
+//                    ResourceBundle.getBundle("db").getString("bill.font"),
+//                    ResourceBundle.getBundle("db").getString("bill.encoding")
+//            );
+//
+//            PdfDocument backPdfDocument = new PdfDocument(new PdfReader(BACKGROUND_PDF));
+//
+//            String fileName = String.format(FILENAME_PDF_FORMAT,
+//                    LocalDate.now(), System.nanoTime());
+//            Path path = FileSystems.getDefault().getPath(printPath, fileName);
+//            Files.createDirectories(path.getParent());
+//
+//            PdfDocument receiptPdfDocument = new PdfDocument(new PdfWriter(printPath + fileName));
+//            receiptPdfDocument.addNewPage();
+//
+//            Document document = new Document(receiptPdfDocument);
+//            document.setFont(font);
+//            document.setLeftMargin(100);
+//            document.setTopMargin(200);
+//            Table receiptTable = new Table(new float[]{1f})
+//                    .setHorizontalAlignment(HorizontalAlignment.CENTER)
+//                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+//                    .setWidth(UnitValue.createPercentValue(100))
+//                    .setFontSize(14f);
+//            for (String line : content) {
+//                Cell c = new Cell().setBorder(Border.NO_BORDER);
+//                if (line.charAt(0) == delimiter) {
+//                    c.add(new Paragraph(printMonocharLine(delimiter, MAX_SYMBOLS_PER_LINE)));
+//                    receiptTable.addCell(c);
+//                } else if (line.contains("%s")) {
+//                    int literals = StringUtils.countMatches(line, "%s");
+//                    char[] varargs = new char[literals];
+//                    for (int i = 0; i < literals; i++) {
+//                        varargs[i] = delimiter;
+//                    }
+//                    c.add(new Paragraph(replaceFormatLiteral(line, varargs)));
+//                    receiptTable.addCell(c);
+//                } else if (line.charAt(0) == lineDelimiter) {
+//                    c.add(new Paragraph(printMonocharLine(lineDelimiter, MAX_SYMBOLS_PER_LINE)));
+//                    receiptTable.addCell(c);
+//                }
+//            }
+//            document.add(receiptTable);
+//
+//            PdfCanvas canvas = new PdfCanvas(receiptPdfDocument.getFirstPage().newContentStreamBefore(),
+//                    receiptPdfDocument.getFirstPage().getResources(), receiptPdfDocument);
+//            PdfFormXObject pdfFormXObject = backPdfDocument.getFirstPage().copyAsFormXObject(receiptPdfDocument);
+//            canvas.addXObjectAt(pdfFormXObject, 0, 0);
+//
+//            backPdfDocument.close();
+//            receiptPdfDocument.close();
+//            document.close();
+//        } catch (IOException e) {
+//            throw new WritingException("error.writing");
+//        }
+    }
+
+    public Path printAsFile(List<String> content) {
         try {
             PdfFont font = PdfFontFactory.createFont(
                     ResourceBundle.getBundle("db").getString("bill.font"),
@@ -105,10 +164,12 @@ public class PdfPrinter extends AbstractPrinter {
             backPdfDocument.close();
             receiptPdfDocument.close();
             document.close();
+            return path;
         } catch (IOException e) {
             throw new WritingException("error.writing");
         }
     }
+
 
     private String printMonocharLine(char ch, int len) {
         return StringUtils.repeat(ch, len);

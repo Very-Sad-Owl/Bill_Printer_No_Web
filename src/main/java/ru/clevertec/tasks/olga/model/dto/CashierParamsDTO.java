@@ -11,9 +11,8 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartParamsDTO extends AbstractDto{
-    public Map<Long, Integer> goods = new HashMap<>();
+public class CashierParamsDTO extends AbstractDto{
     public long id;
-    public long cashier_id;
-    public long card_id;
+    public String name;
+    public String surname;
 }

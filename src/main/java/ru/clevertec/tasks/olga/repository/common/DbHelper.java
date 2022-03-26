@@ -44,7 +44,7 @@ public class DbHelper {
         return st;
     }
 
-    public static <T extends AbstractModel> List<T> getAll(String query, NodeWorker<T> worker)
+    public static <T extends AbstractModel> List<T> getAll(String query, NodeWorker<T> worker, int offset, int limit)
             throws ConnectionPoolException, SQLException {
         PreparedStatement ps = null;
         ConnectionPool pool = null;
@@ -55,6 +55,8 @@ public class DbHelper {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
             ps = con.prepareStatement(query);
+            ps.setInt(1, limit == 0 ? Types.INTEGER : limit);
+            ps.setInt(2, offset == 0 ? 0 : (offset - 1)*limit);
             rs = ps.executeQuery();
             while (rs.next()){
                 found.add(worker.nodeToModel(rs, false));
@@ -68,10 +70,13 @@ public class DbHelper {
     }
 
     public static <T extends AbstractModel> List<T> getAll(String query, NodeWorker<T> worker,
-                                                           Connection con, PreparedStatement ps, ResultSet rs)
+                                                           Connection con, PreparedStatement ps, ResultSet rs,
+                                                           int offset, int limit)
             throws SQLException {
         List<T> found = new ArrayListImpl<>();
         ps = con.prepareStatement(query);
+        ps.setInt(1, limit == 0 ? Types.INTEGER : limit);
+        ps.setInt(2, offset);
         rs = ps.executeQuery();
         while (rs.next()) {
             found.add(worker.nodeToModel(rs, false));
@@ -85,7 +90,7 @@ public class DbHelper {
         ConnectionPool pool = null;
         Connection con = null;
         ResultSet rs = null;
-        Optional<T> found = null;
+        Optional<T> found;
         try {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
@@ -101,14 +106,13 @@ public class DbHelper {
     public static <T extends AbstractModel> Optional<T> findById(String query, long id, NodeWorker<T> worker,
                                                                  Connection con, PreparedStatement ps, ResultSet rs)
             throws SQLException {
-        T found = null;
         ps = con.prepareStatement(query);
         ps.setLong(1, id);
         rs = ps.executeQuery();
         if (rs.next()) {
-            found = worker.nodeToModel(rs, false);
+            return Optional.of(worker.nodeToModel(rs, false));
         }
-        return Optional.of(found);
+        return Optional.empty();
 
     }
 
