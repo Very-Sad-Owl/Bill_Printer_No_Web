@@ -3,13 +3,17 @@ package ru.clevertec.tasks.olga.controller;
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.controller.command.Command;
 import ru.clevertec.tasks.olga.controller.command.CommandProvider;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Locale;
 
+import static ru.clevertec.tasks.olga.controller.command.resource.RequestParam.CHOSEN_LANGUAGE;
 import static ru.clevertec.tasks.olga.controller.command.resource.SessionAttr.LOCALE;
 
 @Slf4j
@@ -28,7 +32,6 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		String callingUrl = request.getHeader("referer");
 		if (callingUrl == null){
-//			callingUrl = CommandUrlPath.GOTOINDEXPAGE;
             callingUrl = "Controller?command=guide";
 		}
 		String callingCommand = callingUrl.replaceFirst("(.)*/", "");
@@ -46,11 +49,16 @@ public class Controller extends HttpServlet {
 	
 	private void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		String name;
+		String language;
 		Command command;
 
-		if (request.getSession() != null){
-		    request.getSession().setAttribute(LOCALE, "en");
-        }
+		language = request.getParameter(CHOSEN_LANGUAGE);
+		if (language != null && !language.isEmpty()){
+			request.getSession().setAttribute(LOCALE, language);
+		} else if (request.getSession() != null
+				&& request.getSession().getAttribute(LOCALE) == null){
+			request.getSession().setAttribute(LOCALE, "en");
+		}
 
 		name = request.getParameter("command");
 		log.info("command = " + name + "\n");

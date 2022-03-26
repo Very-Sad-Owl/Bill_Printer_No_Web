@@ -13,22 +13,12 @@ public interface Query {
     //cart
     String INSERT_CART = "INSERT INTO public.cart(card_id, cashier_id, price) VALUES (?, ?, ?);";
     String FIND_CART_BY_ID = "select * from cart join cashier on cart.cashier_id = cashier.id join card on cart.card_id  = card.id join general_discount on card.discount_id = general_discount.id where cart.id = ?;";
-//    String GET_CARTS = "select * from cart \n" +
-//            "join cashier\n" +
-//            "on cart.cashier_id = cashier.id\n" +
-//            "join card\n" +
-//            "on cart.card_id  = card.id\n" +
-//            "join general_discount \n" +
-//            "on card.discount_id = general_discount.id;";
-
     String GET_CARTS = "select * from cart join cashier on cart.cashier_id = cashier.id join card on cart.card_id  = card.id join general_discount on card.discount_id = general_discount.id order by cart.id limit ? offset ?;";
-
     String UPDATE_CART = "update cart set card_id = ?, cashier_id = ?, price = ? WHERE id = ?;";
     String DELETE_CART = "delete from cart where id = ?;";
 
     //cashier
     String INSERT_CASHIER = "INSERT INTO cashier(name, surname) VALUES (?, ?);";
-//    String GET_CASHIERS = "select * from cashier;";
     String GET_CASHIERS = "select * from cashier order by id limit ? offset ?;";
     String FIND_CASHIER_BY_ID = "select * from cashier where id = ?;";
     String UPDATE_CASHIER = "UPDATE cashier set name=?, surname=? WHERE id = ?;";
@@ -36,7 +26,6 @@ public interface Query {
 
     //slot
     String INSERT_SLOT = "INSERT INTO slot(product_id, quantity, price) VALUES (?, ?, ?);";
-//    String GET_SLOTS = "select * from slot join product using(id) join product_discount using(id);";
     String GET_SLOTS = "select * from slot join product using(id) join product_discount using(id) order by slot.id limit ? offset ?;";
     String FIND_SLOT_BY_ID = "select * from slot join product using(id) join product_discount using(id) where slot.id = ?;";
     String UPDATE_SLOT = "UPDATE slot set product_id=?, quantity=?, price=?, cart_id=? WHERE id = ?;";
@@ -46,9 +35,15 @@ public interface Query {
 
     //discount card
     String INSERT_DISCOUNT = "INSERT INTO card(birthday, discount_id) VALUES (?, ?);";
-//    String GET_DISCOUNTS = "select * from card join general_discount using(id)";
     String GET_DISCOUNTS = "select * from card join general_discount using(id) order by card.id limit ? offset ?";
     String FIND_DISCOUNT_BY_ID = "select * from card join general_discount using(id) where card.id = ?";
-    String UPDATE_DISCOUNT = "update card set birthday = ? discount_id = ? where id = ?";
+    String UPDATE_DISCOUNT = "update card set birthday = ?, discount_id = ?, where id = ?";
     String DELETE_DISCOUNT = "delete from card where id = ?;";
+
+    //product discount type
+    String INSERT_PRODUCT_DISCOUNT_TYPE = "INSERT INTO product_discount(discount_title, discount_val, required_quantity) VALUES (?, ?, ?);";
+    String GET_PRODUCT_DISCOUNT_TYPES = "select * from product_discount order by card.id limit ? offset ?";
+    String FIND_PRODUCT_DISCOUNT_TYPE = "select * from product_discount where id = ?;";
+    String UPDATE_PRODUCT_DISCOUNT_TYPE = "update product_discount set discount_title = ?, discount_val = ?, required_quantity = ? where id = ?;";
+    String DELETE_PRODUCT_DISCOUNT_TYPE = "delete from product_discount where id = ?;";
 }

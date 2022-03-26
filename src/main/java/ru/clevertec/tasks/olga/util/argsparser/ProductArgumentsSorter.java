@@ -33,7 +33,7 @@ public class ProductArgumentsSorter extends ArgumentsSorter<ProductParamsDto> {
                     params.title = values[0];
                     break;
                 case PRODUCT_PRICE_PARAM:
-                    params.price = Long.parseLong(values[0]);
+                    params.price = Double.parseDouble(values[0]);
                     break;
             }
         }

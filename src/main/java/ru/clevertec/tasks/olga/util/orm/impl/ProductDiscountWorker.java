@@ -25,7 +25,9 @@ public class ProductDiscountWorker extends NodeWorker<ProductDiscountType> {
 
     @Override
     public void modelToNode(ProductDiscountType model, PreparedStatement st) throws SQLException {
-
+        st.setString(1, model.getTitle());
+        st.setDouble(2, model.getDiscount());
+        st.setInt(3, model.getRequiredMinQuantity());
     }
 
 }

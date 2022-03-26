@@ -7,7 +7,6 @@ import ru.clevertec.tasks.olga.model.Cart;
 import ru.clevertec.tasks.olga.model.Slot;
 import ru.clevertec.tasks.olga.model.dto.CartParamsDTO;
 import ru.clevertec.tasks.olga.repository.CartRepository;
-import ru.clevertec.tasks.olga.repository.impl.CartRepositoryImpl;
 import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
@@ -19,7 +18,7 @@ import java.util.*;
 @NoArgsConstructor
 public class CartServiceImpl extends AbstractService<Cart, CartRepository> implements CartService {
 
-    private CartRepository cartRepository = new CartRepositoryImpl();
+    private CartRepository cartRepository = repoFactory.getCartRepo();
     private ProductService productService = new ProductServiceImpl();
     private CashierService cashierService = new CashierServiceImpl();
     private DiscountCardService cardService = new DiscountCardServiceImpl();
@@ -52,12 +51,12 @@ public class CartServiceImpl extends AbstractService<Cart, CartRepository> imple
     }
 
     @Override
-    public boolean delete(Cart cart, String filePath) {
+    public boolean delete(long id) {
         return false;
     }
 
     @Override
-    public Cart update(Cart cart, String filePath) {
+    public Cart update(long id, Cart cart) {
         return null;
     }
 

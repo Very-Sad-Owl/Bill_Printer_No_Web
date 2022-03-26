@@ -11,6 +11,7 @@ public class WorkerFactory {
 
     private final NodeWorker<Product> productWorker = new ProductWorker();
     private final NodeWorker<DiscountCard> discountWorker = new DiscountCardWorker();
+    private final NodeWorker<ProductDiscountType> productDiscountWorker = new ProductDiscountWorker();
     private final NodeWorker<Cashier> cashierWorker = new CashierWorker();
     private final NodeWorker<Cart> cartWorker = new CartWorker();
     private final NodeWorker<Slot> slotWorker = new SlotWorker();

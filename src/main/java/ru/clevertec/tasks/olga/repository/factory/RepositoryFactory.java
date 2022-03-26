@@ -16,6 +16,7 @@ public class RepositoryFactory {
     private final DiscountCardRepository discountCardRepository = new DiscountCardRepositoryImpl();
     private final ProductRepository productRepository = new ProductRepositoryImpl();
     private final SlotRepository slotRepository = new SlotRepositoryImpl();
+    private final ProductDiscountRepository productDiscountRepository = new ProductDiscountRepositoryImpl();
 
     public static RepositoryFactory getInstance(){
         return instance;

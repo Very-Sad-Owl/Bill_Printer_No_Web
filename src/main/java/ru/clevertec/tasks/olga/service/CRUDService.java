@@ -12,8 +12,8 @@ public interface CRUDService<E extends AbstractModel> {
 
     List<E> getAll(int limit, int offset);
 
-    boolean delete(E e, String filePath);
+    boolean delete(long id);
 
-    E update(E e, String filePath);
+    E update(long id, E e);
 
 }

@@ -14,7 +14,7 @@ import java.util.Optional;
 @NoArgsConstructor
 public class CashierServiceImpl extends AbstractService<Cashier, CashierRepository> implements CashierService {
 
-    private static final CashierRepository cashierRepository = new CashierRepositoryImpl();
+    private static final CashierRepository cashierRepository = repoFactory.getCashierRepository();
 
     @Override
     public long save(Cashier cashier) {
@@ -42,12 +42,12 @@ public class CashierServiceImpl extends AbstractService<Cashier, CashierReposito
     }
 
     @Override
-    public boolean delete(Cashier cashier, String filePath) {
+    public boolean delete(long id) {
         return false;
     }
 
     @Override
-    public Cashier update(Cashier cashier, String filePath) {
+    public Cashier update(long id, Cashier cashier) {
         return null;
     }
 

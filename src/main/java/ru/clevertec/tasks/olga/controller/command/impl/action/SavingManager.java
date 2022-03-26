@@ -52,9 +52,13 @@ public class SavingManager implements Command {
                     break;
                 case "product":
                     ProductParamsDto productParams = sorterFactory.getProductSorter().retrieveArgs(parameterMap);
+                    Product product = factory.getProductService().formProduct(productParams);
+                    insertedId = factory.getProductService().save(product);
+                    product.setId(insertedId);
+
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-//                    response.getWriter().write(JsonMapper.parseObject(products));
+                    response.getWriter().write(JsonMapper.parseObject(product));
                     break;
                 case "cashier":
                     CashierParamsDTO cashierParams = sorterFactory.getCashierSorter().retrieveArgs(parameterMap);

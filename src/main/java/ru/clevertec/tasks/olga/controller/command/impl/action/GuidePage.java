@@ -5,6 +5,7 @@ import ru.clevertec.tasks.olga.controller.command.Command;
 import ru.clevertec.tasks.olga.controller.util.messages_provider.MessageProvider;
 import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
+import ru.clevertec.tasks.olga.util.MessageLocaleService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,10 +20,12 @@ public class GuidePage implements Command {
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        MessageProvider msgProvider = new MessageProvider(new Locale((String) request.getSession().getAttribute(LOCALE)));
+        Locale locale = new Locale((String) request.getSession().getAttribute(LOCALE));
+        MessageProvider msgProvider = new MessageProvider(locale);
         try{
-            response.getWriter().write("guide");
-            response.getWriter().write("http://localhost:8080/Controller?command=print&table=product&products=1-2,2-5,3-4&card_uid=1&cashier_uid=2");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(MessageLocaleService.getMessage("label.guide", locale) + "\n");
+            response.getWriter().write("localhost:8080/Controller?command=print&table=cart&id=25&language=en");
         } catch (Exception e) {
             response.getWriter().print(msgProvider.getMessage(e.getClass().getSimpleName()));
             log.error(e.getMessage());

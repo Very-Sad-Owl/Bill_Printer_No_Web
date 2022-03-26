@@ -30,6 +30,8 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 
+import static ru.clevertec.tasks.olga.controller.command.resource.CommandParam.*;
+import static ru.clevertec.tasks.olga.controller.command.resource.RequestParam.CATEGORY;
 import static ru.clevertec.tasks.olga.controller.command.resource.SessionAttr.LOCALE;
 
 @Slf4j
@@ -38,16 +40,17 @@ public class PrinterManager implements Command {
     public static final ServiceFactory factory = ServiceFactory.getInstance();
     public static final SorterFactory sorterFactory = SorterFactory.getInstance();
         private static final PdfPrinter pdfPrinter = new PdfPrinter();
-    private static final AbstractBillFormatter formatter = new PseudographicBillFormatter();
 
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        MessageProvider msgProvider = new MessageProvider
-                (new Locale((String) request.getSession().getAttribute(LOCALE)));
+
+        Locale locale = new Locale((String)request.getSession().getAttribute(LOCALE));
+        MessageProvider msgProvider = new MessageProvider(locale);
         try {
             Path res;
             Map<String, String[]> parameterMap = request.getParameterMap();
-            switch (parameterMap.get("table")[0]){
-                case "cart":
+            switch (parameterMap.get(CATEGORY)[0]){
+                case CART:
+                    AbstractBillFormatter formatter = new PseudographicBillFormatter(locale);
                     CartParamsDTO cartParams = sorterFactory.getCartSorter().retrieveArgs(parameterMap);
                     Cart cart = factory.getCartService().findById(cartParams.id);
                     res = pdfPrinter.printAsFile(formatter.format(cart));
@@ -58,7 +61,7 @@ public class PrinterManager implements Command {
                     response.setContentLength(content.length);
                     response.getOutputStream().write(content);
                     break;
-                case "product":
+                case PRODUCT:
                     ProductParamsDto productParams = sorterFactory.getProductSorter().retrieveArgs(parameterMap);
                     Product product = factory.getProductService().findById(productParams.id);
 
@@ -66,7 +69,7 @@ public class PrinterManager implements Command {
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write(JsonMapper.parseObject(product));
                     break;
-                case "cashier":
+                case CASHIER:
                     CashierParamsDTO cashierParams = sorterFactory.getCashierSorter().retrieveArgs(parameterMap);
                     Cashier cashier = factory.getCashierService().findById(cashierParams.id);
 
@@ -75,18 +78,6 @@ public class PrinterManager implements Command {
                     response.getWriter().write(JsonMapper.parseObject(cashier));
                     break;
             }
-//            String mapAsString = parameterMap.keySet().stream()
-//                    .map(key -> key + "=" + Arrays.asList(parameterMap.get(key)))
-//                    .collect(Collectors.joining(", ", "{", "}"));
-//            log.info(mapAsString);
-//            CartParamsDTO cartParamsDTO = CART_ARGUMENTS_SORTER.retrieveArgs(parameterMap);
-//            Cart cart = cartService.formCart(cartParamsDTO);
-////            cartService.save(cart);
-//            cartService.printBill(cart);
-//            log.info(cart.toString());
-//            response.getWriter().write(MessageLocaleService.getMessage("label.guide",
-//                    new Locale((String) request.getSession().getAttribute(LOCALE))) +
-//                    cart.toString());
         } catch (Exception e) {
             log.error(e.getMessage());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -95,9 +86,6 @@ public class PrinterManager implements Command {
             response.getWriter().flush();
             response.getWriter().close();
         }
-
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher(CommandUrlPath.CART_PAGE);
-        requestDispatcher.forward(request, response);
 
     }
 

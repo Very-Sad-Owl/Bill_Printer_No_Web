@@ -1,5 +1,7 @@
 package ru.clevertec.tasks.olga.util.formatter;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.model.Cart;
 import ru.clevertec.tasks.olga.model.Cashier;
@@ -8,10 +10,15 @@ import ru.clevertec.tasks.olga.util.MessageLocaleService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@NoArgsConstructor
+@AllArgsConstructor
 public class PseudographicBillFormatter extends AbstractBillFormatter {
+
+    private Locale locale= Locale.getDefault();
 
     @Override
     public List<String> format(Cart cart) {
@@ -49,30 +56,30 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
 
     @Override
     public void drawMetaInfo(long cartId, List<String> billBuilder) {
-        billBuilder.add((MessageLocaleService.getMessage("label.pseudographics_char")));
-        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.shop_title")));
-        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.address")));
-        billBuilder.add(MessageLocaleService.getMessage("label.pseudographics_char"));
+        billBuilder.add((MessageLocaleService.getMessage("label.pseudographics_char", locale)));
+        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.shop_title", locale)));
+        billBuilder.add(centreLine(MessageLocaleService.getMessage("info.address", locale)));
+        billBuilder.add(MessageLocaleService.getMessage("label.pseudographics_char", locale));
         billBuilder.add(centreLine(
-                MessageLocaleService.getMessage("label.receipt_uid") + " " + cartId));
-        billBuilder.add(MessageLocaleService.getMessage("label.pseudographics_char"));
+                MessageLocaleService.getMessage("label.receipt_uid", locale) + " " + cartId));
+        billBuilder.add(MessageLocaleService.getMessage("label.pseudographics_char", locale));
     }
 
     @Override
     public void drawCashierInfo(Cashier cashier, List<String> billBuilder) {
                 billBuilder.add(
-                        drawSplittedLine(MessageLocaleService.getMessage("label.cashier_uid") +
-                                        MessageLocaleService.getMessage("label.definition"),
+                        drawSplittedLine(MessageLocaleService.getMessage("label.cashier_uid", locale) +
+                                        MessageLocaleService.getMessage("label.definition", locale),
                                 cashier.getId()+"")
         );
         billBuilder.add(
                 drawSplittedLine(
-                MessageLocaleService.getMessage("label.cashier") +
-                        MessageLocaleService.getMessage("label.definition"),
+                MessageLocaleService.getMessage("label.cashier", locale) +
+                        MessageLocaleService.getMessage("label.definition", locale),
                             cashier.getFullName()
                 )
         );
-        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char").charAt(0)));
+        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char", locale).charAt(0)));
 
     }
 
@@ -89,41 +96,41 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
 
         );
         billBuilder.add(drawSplittedLine(
-                MessageLocaleService.getMessage("label.original_price") +
-                        MessageLocaleService.getMessage("label.definition") +
+                MessageLocaleService.getMessage("label.original_price", locale) +
+                        MessageLocaleService.getMessage("label.definition", locale) +
                         slot.getTotalPrice(),
-                        MessageLocaleService.getMessage("label.total_price") +
-                        MessageLocaleService.getMessage("label.definition") +
+                        MessageLocaleService.getMessage("label.total_price", locale) +
+                        MessageLocaleService.getMessage("label.definition", locale) +
                         slot.getRawPrice()
                 )
         );
-        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char").charAt(0)));
+        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char", locale).charAt(0)));
     }
 
     @Override
     public void drawPaymentInfo(Cart cart, List<String> billBuilder) {
-        billBuilder.add(MessageLocaleService.getMessage("label.discount_card_uid") + cart.getDiscountCard().getId());
+        billBuilder.add(MessageLocaleService.getMessage("label.discount_card_uid", locale) + cart.getDiscountCard().getId());
         billBuilder.add(drawSplittedLine(
-                MessageLocaleService.getMessage("label.original_price") +
-                        MessageLocaleService.getMessage("label.definition"),
+                MessageLocaleService.getMessage("label.original_price", locale) +
+                        MessageLocaleService.getMessage("label.definition", locale),
                         cart.getRawPrice() + ""
                 )
         );
         billBuilder.add(drawSplittedLine(
-                MessageLocaleService.getMessage("label.tottal_discount") +
-                        MessageLocaleService.getMessage("label.definition"),
+                MessageLocaleService.getMessage("label.tottal_discount", locale) +
+                        MessageLocaleService.getMessage("label.definition", locale),
                         cart.getTotalDiscount() +
-                        MessageLocaleService.getMessage("label.discount_percentage") +
-                                MessageLocaleService.getMessage("label.discount_percentage")
+                        MessageLocaleService.getMessage("label.discount_percentage", locale) +
+                                MessageLocaleService.getMessage("label.discount_percentage", locale)
                 )
         );
         billBuilder.add(drawSplittedLine(
-                MessageLocaleService.getMessage("label.total_price") +
-                        MessageLocaleService.getMessage("label.definition"),
+                MessageLocaleService.getMessage("label.total_price", locale) +
+                        MessageLocaleService.getMessage("label.definition", locale),
                         cart.getPrice() + ""
                 )
         );
-        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char").charAt(0)));
+        billBuilder.add(drawLine(MessageLocaleService.getMessage("label.pseudographics_char", locale).charAt(0)));
 
     }
 }

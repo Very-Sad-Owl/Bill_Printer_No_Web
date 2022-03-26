@@ -6,6 +6,7 @@ import ru.clevertec.tasks.olga.model.Product;
 import ru.clevertec.tasks.olga.model.dto.ProductParamsDto;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
 import ru.clevertec.tasks.olga.repository.impl.ProductRepositoryImpl;
+import ru.clevertec.tasks.olga.service.ProductDiscountService;
 import ru.clevertec.tasks.olga.service.ProductService;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +16,8 @@ import java.util.Optional;
 @NoArgsConstructor
 public class ProductServiceImpl extends AbstractService<Product, ProductRepository> implements ProductService {
 
-    private ProductRepository productRepository = new ProductRepositoryImpl();
+    private static final ProductRepository productRepository = new ProductRepositoryImpl();
+    private static final ProductDiscountService discountService = new ProductDiscountImpl();
 
     @Override
     public long save(Product product) {
@@ -38,21 +40,21 @@ public class ProductServiceImpl extends AbstractService<Product, ProductReposito
     }
 
     @Override
-    public boolean delete(Product product, String filePath) {
+    public boolean delete(long id) {
         return false;
     }
 
     @Override
-    public Product update(Product product, String filePath) {
+    public Product update(long id, Product product) {
         return null;
     }
 
     @Override
     public Product formProduct(ProductParamsDto params) {
-//        Product.builder()
-//                .title(params.title)
-//                .price(params.price)
-//                .discountType()
-        return null;
+        return Product.builder()
+                .title(params.title)
+                .price(params.price)
+                .discountType(discountService.findById(params.discount_id))
+                .build();
     }
 }

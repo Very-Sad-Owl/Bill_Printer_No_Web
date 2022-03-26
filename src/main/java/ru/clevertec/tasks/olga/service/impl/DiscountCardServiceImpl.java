@@ -3,15 +3,16 @@ package ru.clevertec.tasks.olga.service.impl;
 import ru.clevertec.tasks.olga.exception.CardNotFoundException;
 import ru.clevertec.tasks.olga.model.DiscountCard;
 import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
-import ru.clevertec.tasks.olga.repository.impl.DiscountCardRepositoryImpl;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
 
 import java.util.List;
 import java.util.Optional;
 
-public class DiscountCardServiceImpl implements DiscountCardService {
+public class DiscountCardServiceImpl
+        extends AbstractService<DiscountCard, DiscountCardRepository>
+        implements DiscountCardService {
 
-    private static final DiscountCardRepository cardRepo = new DiscountCardRepositoryImpl();
+    private static final DiscountCardRepository cardRepo = repoFactory.getDiscountCardRepository();
 
     @Override
     public long save(DiscountCard discountCard) {
@@ -34,12 +35,12 @@ public class DiscountCardServiceImpl implements DiscountCardService {
     }
 
     @Override
-    public boolean delete(DiscountCard discountCard, String filePath) {
+    public boolean delete(long id) {
         return false;
     }
 
     @Override
-    public DiscountCard update(DiscountCard discountCard, String filePath) {
+    public DiscountCard update(long id, DiscountCard discountCard) {
         return null;
     }
 }
