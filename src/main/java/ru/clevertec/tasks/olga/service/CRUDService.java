@@ -1,12 +1,13 @@
 package ru.clevertec.tasks.olga.service;
 
-import ru.clevertec.tasks.olga.model.AbstractModel;
+import ru.clevertec.tasks.olga.entity.AbstractModel;
+import ru.clevertec.tasks.olga.dto.AbstractDto;
 
 import java.util.List;
 
-public interface CRUDService<E extends AbstractModel> {
+public interface CRUDService<E extends AbstractModel, T extends AbstractDto> {
 
-    long save(E e);
+    E save(T e);
 
     E findById(long id);
 
@@ -14,6 +15,6 @@ public interface CRUDService<E extends AbstractModel> {
 
     boolean delete(long id);
 
-    E update(long id, E e);
+    E update(T dto);
 
 }

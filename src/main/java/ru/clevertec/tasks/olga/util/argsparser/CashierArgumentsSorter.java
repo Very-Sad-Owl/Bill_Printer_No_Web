@@ -2,9 +2,7 @@ package ru.clevertec.tasks.olga.util.argsparser;
 
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
-import ru.clevertec.tasks.olga.model.dto.CashierParamsDTO;
-import ru.clevertec.tasks.olga.model.dto.ProductParamsDto;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
+import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
 
 import java.util.ArrayList;
 import java.util.List;

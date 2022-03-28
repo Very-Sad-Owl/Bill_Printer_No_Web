@@ -1,21 +1,18 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
+import com.google.common.base.Defaults;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
-import ru.clevertec.tasks.olga.model.Cart;
-import ru.clevertec.tasks.olga.model.Slot;
-import ru.clevertec.tasks.olga.model.dto.CartDto;
-import ru.clevertec.tasks.olga.model.dto.SlotDto;
+import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.repository.CartRepository;
-import lombok.AllArgsConstructor;
-import ru.clevertec.tasks.olga.repository.SlotRepository;
 import ru.clevertec.tasks.olga.repository.common.DbHelper;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.repository.factory.RepositoryFactory;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
 import ru.clevertec.tasks.olga.util.orm.WorkerFactory;
 
@@ -28,7 +25,7 @@ import java.util.Optional;
 
 import static ru.clevertec.tasks.olga.repository.Query.*;
 
-@AllArgsConstructor
+@NoArgsConstructor
 @Slf4j
 public class CartRepositoryImpl implements CartRepository {
 
@@ -76,7 +73,11 @@ public class CartRepositoryImpl implements CartRepository {
             con = pool.takeConnection();
             con.setAutoCommit(false);
             cart = DbHelper.findById(FIND_CART_BY_ID, id, cartWorker, con, ps, rs);
-            List<Slot> slots = DbHelper.getAll(GET_SLOTS, slotWorker, con, ps, rs, 0, 0);
+            rs = findSlotsByCartId(id, con, ps);
+            List<Slot> slots = new ArrayListImpl<>();
+            while (rs.next()){
+                slots.add(slotWorker.nodeToModel(rs, false));
+            }
             if (cart.isPresent()) cart.get().setPositions(slots);
             con.commit();
         } catch (ConnectionPoolException | SQLException e) {
@@ -130,7 +131,11 @@ public class CartRepositoryImpl implements CartRepository {
             con.setAutoCommit(false);
             st = DbHelper.update(cart, UPDATE_CART, cartWorker, con);
             for (Slot el : cart.getPositions()){
-                st = DbHelper.update(el, UPDATE_SLOT, slotWorker, con);
+                if (el.getId() == Defaults.defaultValue(Long.TYPE)){
+                    st = DbHelper.save(el, INSERT_SLOT, slotWorker, con);
+                } else {
+                    st = DbHelper.update(el, UPDATE_SLOT, slotWorker, con);
+                }
             }
             con.commit();
         } catch (SQLException | ConnectionPoolException e) {
@@ -159,6 +164,12 @@ public class CartRepositoryImpl implements CartRepository {
         ps.setLong(1, cartId);
         ps.setLong(2, slotId);
         ps.executeUpdate();
+    }
+
+    private ResultSet findSlotsByCartId(long cartId, Connection con, PreparedStatement ps) throws SQLException {
+        ps = con.prepareStatement(FIND_SLOTS_BY_CART_ID);
+        ps.setLong(1, cartId);
+        return ps.executeQuery();
     }
 
 }

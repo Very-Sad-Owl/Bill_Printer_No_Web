@@ -1,6 +1,6 @@
 package ru.clevertec.tasks.olga.util.orm.impl;
 
-import ru.clevertec.tasks.olga.model.Cashier;
+import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
 import lombok.NoArgsConstructor;
 import java.sql.PreparedStatement;
@@ -20,8 +20,15 @@ public class CashierWorker extends NodeWorker<Cashier> {
     }
 
     @Override
-    public void modelToNode(Cashier model, PreparedStatement st) throws SQLException {
+    public void modelToNewNode(Cashier model, PreparedStatement st) throws SQLException {
         st.setString(1, model.getName());
         st.setString(2, model.getSurname());
+    }
+
+    @Override
+    public void modelToExisingNode(Cashier model, PreparedStatement st) throws SQLException {
+        st.setString(1, model.getName());
+        st.setString(2, model.getSurname());
+        st.setLong(3, model.getId());
     }
 }

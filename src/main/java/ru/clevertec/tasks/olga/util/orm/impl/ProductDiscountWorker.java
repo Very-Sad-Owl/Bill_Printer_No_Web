@@ -1,9 +1,7 @@
 package ru.clevertec.tasks.olga.util.orm.impl;
 
 import lombok.AllArgsConstructor;
-import ru.clevertec.tasks.olga.model.DiscountCard;
-import ru.clevertec.tasks.olga.model.Product;
-import ru.clevertec.tasks.olga.model.ProductDiscountType;
+import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
 
 import java.sql.PreparedStatement;
@@ -24,10 +22,17 @@ public class ProductDiscountWorker extends NodeWorker<ProductDiscountType> {
     }
 
     @Override
-    public void modelToNode(ProductDiscountType model, PreparedStatement st) throws SQLException {
+    public void modelToNewNode(ProductDiscountType model, PreparedStatement st) throws SQLException {
         st.setString(1, model.getTitle());
         st.setDouble(2, model.getDiscount());
         st.setInt(3, model.getRequiredMinQuantity());
     }
 
+    @Override
+    public void modelToExisingNode(ProductDiscountType model, PreparedStatement st) throws SQLException {
+        st.setString(1, model.getTitle());
+        st.setDouble(2, model.getDiscount());
+        st.setInt(3, model.getRequiredMinQuantity());
+        st.setLong(4, model.getId());
+    }
 }

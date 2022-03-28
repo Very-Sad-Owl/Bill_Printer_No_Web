@@ -3,7 +3,7 @@ package ru.clevertec.tasks.olga.repository.impl;
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
-import ru.clevertec.tasks.olga.model.Cashier;
+import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.repository.common.DbHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;

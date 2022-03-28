@@ -2,25 +2,20 @@ package ru.clevertec.tasks.olga.controller.command.impl.action;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.controller.command.Command;
-import ru.clevertec.tasks.olga.controller.command.resource.CommandUrlPath;
 import ru.clevertec.tasks.olga.controller.util.messages_provider.MessageProvider;
-import ru.clevertec.tasks.olga.model.Cart;
-import ru.clevertec.tasks.olga.model.Cashier;
-import ru.clevertec.tasks.olga.model.Product;
-import ru.clevertec.tasks.olga.model.dto.CartParamsDTO;
-import ru.clevertec.tasks.olga.model.dto.CashierParamsDTO;
-import ru.clevertec.tasks.olga.model.dto.ProductParamsDto;
+import ru.clevertec.tasks.olga.exception.GeneralException;
+import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.entity.Cashier;
+import ru.clevertec.tasks.olga.entity.Product;
+import ru.clevertec.tasks.olga.dto.CartParamsDTO;
+import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
+import ru.clevertec.tasks.olga.dto.ProductParamsDto;
 import ru.clevertec.tasks.olga.printer.impl.PdfPrinter;
-import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
-import ru.clevertec.tasks.olga.util.argsparser.CartArgumentsSorter;
-import ru.clevertec.tasks.olga.util.argsparser.CashierArgumentsSorter;
-import ru.clevertec.tasks.olga.util.argsparser.ProductArgumentsSorter;
 import ru.clevertec.tasks.olga.util.argsparser.factory.SorterFactory;
 import ru.clevertec.tasks.olga.util.formatter.AbstractBillFormatter;
 import ru.clevertec.tasks.olga.util.formatter.PseudographicBillFormatter;
 import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,7 +73,7 @@ public class PrinterManager implements Command {
                     response.getWriter().write(JsonMapper.parseObject(cashier));
                     break;
             }
-        } catch (Exception e) {
+        } catch (GeneralException e) {
             log.error(e.getMessage());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print(msgProvider.getMessage(e.getClass().getSimpleName()));

@@ -3,6 +3,7 @@ package ru.clevertec.tasks.olga.controller.command.impl.action;
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.controller.command.Command;
 import ru.clevertec.tasks.olga.controller.util.messages_provider.MessageProvider;
+import ru.clevertec.tasks.olga.exception.GeneralException;
 import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
 import ru.clevertec.tasks.olga.util.MessageLocaleService;
@@ -26,7 +27,7 @@ public class GuidePage implements Command {
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(MessageLocaleService.getMessage("label.guide", locale) + "\n");
             response.getWriter().write("localhost:8080/Controller?command=print&table=cart&id=25&language=en");
-        } catch (Exception e) {
+        } catch (GeneralException e) {
             response.getWriter().print(msgProvider.getMessage(e.getClass().getSimpleName()));
             log.error(e.getMessage());
         } finally {

@@ -2,8 +2,7 @@ package ru.clevertec.tasks.olga.util.argsparser;
 
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
-import ru.clevertec.tasks.olga.model.dto.CartParamsDTO;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
+import ru.clevertec.tasks.olga.dto.CartParamsDTO;
 
 import java.util.*;
 
@@ -53,6 +52,7 @@ public class CartArgumentsSorter extends ArgumentsSorter<CartParamsDTO> {
 
     private boolean checkRequiredArgs(Set<String> args, String action) {
         List<String> required = formCmdRequiredArgs(action);
+        if (required.isEmpty()) return true;
         List<String> listArgs = new ArrayList<>(args);
         return listArgs.containsAll(required);
     }
@@ -67,6 +67,7 @@ public class CartArgumentsSorter extends ArgumentsSorter<CartParamsDTO> {
                 required.add(ACTION_PARAM);
                 break;
             case ACTION_PRINT:
+            case ACTION_UPDATE:
                 required.add(BILL_ID_PARAM);
                 break;
             case ACTION_LOG:

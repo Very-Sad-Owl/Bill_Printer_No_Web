@@ -1,7 +1,8 @@
 package ru.clevertec.tasks.olga.service;
 
-import ru.clevertec.tasks.olga.model.DiscountCard;
-import ru.clevertec.tasks.olga.model.ProductDiscountType;
+import ru.clevertec.tasks.olga.entity.ProductDiscountType;
+import ru.clevertec.tasks.olga.dto.ProductDiscountDTO;
 
-public interface ProductDiscountService extends CRUDService<ProductDiscountType> {
+public interface ProductDiscountService extends CRUDService<ProductDiscountType, ProductDiscountDTO> {
+    ProductDiscountType formDiscount(ProductDiscountDTO dto);
 }

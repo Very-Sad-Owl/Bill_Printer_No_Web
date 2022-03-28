@@ -1,9 +1,9 @@
 package ru.clevertec.tasks.olga.util.argsparser.factory;
 
 import lombok.Getter;
-import ru.clevertec.tasks.olga.model.dto.CartParamsDTO;
-import ru.clevertec.tasks.olga.model.dto.CashierParamsDTO;
-import ru.clevertec.tasks.olga.model.dto.ProductParamsDto;
+import ru.clevertec.tasks.olga.dto.CartParamsDTO;
+import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
+import ru.clevertec.tasks.olga.dto.ProductParamsDto;
 import ru.clevertec.tasks.olga.util.argsparser.ArgumentsSorter;
 import ru.clevertec.tasks.olga.util.argsparser.CartArgumentsSorter;
 import ru.clevertec.tasks.olga.util.argsparser.CashierArgumentsSorter;

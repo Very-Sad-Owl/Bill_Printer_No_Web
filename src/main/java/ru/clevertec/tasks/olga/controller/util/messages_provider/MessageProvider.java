@@ -27,6 +27,7 @@ public class MessageProvider {
             messages.put(ProductNotFoundException.class.getSimpleName(), rb.getString(NO_PRODUCT_MSG));
             messages.put(ReadingException.class.getSimpleName(), rb.getString(READING_EXC_MSG));
             messages.put(WritingException.class.getSimpleName(), rb.getString(WRITING_EXC_MSG));
+            messages.put(UndefinedException.class.getSimpleName(), rb.getString(UNDEFINED_EXCEPTION_MSG));
     }
 
     public String getMessage(String cause){

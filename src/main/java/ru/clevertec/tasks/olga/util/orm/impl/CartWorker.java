@@ -1,14 +1,12 @@
 package ru.clevertec.tasks.olga.util.orm.impl;
 
 import lombok.AllArgsConstructor;
-import ru.clevertec.tasks.olga.model.*;
-import ru.clevertec.tasks.olga.model.dto.CartDto;
+import ru.clevertec.tasks.olga.entity.*;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class CartWorker extends NodeWorker<Cart> {
@@ -27,10 +25,17 @@ public class CartWorker extends NodeWorker<Cart> {
     }
 
     @Override
-    public void modelToNode(Cart model, PreparedStatement st) throws SQLException {
+    public void modelToNewNode(Cart model, PreparedStatement st) throws SQLException {
         st.setLong(1, model.getDiscountCard().getId());
         st.setLong(2, model.getCashier().getId());
         st.setDouble(3, model.getPrice());
     }
 
+    @Override
+    public void modelToExisingNode(Cart model, PreparedStatement st) throws SQLException {
+        st.setLong(1, model.getDiscountCard().getId());
+        st.setLong(2, model.getCashier().getId());
+        st.setDouble(3, model.getPrice());
+        st.setLong(4, model.getId());
+    }
 }

@@ -1,6 +1,6 @@
 package ru.clevertec.tasks.olga.exception;
 
-public class CashierNotFoundException extends LocalizedException {
+public class CashierNotFoundException extends GeneralException {
     public CashierNotFoundException() {
         super();
     }

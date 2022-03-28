@@ -1,24 +1,26 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import ru.clevertec.tasks.olga.exception.CardNotFoundException;
-import ru.clevertec.tasks.olga.model.DiscountCard;
-import ru.clevertec.tasks.olga.model.ProductDiscountType;
+import ru.clevertec.tasks.olga.entity.ProductDiscountType;
+import ru.clevertec.tasks.olga.dto.ProductDiscountDTO;
 import ru.clevertec.tasks.olga.repository.ProductDiscountRepository;
-import ru.clevertec.tasks.olga.service.DiscountCardService;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 
 import java.util.List;
 import java.util.Optional;
 
 public class ProductDiscountImpl
-        extends AbstractService<ProductDiscountType, ProductDiscountRepository>
+        extends AbstractService<ProductDiscountType, ProductDiscountDTO, ProductDiscountRepository>
         implements ProductDiscountService {
 
     private static final ProductDiscountRepository discountRepo = repoFactory.getProductDiscountRepository();
 
     @Override
-    public long save(ProductDiscountType productDiscountType) {
-        return discountRepo.save(productDiscountType);
+    public ProductDiscountType save(ProductDiscountDTO dto) {
+        ProductDiscountType type = formDiscount(dto);
+        long insertedId = discountRepo.save(type);
+        type.setId(insertedId);
+        return type;
     }
 
     @Override
@@ -42,7 +44,17 @@ public class ProductDiscountImpl
     }
 
     @Override
-    public ProductDiscountType update(long id, ProductDiscountType productDiscountType) {
+    public ProductDiscountType update(ProductDiscountDTO dto) {
         return null;
+    }
+
+    @Override
+    public ProductDiscountType formDiscount(ProductDiscountDTO dto) {
+        return ProductDiscountType.builder()
+                .id(dto.id)
+                .title(dto.title)
+                .discount(dto.val)
+                .requiredMinQuantity(dto.requiredQuantity)
+                .build();
     }
 }

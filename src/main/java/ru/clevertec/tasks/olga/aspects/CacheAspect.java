@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import ru.clevertec.tasks.olga.cache.Cache;
 import ru.clevertec.tasks.olga.cache.CacheFactory;
-import ru.clevertec.tasks.olga.model.AbstractModel;
+import ru.clevertec.tasks.olga.entity.AbstractModel;
 
 @Aspect
 public class CacheAspect {

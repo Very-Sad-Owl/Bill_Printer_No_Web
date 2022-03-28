@@ -1,14 +1,11 @@
 package ru.clevertec.tasks.olga.repository.common;
 
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.exception.WritingException;
-import ru.clevertec.tasks.olga.model.AbstractModel;
+import ru.clevertec.tasks.olga.entity.AbstractModel;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.orm.WorkerFactory;
 
 import java.sql.*;
 import java.util.List;
@@ -26,9 +23,8 @@ public class DbHelper {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
             st = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            worker.modelToNode(model, st);
+            worker.modelToNewNode(model, st);
             return st.executeUpdate();
-//            return getGeneratedKey(st);
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, st);
@@ -39,7 +35,7 @@ public class DbHelper {
     public static <T extends AbstractModel> PreparedStatement save(T model, String query, NodeWorker<T> worker,
                                                                    Connection con) throws SQLException {
         PreparedStatement st = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        worker.modelToNode(model, st);
+        worker.modelToNewNode(model, st);
         st.executeUpdate();
         return st;
     }
@@ -75,7 +71,7 @@ public class DbHelper {
             throws SQLException {
         List<T> found = new ArrayListImpl<>();
         ps = con.prepareStatement(query);
-        ps.setInt(1, limit == 0 ? Types.INTEGER : limit);
+        ps.setInt(1, limit == 0 ? null : limit);
         ps.setInt(2, offset);
         rs = ps.executeQuery();
         while (rs.next()) {
@@ -139,8 +135,7 @@ public class DbHelper {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
             ps = con.prepareStatement(query);
-            worker.modelToNode(model, ps);
-            ps.setLong(4, model.getId());
+            worker.modelToExisingNode(model, ps);
             ps.executeUpdate();
         } finally {
             if (pool != null) {
@@ -154,9 +149,16 @@ public class DbHelper {
             throws SQLException {
         PreparedStatement ps;
         ps = con.prepareStatement(query);
-        worker.modelToNode(model, ps);
-        ps.setLong(4, model.getId());
+        worker.modelToExisingNode(model, ps);
         ps.executeUpdate();
+        return ps;
+    }
+
+    public static <T extends AbstractModel> PreparedStatement prepareToUpdate(T model, String query, NodeWorker<T> worker, Connection con)
+            throws SQLException {
+        PreparedStatement ps;
+        ps = con.prepareStatement(query);
+        worker.modelToExisingNode(model, ps);
         return ps;
     }
 
@@ -172,7 +174,6 @@ public class DbHelper {
             con = pool.takeConnection();
             ps = con.prepareStatement(query);
             ps.setLong(1, id);
-
             res = ps.executeUpdate();
         } finally {
             if (pool != null) {

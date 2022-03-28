@@ -1,6 +1,6 @@
 package ru.clevertec.tasks.olga.repository;
 
-import ru.clevertec.tasks.olga.model.AbstractModel;
+import ru.clevertec.tasks.olga.entity.AbstractModel;
 
 import java.util.List;
 import java.util.Optional;

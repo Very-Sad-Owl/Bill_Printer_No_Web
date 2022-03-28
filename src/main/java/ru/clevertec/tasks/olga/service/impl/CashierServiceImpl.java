@@ -1,10 +1,10 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import ru.clevertec.tasks.olga.exception.CashierNotFoundException;
-import ru.clevertec.tasks.olga.model.Cashier;
-import ru.clevertec.tasks.olga.model.dto.CashierParamsDTO;
+import ru.clevertec.tasks.olga.exception.WritingException;
+import ru.clevertec.tasks.olga.entity.Cashier;
+import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
-import ru.clevertec.tasks.olga.repository.impl.CashierRepositoryImpl;
 import ru.clevertec.tasks.olga.service.CashierService;
 import lombok.NoArgsConstructor;
 
@@ -12,13 +12,18 @@ import java.util.List;
 import java.util.Optional;
 
 @NoArgsConstructor
-public class CashierServiceImpl extends AbstractService<Cashier, CashierRepository> implements CashierService {
+public class CashierServiceImpl
+        extends AbstractService<Cashier, CashierParamsDTO, CashierRepository>
+        implements CashierService {
 
     private static final CashierRepository cashierRepository = repoFactory.getCashierRepository();
 
     @Override
-    public long save(Cashier cashier) {
-        return cashierRepository.save(cashier);
+    public Cashier save(CashierParamsDTO dto) {
+        Cashier cashier = formCashier(dto);
+        long insertedId = cashierRepository.save(cashier);
+        cashier.setId(insertedId);
+        return cashier;
     }
 
     @Override
@@ -47,13 +52,26 @@ public class CashierServiceImpl extends AbstractService<Cashier, CashierReposito
     }
 
     @Override
-    public Cashier update(long id, Cashier cashier) {
-        return null;
+    public Cashier update(CashierParamsDTO dto) {
+        Cashier original = findById(dto.id);
+        CashierParamsDTO newCashier = CashierParamsDTO.builder()
+                .id(dto.id)
+                .name(dto.name == null ? original.getName() : dto.name)
+                .surname(dto.surname == null ? original.getSurname() : dto.surname)
+                .build();
+        Cashier updated = formCashier(newCashier);
+        if (original == updated) throw new WritingException(); //TODO: nothing to update exception
+        if (cashierRepository.update(updated)){
+            return updated;
+        } else {
+            throw new CashierNotFoundException();
+        }
     }
 
     @Override
     public Cashier formCashier(CashierParamsDTO params) {
         return Cashier.builder()
+                .id(params.id)
                 .name(params.name)
                 .surname(params.surname)
                 .build();

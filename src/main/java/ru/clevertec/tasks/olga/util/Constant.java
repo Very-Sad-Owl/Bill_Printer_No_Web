@@ -26,7 +26,7 @@ public interface Constant {
     String ACTION_PARAM = "command";
     String ACTION_PRINT = "print";
     String ACTION_LOG = "log";
-    String ACTION_FIND_BY_ID = "find";
+    String ACTION_UPDATE = "update";
     String ACTION_SAVE = "save";
     String CACHE_ALG = "cache.algorithm";
     String CACHE_CAPACITY = "cache.capacity";

@@ -4,12 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.controller.command.Command;
 import ru.clevertec.tasks.olga.controller.command.resource.CommandUrlPath;
 import ru.clevertec.tasks.olga.controller.util.messages_provider.MessageProvider;
-import ru.clevertec.tasks.olga.model.Cart;
-import ru.clevertec.tasks.olga.model.Cashier;
-import ru.clevertec.tasks.olga.model.Product;
-import ru.clevertec.tasks.olga.model.dto.CartParamsDTO;
-import ru.clevertec.tasks.olga.model.dto.CashierParamsDTO;
-import ru.clevertec.tasks.olga.model.dto.ProductParamsDto;
+import ru.clevertec.tasks.olga.exception.GeneralException;
+import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.entity.Cashier;
+import ru.clevertec.tasks.olga.entity.Product;
+import ru.clevertec.tasks.olga.dto.CartParamsDTO;
+import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
+import ru.clevertec.tasks.olga.dto.ProductParamsDto;
 import ru.clevertec.tasks.olga.printer.impl.PdfPrinter;
 import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
@@ -23,12 +24,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static ru.clevertec.tasks.olga.controller.command.resource.CommandParam.*;
 import static ru.clevertec.tasks.olga.controller.command.resource.SessionAttr.LOCALE;
 
 @Slf4j
@@ -46,7 +46,7 @@ public class LogManager implements Command {
         try {
             Map<String, String[]> parameterMap = request.getParameterMap();
             switch (parameterMap.get("table")[0]){
-                case "cart":
+                case CART:
                     CartParamsDTO cartParams = sorterFactory.getCartSorter().retrieveArgs(parameterMap);
                     List<Cart> carts = cartService.getAll(cartParams.nodesPerPage, cartParams.offset);
 
@@ -54,7 +54,7 @@ public class LogManager implements Command {
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write(JsonMapper.parseObject(carts));
                     break;
-                case "product":
+                case PRODUCT:
                     ProductParamsDto productParams = sorterFactory.getProductSorter().retrieveArgs(parameterMap);
                     List<Product> products = factory.getProductService()
                             .getAll(productParams.nodesPerPage, productParams.offset);
@@ -63,7 +63,7 @@ public class LogManager implements Command {
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write(JsonMapper.parseObject(products));
                     break;
-                case "cashier":
+                case CASHIER:
                     CashierParamsDTO cashierParams = sorterFactory.getCashierSorter().retrieveArgs(parameterMap);
                     List<Cashier> cashiers = factory.getCashierService()
                             .getAll(cashierParams.nodesPerPage, cashierParams.offset);
@@ -73,19 +73,7 @@ public class LogManager implements Command {
                     response.getWriter().write(JsonMapper.parseObject(cashiers));
                     break;
             }
-//            String mapAsString = parameterMap.keySet().stream()
-//                    .map(key -> key + "=" + Arrays.asList(parameterMap.get(key)))
-//                    .collect(Collectors.joining(", ", "{", "}"));
-//            log.info(mapAsString);
-//            CartParamsDTO cartParamsDTO = CART_ARGUMENTS_SORTER.retrieveArgs(parameterMap);
-//            Cart cart = cartService.formCart(cartParamsDTO);
-////            cartService.save(cart);
-//            cartService.printBill(cart);
-//            log.info(cart.toString());
-//            response.getWriter().write(MessageLocaleService.getMessage("label.guide",
-//                    new Locale((String) request.getSession().getAttribute(LOCALE))) +
-//                    cart.toString());
-        } catch (Exception e) {
+        } catch (GeneralException e) {
             log.error(e.getMessage());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print(msgProvider.getMessage(e.getClass().getSimpleName()));

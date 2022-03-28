@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.yaml.snakeyaml.Yaml;
 import ru.clevertec.tasks.olga.cache.impl.LfuCache;
 import ru.clevertec.tasks.olga.cache.impl.LruCache;
-import ru.clevertec.tasks.olga.model.AbstractModel;
+import ru.clevertec.tasks.olga.entity.AbstractModel;
 
 import java.io.InputStream;
 import java.util.Map;

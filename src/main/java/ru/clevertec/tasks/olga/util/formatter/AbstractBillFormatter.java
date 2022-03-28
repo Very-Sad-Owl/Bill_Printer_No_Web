@@ -1,8 +1,8 @@
 package ru.clevertec.tasks.olga.util.formatter;
 
-import ru.clevertec.tasks.olga.model.Cart;
-import ru.clevertec.tasks.olga.model.Cashier;
-import ru.clevertec.tasks.olga.model.Slot;
+import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.entity.Cashier;
+import ru.clevertec.tasks.olga.entity.Slot;
 
 import java.util.List;
 

@@ -14,6 +14,7 @@ public class RepositoryFactory {
     private final CartRepository cartRepo = new CartRepositoryImpl();
     private final CashierRepository cashierRepository = new CashierRepositoryImpl();
     private final DiscountCardRepository discountCardRepository = new DiscountCardRepositoryImpl();
+    private final CardTypeRepository cardTypeRepository = new CardTypeRepositoryImpl();
     private final ProductRepository productRepository = new ProductRepositoryImpl();
     private final SlotRepository slotRepository = new SlotRepositoryImpl();
     private final ProductDiscountRepository productDiscountRepository = new ProductDiscountRepositoryImpl();

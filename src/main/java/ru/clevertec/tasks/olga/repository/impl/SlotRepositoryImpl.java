@@ -3,17 +3,13 @@ package ru.clevertec.tasks.olga.repository.impl;
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
-import ru.clevertec.tasks.olga.model.Slot;
+import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.repository.SlotRepository;
 import ru.clevertec.tasks.olga.repository.common.DbHelper;
-import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
-import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
 import ru.clevertec.tasks.olga.util.orm.WorkerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;

@@ -1,8 +1,7 @@
 package ru.clevertec.tasks.olga.util.orm.impl;
 
-import ru.clevertec.tasks.olga.model.Product;
-import ru.clevertec.tasks.olga.model.Slot;
-import ru.clevertec.tasks.olga.model.dto.SlotDto;
+import ru.clevertec.tasks.olga.entity.Product;
+import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.util.orm.NodeWorker;
 
 import java.sql.PreparedStatement;
@@ -24,9 +23,17 @@ public class SlotWorker extends NodeWorker<Slot> {
     }
 
     @Override
-    public void modelToNode(Slot model, PreparedStatement st) throws SQLException {
+    public void modelToNewNode(Slot model, PreparedStatement st) throws SQLException {
         st.setLong(1, model.getProduct().getId());
         st.setInt(2, model.getQuantity());
         st.setDouble(3, model.getTotalPrice());
+    }
+
+    @Override
+    public void modelToExisingNode(Slot model, PreparedStatement st) throws SQLException {
+        st.setLong(1, model.getProduct().getId());
+        st.setInt(2, model.getQuantity());
+        st.setDouble(3, model.getTotalPrice());
+        st.setLong(4, model.getId());
     }
 }

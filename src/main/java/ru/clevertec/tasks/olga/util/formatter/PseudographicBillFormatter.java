@@ -3,12 +3,11 @@ package ru.clevertec.tasks.olga.util.formatter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.model.Cart;
-import ru.clevertec.tasks.olga.model.Cashier;
-import ru.clevertec.tasks.olga.model.Slot;
+import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.entity.Cashier;
+import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.util.MessageLocaleService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;

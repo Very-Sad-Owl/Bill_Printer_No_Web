@@ -28,10 +28,10 @@ public interface Query {
     String INSERT_SLOT = "INSERT INTO slot(product_id, quantity, price) VALUES (?, ?, ?);";
     String GET_SLOTS = "select * from slot join product using(id) join product_discount using(id) order by slot.id limit ? offset ?;";
     String FIND_SLOT_BY_ID = "select * from slot join product using(id) join product_discount using(id) where slot.id = ?;";
-    String UPDATE_SLOT = "UPDATE slot set product_id=?, quantity=?, price=?, cart_id=? WHERE id = ?;";
+    String UPDATE_SLOT = "UPDATE slot set product_id=?, quantity=?, price=? WHERE id = ?;";
     String DELETE_SLOT = "DELETE FROM slot WHERE id = ?;";
     String SET_SLOT_CART_ID = "UPDATE slot set cart_id=? WHERE id = ?;";
-    String FIND_SLOTS_BY_CART_ID = "select * from slot join product using(id) join product_discount using(id) where cart_id = ?;";
+    String FIND_SLOTS_BY_CART_ID = "select * from slot join product on slot.product_id = product.id join product_discount on product.discount_id = product_discount.id where cart_id = ?;";
 
     //discount card
     String INSERT_DISCOUNT = "INSERT INTO card(birthday, discount_id) VALUES (?, ?);";
@@ -46,4 +46,11 @@ public interface Query {
     String FIND_PRODUCT_DISCOUNT_TYPE = "select * from product_discount where id = ?;";
     String UPDATE_PRODUCT_DISCOUNT_TYPE = "update product_discount set discount_title = ?, discount_val = ?, required_quantity = ? where id = ?;";
     String DELETE_PRODUCT_DISCOUNT_TYPE = "delete from product_discount where id = ?;";
+
+    //discount type
+    String INSERT_DISCOUNT_TYPE = "INSERT INTO general_discount(title, discount) VALUES (?, ?);";
+    String GET_DISCOUNT_TYPES = "select * from general_discount order by card.id limit ? offset ?;";
+    String FIND_DISCOUNT_TYPE = "select * from general_discount order by card.id limit ? offset ? where id = ?;";
+    String UPDATE_DISCOUNT_TYPE = "UPDATE general_discount title = ?, discount = ? WHERE id = ?;";
+    String DELETE_DISCOUNT_TYPE = "delete from general_discount WHERE id = ?;";
 }

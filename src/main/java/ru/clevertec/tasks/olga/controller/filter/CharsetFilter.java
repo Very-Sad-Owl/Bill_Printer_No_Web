@@ -1,8 +1,10 @@
 package ru.clevertec.tasks.olga.controller.filter;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import java.io.IOException;
 
+@WebFilter(urlPatterns = {"/*"})
 public class CharsetFilter implements Filter {
     private String encoding;
 
@@ -12,7 +14,6 @@ public class CharsetFilter implements Filter {
         if (encoding == null) {
             encoding = "UTF-8";
         }
-
     }
 
     @Override

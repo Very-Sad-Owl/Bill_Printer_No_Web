@@ -1,16 +1,14 @@
 package ru.clevertec.tasks.olga.util.argsparser;
 
 import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
-import ru.clevertec.tasks.olga.model.dto.AbstractDto;
-import ru.clevertec.tasks.olga.model.dto.CartParamsDTO;
+import ru.clevertec.tasks.olga.dto.AbstractDto;
 import ru.clevertec.tasks.olga.util.MessageLocaleService;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static ru.clevertec.tasks.olga.util.Constant.*;
 
-public abstract class ArgumentsSorter<T extends AbstractDto> {
+public abstract class ArgumentsSorter<T extends AbstractDto> implements Sorter {
     public abstract T retrieveArgs(Map<String, String[]> args);
 
     public void retrieveBaseArgs(Map<String, String[]> args, T dest){

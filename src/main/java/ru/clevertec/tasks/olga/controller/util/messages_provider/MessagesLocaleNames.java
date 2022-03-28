@@ -9,4 +9,5 @@ public interface MessagesLocaleNames {
     String INVALID_ARG_MSG = "error.invalid_arg";
     String NO_ARGS_MSG = "error.no_req_args";
     String NO_PRODUCT_MSG = "error.product_not_found";
+    String UNDEFINED_EXCEPTION_MSG = "error.undefined";
 }

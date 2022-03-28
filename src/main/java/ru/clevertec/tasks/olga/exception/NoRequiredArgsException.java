@@ -1,6 +1,6 @@
 package ru.clevertec.tasks.olga.exception;
 
-public class NoRequiredArgsException extends LocalizedException {
+public class NoRequiredArgsException extends GeneralException {
     public NoRequiredArgsException() {
         super();
     }
