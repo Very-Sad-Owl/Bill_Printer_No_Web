@@ -5,7 +5,6 @@ import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.exception.CartNotFoundException;
 import ru.clevertec.tasks.olga.exception.InvalidArgException;
 import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
@@ -16,8 +15,8 @@ import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
 import ru.clevertec.tasks.olga.service.ProductService;
 import lombok.NoArgsConstructor;
-import ru.clevertec.tasks.olga.util.formatter.AbstractBillFormatter;
-import ru.clevertec.tasks.olga.util.formatter.PseudographicBillFormatter;
+import ru.clevertec.tasks.olga.util.printer.template.AbstractBillFormatter;
+import ru.clevertec.tasks.olga.util.printer.template.PseudographicBillFormatter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

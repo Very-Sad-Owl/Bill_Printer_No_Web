@@ -1,13 +1,13 @@
-package ru.clevertec.tasks.olga.repository.connection.recource_provider;
+package ru.clevertec.tasks.olga.util.resourceprovider;
 
 import java.util.ResourceBundle;
-public class DBResourceManager {
-    private final static DBResourceManager instance = new DBResourceManager();
+public class DbResourceService {
+    private final static DbResourceService instance = new DbResourceService();
 
     private final ResourceBundle bundle =
             ResourceBundle.getBundle("db");
 
-    public static DBResourceManager getInstance() {
+    public static DbResourceService getInstance() {
         return instance;
     }
 

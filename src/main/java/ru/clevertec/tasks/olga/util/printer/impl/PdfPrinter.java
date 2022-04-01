@@ -21,9 +21,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import ru.clevertec.tasks.olga.exception.WritingException;
+import ru.clevertec.tasks.olga.util.resourceprovider.AppPropertiesService;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
 import com.itextpdf.layout.Document;
-import ru.clevertec.tasks.olga.util.localization.MessageLocaleService;
+import ru.clevertec.tasks.olga.util.resourceprovider.MessageLocaleService;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -31,7 +32,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import static ru.clevertec.tasks.olga.util.Constant.FILENAME_PDF_FORMAT;
 
@@ -39,33 +39,29 @@ import static ru.clevertec.tasks.olga.util.Constant.FILENAME_PDF_FORMAT;
 public class PdfPrinter extends AbstractPrinter {
 
     @Setter
-    private String printPath = ResourceBundle.getBundle("db").getString("path.default");
-    private static final String BACKGROUND_PDF = ResourceBundle.getBundle("db").getString("bill.template");
+    private static final String PRINT_PATH = AppPropertiesService.getMessage("path.default");
+    private static final String BACKGROUND_PDF = AppPropertiesService.getMessage("bill.template");
     private final char delimiter = MessageLocaleService
             .getMessage("label.pseudographics_delimiter").charAt(0);
     private final char lineDelimiter = MessageLocaleService
             .getMessage("label.pseudographics_char").charAt(0);
 
-    public PdfPrinter(String printPath) {
-        this.printPath = printPath;
-    }
-
     @Override
     public String print(List<String> content) {
         try {
             PdfFont font = PdfFontFactory.createFont(
-                    ResourceBundle.getBundle("db").getString("bill.font"),
-                    ResourceBundle.getBundle("db").getString("bill.encoding")
+                    AppPropertiesService.getMessage("bill.font"),
+                    AppPropertiesService.getMessage("bill.encoding")
             );
 
             PdfDocument backPdfDocument = new PdfDocument(new PdfReader(BACKGROUND_PDF));
 
             String fileName = String.format(FILENAME_PDF_FORMAT,
                     LocalDate.now(), System.nanoTime());
-            Path path = FileSystems.getDefault().getPath(printPath, fileName);
+            Path path = FileSystems.getDefault().getPath(PRINT_PATH, fileName);
             Files.createDirectories(path.getParent());
 
-            PdfDocument receiptPdfDocument = new PdfDocument(new PdfWriter(printPath + fileName));
+            PdfDocument receiptPdfDocument = new PdfDocument(new PdfWriter(PRINT_PATH + fileName));
             receiptPdfDocument.addNewPage();
 
             Document document = new Document(receiptPdfDocument);
@@ -93,6 +89,8 @@ public class PdfPrinter extends AbstractPrinter {
                 } else if (line.charAt(0) == lineDelimiter) {
                     c.add(new Paragraph(printMonocharLine(lineDelimiter, MAX_SYMBOLS_PER_LINE)));
                     receiptTable.addCell(c);
+                } else {
+                    c.add(new Paragraph(line));
                 }
             }
             document.add(receiptTable);

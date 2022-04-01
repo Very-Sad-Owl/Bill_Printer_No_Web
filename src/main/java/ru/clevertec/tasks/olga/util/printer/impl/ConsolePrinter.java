@@ -3,7 +3,7 @@ package ru.clevertec.tasks.olga.util.printer.impl;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
-import ru.clevertec.tasks.olga.util.localization.MessageLocaleService;
+import ru.clevertec.tasks.olga.util.resourceprovider.MessageLocaleService;
 
 import java.util.List;
 

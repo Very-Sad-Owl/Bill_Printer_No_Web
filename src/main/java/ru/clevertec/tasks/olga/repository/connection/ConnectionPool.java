@@ -2,8 +2,8 @@ package ru.clevertec.tasks.olga.repository.connection;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.repository.connection.recource_provider.DBParameter;
-import ru.clevertec.tasks.olga.repository.connection.recource_provider.DBResourceManager;
+import ru.clevertec.tasks.olga.repository.connection.resourcekeys.DBParameter;
+import ru.clevertec.tasks.olga.util.resourceprovider.DbResourceService;
 
 import java.sql.*;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class ConnectionPool {
     private int size;
 
     public ConnectionPool() throws ConnectionPoolException {
-        DBResourceManager resourceManager = DBResourceManager.getInstance();
+        DbResourceService resourceManager = DbResourceService.getInstance();
         this.driver = resourceManager.getValue(DBParameter.DB_DRIVER);
         this.url = resourceManager.getValue(DBParameter.DB_URL);
         this.user = resourceManager.getValue(DBParameter.DB_USER);

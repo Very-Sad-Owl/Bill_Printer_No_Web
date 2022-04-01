@@ -6,8 +6,8 @@ import ru.clevertec.tasks.olga.util.printer.impl.ConsolePrinter;
 import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
 import ru.clevertec.tasks.olga.util.argsparser.CartArgumentsSorter;
-import ru.clevertec.tasks.olga.util.formatter.AbstractBillFormatter;
-import ru.clevertec.tasks.olga.util.formatter.PseudographicBillFormatter;
+import ru.clevertec.tasks.olga.util.printer.template.AbstractBillFormatter;
+import ru.clevertec.tasks.olga.util.printer.template.PseudographicBillFormatter;
 
 @Slf4j
 public class App {

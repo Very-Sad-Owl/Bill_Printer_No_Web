@@ -1,4 +1,4 @@
-package ru.clevertec.tasks.olga.repository.connection.recource_provider;
+package ru.clevertec.tasks.olga.repository.connection.resourcekeys;
 
 public final class DBParameter {
 

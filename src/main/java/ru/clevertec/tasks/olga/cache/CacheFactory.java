@@ -5,6 +5,7 @@ import org.yaml.snakeyaml.Yaml;
 import ru.clevertec.tasks.olga.cache.impl.LfuCache;
 import ru.clevertec.tasks.olga.cache.impl.LruCache;
 import ru.clevertec.tasks.olga.entity.AbstractModel;
+import ru.clevertec.tasks.olga.util.resourceprovider.AppPropertiesService;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class CacheFactory {
         Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass().getClassLoader()
                 .getResourceAsStream(
-                        ResourceBundle.getBundle("db").getString("cache_data.source")
+                        AppPropertiesService.getMessage("cache_data.source")
                 );
         Map<String, Object> obj = yaml.load(inputStream);
         strategy = CacheDeletionStrategy.valueOf(obj.get(CACHE_ALG).toString());

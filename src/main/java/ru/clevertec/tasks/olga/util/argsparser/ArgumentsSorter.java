@@ -3,7 +3,7 @@ package ru.clevertec.tasks.olga.util.argsparser;
 import ru.clevertec.tasks.olga.dto.RequestParamsDto;
 import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
 import ru.clevertec.tasks.olga.dto.AbstractDto;
-import ru.clevertec.tasks.olga.util.localization.MessageLocaleService;
+import ru.clevertec.tasks.olga.util.resourceprovider.MessageLocaleService;
 
 import java.util.Map;
 

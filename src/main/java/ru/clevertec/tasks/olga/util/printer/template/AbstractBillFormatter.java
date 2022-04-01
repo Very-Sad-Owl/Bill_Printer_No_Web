@@ -1,4 +1,4 @@
-package ru.clevertec.tasks.olga.util.formatter;
+package ru.clevertec.tasks.olga.util.printer.template;
 
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Cashier;

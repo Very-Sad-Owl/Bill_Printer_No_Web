@@ -9,7 +9,7 @@ import ru.clevertec.tasks.olga.controller.util.servlethelper.ResponseUtils;
 import ru.clevertec.tasks.olga.dto.*;
 import ru.clevertec.tasks.olga.exception.GeneralException;
 import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
-import ru.clevertec.tasks.olga.util.localization.MessageLocaleService;
+import ru.clevertec.tasks.olga.util.resourceprovider.MessageLocaleService;
 import ru.clevertec.tasks.olga.util.argsparser.ArgumentsSorter;
 import ru.clevertec.tasks.olga.util.jsonmapper.GsonFactory;
 
