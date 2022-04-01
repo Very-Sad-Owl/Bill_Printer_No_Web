@@ -7,7 +7,8 @@ import lombok.Data;
 public class RequestParamsDto {
     public String category;
     public String action;
-    @SerializedName("page")
+    @SerializedName("limit")
     public int nodesPerPage = 0;
+    @SerializedName("page")
     public int offset = 0;
 }

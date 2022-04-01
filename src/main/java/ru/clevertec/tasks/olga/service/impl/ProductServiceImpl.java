@@ -67,7 +67,6 @@ public class ProductServiceImpl
                                 : params.discount_id)
                         .build();
         Product updated = formProduct(newProduct);
-        if (original == updated) throw new WritingException(); //TODO: nothing to update exception
         if (productRepository.update(updated)) {
             return original;
         } else {

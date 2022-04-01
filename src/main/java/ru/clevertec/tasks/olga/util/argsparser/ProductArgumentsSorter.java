@@ -50,16 +50,14 @@ public class ProductArgumentsSorter extends ArgumentsSorter<ProductParamsDto> {
         List<String> required = new ArrayListImpl<>();
         switch (action){
             case ACTION_PRINT:
+            case ACTION_UPDATE:
+            case ACTION_DELETE:
                 required.add(PRODUCT_ID_PARAM);
                 break;
             case ACTION_SAVE:
                 required.add(PRODUCT_TITLE_PARAM);
                 required.add(PRODUCT_PRICE_PARAM);
                 required.add(PRODUCT_DISCOUNT_PARAM);
-                break;
-            case ACTION_LOG:
-                required.add(PAGINATION_PARAM);
-                required.add(OFFSET_PARAM);
                 break;
         }
         return required;

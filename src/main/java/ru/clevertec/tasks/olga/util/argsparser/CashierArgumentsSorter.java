@@ -50,6 +50,8 @@ public class CashierArgumentsSorter extends ArgumentsSorter<CashierParamsDTO> {
         List<String> required = new ArrayListImpl<>();
         switch (action){
             case ACTION_PRINT:
+            case ACTION_UPDATE:
+            case ACTION_DELETE:
                 required.add(CASHIER_ID_PARAM);
                 break;
             case ACTION_SAVE:

@@ -54,6 +54,8 @@ public class ProductDiscountSorter extends ArgumentsSorter<ProductDiscountDTO> {
         List<String> required = new ArrayListImpl<>();
         switch (action){
             case ACTION_PRINT:
+            case ACTION_UPDATE:
+            case ACTION_DELETE:
                 required.add(PRODUCT_DISCOUNT_ID);
                 break;
             case ACTION_SAVE:

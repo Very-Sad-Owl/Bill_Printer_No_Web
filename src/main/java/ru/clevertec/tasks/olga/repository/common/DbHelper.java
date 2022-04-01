@@ -71,7 +71,11 @@ public class DbHelper {
             throws SQLException {
         List<T> found = new ArrayListImpl<>();
         ps = con.prepareStatement(query);
-        ps.setInt(1, limit == 0 ? null : limit);
+        if (limit == 0){
+            ps.setNull(1, Types.NULL);
+        } else {
+            ps.setInt(1, limit);
+        }
         ps.setInt(2, offset);
         rs = ps.executeQuery();
         while (rs.next()) {

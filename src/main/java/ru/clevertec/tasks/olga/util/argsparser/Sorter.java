@@ -8,5 +8,4 @@ import java.util.Map;
 
 public interface Sorter <T extends AbstractDto> {
     T retrieveArgsFromMap(Map<String, String[]> args, RequestParamsDto requestParams);
-//    T retrieveArgsFromCollection(Iterator<String> it);
 }

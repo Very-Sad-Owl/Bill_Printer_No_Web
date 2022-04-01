@@ -60,7 +60,6 @@ public class CashierServiceImpl
                 .surname(dto.surname == null ? original.getSurname() : dto.surname)
                 .build();
         Cashier updated = formCashier(newCashier);
-        if (original == updated) throw new WritingException(); //TODO: nothing to update exception
         if (cashierRepository.update(updated)){
             return updated;
         } else {

@@ -96,8 +96,6 @@ public class CartServiceImpl
             }
         }
         updated.calculatePrice();
-
-        if (updated == original) throw new WritingException(); //TODO: nothing to update exception
         if (cartRepository.update(updated)) {
             return updated;
         } else {

@@ -36,11 +36,6 @@ public class DiscountCardArgumentsSorter extends ArgumentsSorter<CardParamsDTO> 
         return params;
     }
 
-//    @Override
-    public CartParamsDTO retrieveArgsFromCollection(Iterator<String> it) {
-        return null;
-    }
-
     private boolean checkRequiredArgs(Set<String> args, String action) {
         List<String> required = formCmdRequiredArgs(action);
         if (required.isEmpty()) return true;
@@ -59,6 +54,7 @@ public class DiscountCardArgumentsSorter extends ArgumentsSorter<CardParamsDTO> 
                 break;
             case ACTION_PRINT:
             case ACTION_UPDATE:
+            case ACTION_DELETE:
                 required.add(CARD_ID_PARAM);
                 break;
         }

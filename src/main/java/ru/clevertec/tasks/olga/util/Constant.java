@@ -45,6 +45,8 @@ public interface Constant {
     String ACTION_LOG = "log";
     String ACTION_UPDATE = "update";
     String ACTION_SAVE = "save";
+    String ACTION_DELETE = "delete";
+
     String CACHE_ALG = "cache.algorithm";
     String CACHE_CAPACITY = "cache.capacity";
 

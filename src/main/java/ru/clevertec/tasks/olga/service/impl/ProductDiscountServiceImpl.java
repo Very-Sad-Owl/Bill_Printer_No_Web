@@ -59,7 +59,6 @@ public class ProductDiscountServiceImpl
                         : params.requiredQuantity)
                 .build();
         ProductDiscountType updated = formDiscount(newProduct);
-        if (original == updated) throw new WritingException(); //TODO: nothing to update exception
         if (discountRepo.update(updated)) {
             return updated;
         } else {

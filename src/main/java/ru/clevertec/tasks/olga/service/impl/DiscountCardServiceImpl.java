@@ -62,7 +62,6 @@ public class DiscountCardServiceImpl
                         : params.discountId)
                 .build();
         DiscountCard updated = formCard(newProduct);
-        if (original == updated) throw new WritingException(); //TODO: nothing to update exception
         if (cardRepo.update(updated)) {
             return updated;
         } else {
