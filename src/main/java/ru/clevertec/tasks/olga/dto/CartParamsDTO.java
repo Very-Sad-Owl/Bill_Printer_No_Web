@@ -1,18 +1,18 @@
 package ru.clevertec.tasks.olga.dto;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString(callSuper=true)
 public class CartParamsDTO extends AbstractDto{
-    public Map<Long, Integer> goods = new HashMap<>();
-    public long id;
-    public long cashier_id;
-    public long card_id;
+    public long cashier_uid;
+    public long card_uid;
+    public Map<Long, Integer> products = new HashMap<>();
 }

@@ -15,7 +15,8 @@ public class ServiceFactory {
     private final CashierService cashierService = new CashierServiceImpl();
     private final DiscountCardService discountCardService = new DiscountCardServiceImpl();
     private final ProductService productService = new ProductServiceImpl();
-    private final CardTypeService cardTypeService = new CardTypeImpl();
+    private final ProductDiscountService productDiscount = new ProductDiscountServiceImpl();
+    private final CardTypeService cardTypeService = new CardTypeServiceImpl();
 
     public static ServiceFactory getInstance(){
         return instance;

@@ -1,4 +1,4 @@
-package ru.clevertec.tasks.olga.printer;
+package ru.clevertec.tasks.olga.util.printer;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -15,5 +15,5 @@ public abstract class AbstractPrinter {
         }
     }
 
-    public abstract void print(List<String> content);
+    public abstract String print(List<String> content);
 }

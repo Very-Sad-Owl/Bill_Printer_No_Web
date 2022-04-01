@@ -1,6 +1,7 @@
 package ru.clevertec.tasks.olga.util.argsparser;
 
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
+import ru.clevertec.tasks.olga.dto.RequestParamsDto;
 import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
 import ru.clevertec.tasks.olga.dto.ProductParamsDto;
 
@@ -11,16 +12,12 @@ import static ru.clevertec.tasks.olga.util.Constant.*;
 public class ProductArgumentsSorter extends ArgumentsSorter<ProductParamsDto> {
 
     @Override
-    public ProductParamsDto retrieveArgs(Map<String, String[]> args){
+    public ProductParamsDto retrieveArgsFromMap(Map<String, String[]> args, RequestParamsDto requestParams){
         ProductParamsDto params = new ProductParamsDto();
-        retrieveBaseArgs(args, params);
         for (Map.Entry<String, String[]> pair : args.entrySet()){
             String key = pair.getKey();
             String[] values = pair.getValue();
             switch (key) {
-                case ACTION_PARAM:
-                    params.action = values[0];
-                    break;
                 case PRODUCT_ID_PARAM:
                     params.id = Long.parseLong(values[0]);
                     break;
@@ -35,7 +32,7 @@ public class ProductArgumentsSorter extends ArgumentsSorter<ProductParamsDto> {
                     break;
             }
         }
-        if (!checkRequiredArgs(args.keySet(), params.action)){
+        if (!checkRequiredArgs(args.keySet(), requestParams.action)){
             throw new NoRequiredArgsException();
         }
         return params;

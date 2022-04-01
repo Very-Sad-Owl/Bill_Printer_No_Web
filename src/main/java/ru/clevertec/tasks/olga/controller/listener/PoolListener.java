@@ -6,9 +6,11 @@ import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolExc
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
 @Slf4j
-public class WebListener implements ServletContextListener {
+@WebListener
+public class PoolListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {

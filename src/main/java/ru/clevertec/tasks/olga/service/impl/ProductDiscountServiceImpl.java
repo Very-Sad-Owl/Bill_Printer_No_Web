@@ -1,15 +1,18 @@
 package ru.clevertec.tasks.olga.service.impl;
 
+import com.google.common.base.Defaults;
 import ru.clevertec.tasks.olga.exception.CardNotFoundException;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.dto.ProductDiscountDTO;
+import ru.clevertec.tasks.olga.exception.ProductNotFoundException;
+import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.ProductDiscountRepository;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ProductDiscountImpl
+public class ProductDiscountServiceImpl
         extends AbstractService<ProductDiscountType, ProductDiscountDTO, ProductDiscountRepository>
         implements ProductDiscountService {
 
@@ -44,8 +47,24 @@ public class ProductDiscountImpl
     }
 
     @Override
-    public ProductDiscountType update(ProductDiscountDTO dto) {
-        return null;
+    public ProductDiscountType update(ProductDiscountDTO params) {
+        ProductDiscountType original = findById(params.id);
+        ProductDiscountDTO newProduct = ProductDiscountDTO.builder()
+                .id(params.id)
+                .title(params.title == null
+                        ? original.getTitle()
+                        : params.title)
+                .requiredQuantity(params.requiredQuantity == Defaults.defaultValue(Integer.TYPE)
+                        ? original.getRequiredMinQuantity()
+                        : params.requiredQuantity)
+                .build();
+        ProductDiscountType updated = formDiscount(newProduct);
+        if (original == updated) throw new WritingException(); //TODO: nothing to update exception
+        if (discountRepo.update(updated)) {
+            return updated;
+        } else {
+            throw new ProductNotFoundException();
+        }
     }
 
     @Override

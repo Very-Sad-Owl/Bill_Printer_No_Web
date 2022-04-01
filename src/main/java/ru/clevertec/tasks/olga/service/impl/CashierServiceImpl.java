@@ -48,7 +48,7 @@ public class CashierServiceImpl
 
     @Override
     public boolean delete(long id) {
-        return false;
+        return cashierRepository.delete(id);
     }
 
     @Override

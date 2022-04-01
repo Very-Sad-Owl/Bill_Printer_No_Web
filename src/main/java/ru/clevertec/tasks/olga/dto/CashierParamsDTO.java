@@ -1,14 +1,14 @@
 package ru.clevertec.tasks.olga.dto;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString(callSuper=true)
 public class CashierParamsDTO extends AbstractDto{
-    public long id;
     public String name;
     public String surname;
 }

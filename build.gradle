@@ -36,6 +36,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
 
     implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'org.json:json:20171018'
 
 //Aspect
     implementation group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.6'

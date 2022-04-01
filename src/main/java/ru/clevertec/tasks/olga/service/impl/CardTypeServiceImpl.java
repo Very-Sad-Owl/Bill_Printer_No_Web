@@ -10,7 +10,7 @@ import ru.clevertec.tasks.olga.service.CardTypeService;
 import java.util.List;
 import java.util.Optional;
 
-public class CardTypeImpl
+public class CardTypeServiceImpl
         extends AbstractService<CardType, CardTypeDto, CardTypeRepository>
         implements CardTypeService {
 
@@ -52,7 +52,7 @@ public class CardTypeImpl
                 .title(!dto.title.equals(Defaults.defaultValue(String.class)) ? dto.title : toUpdate.getTitle())
                 .discount(dto.discountVal != Defaults.defaultValue(Double.TYPE) ? dto.discountVal : toUpdate.getDiscount())
                 .build();
-//        discountRepo.update(toUpdate);
+        discountRepo.update(toUpdate);
         return toUpdate;
     }
 

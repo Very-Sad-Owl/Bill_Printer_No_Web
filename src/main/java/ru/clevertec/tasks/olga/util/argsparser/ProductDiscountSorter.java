@@ -1,9 +1,10 @@
 package ru.clevertec.tasks.olga.util.argsparser;
 
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
+import ru.clevertec.tasks.olga.dto.ProductDiscountDTO;
+import ru.clevertec.tasks.olga.dto.ProductParamsDto;
 import ru.clevertec.tasks.olga.dto.RequestParamsDto;
 import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
-import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,23 +13,26 @@ import java.util.Set;
 
 import static ru.clevertec.tasks.olga.util.Constant.*;
 
-public class CashierArgumentsSorter extends ArgumentsSorter<CashierParamsDTO> {
+public class ProductDiscountSorter extends ArgumentsSorter<ProductDiscountDTO> {
 
     @Override
-    public CashierParamsDTO retrieveArgsFromMap(Map<String, String[]> args, RequestParamsDto requestParams){
-        CashierParamsDTO params = new CashierParamsDTO();
+    public ProductDiscountDTO retrieveArgsFromMap(Map<String, String[]> args, RequestParamsDto requestParams){
+        ProductDiscountDTO params = new ProductDiscountDTO();
         for (Map.Entry<String, String[]> pair : args.entrySet()){
             String key = pair.getKey();
             String[] values = pair.getValue();
             switch (key) {
-                case CASHIER_ID_PARAM:
+                case PRODUCT_DISCOUNT_ID:
                     params.id = Long.parseLong(values[0]);
                     break;
-                case CASHIER_NAME_PARAM:
-                    params.name = values[0];
+                case PRODUCT_DISCOUNT_TITLE:
+                    params.title = values[0];
                     break;
-                case CASHIER_SURNAME_PARAM:
-                    params.surname = values[0];
+                case PRODUCT_DISCOUNT_VAL:
+                    params.val = Double.parseDouble(values[0]);
+                    break;
+                case PRODUCT_DISCOUNT_MIN_QUANTITY:
+                    params.requiredQuantity = Integer.parseInt(values[0]);
                     break;
             }
         }
@@ -50,11 +54,12 @@ public class CashierArgumentsSorter extends ArgumentsSorter<CashierParamsDTO> {
         List<String> required = new ArrayListImpl<>();
         switch (action){
             case ACTION_PRINT:
-                required.add(CASHIER_ID_PARAM);
+                required.add(PRODUCT_DISCOUNT_ID);
                 break;
             case ACTION_SAVE:
-                required.add(CASHIER_NAME_PARAM);
-                required.add(CASHIER_SURNAME_PARAM);
+                required.add(PRODUCT_DISCOUNT_TITLE);
+                required.add(PRODUCT_DISCOUNT_VAL);
+                required.add(PRODUCT_DISCOUNT_MIN_QUANTITY);
                 break;
         }
         return required;

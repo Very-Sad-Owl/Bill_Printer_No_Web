@@ -1,13 +1,8 @@
 package ru.clevertec.tasks.olga.util.argsparser.factory;
 
 import lombok.Getter;
-import ru.clevertec.tasks.olga.dto.CartParamsDTO;
-import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
-import ru.clevertec.tasks.olga.dto.ProductParamsDto;
-import ru.clevertec.tasks.olga.util.argsparser.ArgumentsSorter;
-import ru.clevertec.tasks.olga.util.argsparser.CartArgumentsSorter;
-import ru.clevertec.tasks.olga.util.argsparser.CashierArgumentsSorter;
-import ru.clevertec.tasks.olga.util.argsparser.ProductArgumentsSorter;
+import ru.clevertec.tasks.olga.dto.*;
+import ru.clevertec.tasks.olga.util.argsparser.*;
 
 @Getter
 public class SorterFactory {
@@ -19,6 +14,9 @@ public class SorterFactory {
     private final ArgumentsSorter<CartParamsDTO> cartSorter = new CartArgumentsSorter();
     private final ArgumentsSorter<ProductParamsDto> productSorter = new ProductArgumentsSorter();
     private final ArgumentsSorter<CashierParamsDTO> cashierSorter = new CashierArgumentsSorter();
+    private final ArgumentsSorter<CardParamsDTO> cardSorter = new DiscountCardArgumentsSorter();
+    private final ArgumentsSorter<CardTypeDto> cardTypeSorter = new CardTypeArgumentsSorter();
+    private final ArgumentsSorter<ProductDiscountDTO> productDiscountSorter = new ProductDiscountSorter();
 
     public static SorterFactory getInstance(){
         return instance;

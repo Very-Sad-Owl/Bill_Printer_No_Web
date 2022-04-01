@@ -22,8 +22,8 @@ public class CardTypeWorker extends NodeWorker<CardType> {
 
     @Override
     public void modelToNewNode(CardType model, PreparedStatement st) throws SQLException {
-        st.setString(2, model.getTitle());
-        st.setDouble(3, model.getDiscount());
+        st.setString(1, model.getTitle());
+        st.setDouble(2, model.getDiscount());
     }
 
     @Override

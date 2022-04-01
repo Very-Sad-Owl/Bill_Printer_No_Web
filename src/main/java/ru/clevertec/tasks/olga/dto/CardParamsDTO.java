@@ -1,14 +1,16 @@
 package ru.clevertec.tasks.olga.dto;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString(callSuper=true)
 public class CardParamsDTO extends AbstractDto{
-    public long id;
     public String birthday;
+    @SerializedName("discount_id")
     public long discountId;
 }

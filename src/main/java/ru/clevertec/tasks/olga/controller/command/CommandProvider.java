@@ -15,6 +15,7 @@ public class CommandProvider {
 		commands.put(CommandName.GUIDE, new GuidePage());
 		commands.put(CommandName.SAVE, new SavingManager());
 		commands.put(CommandName.UPDATE, new UpdateManager());
+		commands.put(CommandName.DELETE, new DeleteManager());
 	}
 
 	

@@ -1,8 +1,8 @@
 package ru.clevertec.tasks.olga;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.clevertec.tasks.olga.printer.AbstractPrinter;
-import ru.clevertec.tasks.olga.printer.impl.ConsolePrinter;
+import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
+import ru.clevertec.tasks.olga.util.printer.impl.ConsolePrinter;
 import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
 import ru.clevertec.tasks.olga.util.argsparser.CartArgumentsSorter;

@@ -1,8 +1,8 @@
-package ru.clevertec.tasks.olga.printer.impl;
+package ru.clevertec.tasks.olga.util.printer.impl;
 
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import ru.clevertec.tasks.olga.printer.AbstractPrinter;
+import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
 import ru.clevertec.tasks.olga.util.MessageLocaleService;
 
 import java.util.List;
@@ -15,34 +15,36 @@ public class ConsolePrinter extends AbstractPrinter {
             .getMessage("label.pseudographics_char").charAt(0);
 
     @Override
-    public void print(List<String> content) {
+    public String print(List<String> content) {
+        StringBuilder res = new StringBuilder();
         for (String line : content){
           if (line.charAt(0) == delimiter){
-              printMonocharLine(delimiter, MAX_SYMBOLS_PER_LINE);
+              res.append(printMonocharLine(delimiter, MAX_SYMBOLS_PER_LINE));
           } else if (line.contains("%s")){
               int literals = StringUtils.countMatches(line, "%s");
               char[] varargs = new char[literals];
               for (int i = 0 ; i < literals ; i++){
                   varargs[i] = delimiter;
               }
-              replaceFormatLiteral(line, varargs);
+              res.append(replaceFormatLiteral(line, varargs));
           } else if (line.charAt(0) == lineDelimiter){
-              printMonocharLine(lineDelimiter, MAX_SYMBOLS_PER_LINE);
+              res.append(printMonocharLine(lineDelimiter, MAX_SYMBOLS_PER_LINE));
           }
         }
+        return res.toString();
     }
 
-    private void printMonocharLine(char ch, int len){
-        System.out.println(StringUtils.repeat(ch, len));
+    private String printMonocharLine(char ch, int len){
+        return StringUtils.repeat(ch, len);
     }
 
-    private void replaceFormatLiteral(String line, char...replacement){
+    private String replaceFormatLiteral(String line, char...replacement){
         int literals = StringUtils.countMatches(line, "%s");
         int len = MAX_SYMBOLS_PER_LINE - line.length() - literals;
         String[] actualReplacement = new String[replacement.length];
         for (int i = 0; i < replacement.length; i++){
             actualReplacement[i] = StringUtils.repeat(replacement[i], len / replacement.length);
         }
-        System.out.println(String.format(line, actualReplacement));
+        return String.format(line, actualReplacement);
     }
 }

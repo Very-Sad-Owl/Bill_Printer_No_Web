@@ -2,10 +2,8 @@ package ru.clevertec.tasks.olga.controller.command.impl.action;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.controller.command.Command;
-import ru.clevertec.tasks.olga.controller.util.messages_provider.MessageProvider;
+import ru.clevertec.tasks.olga.controller.util.messagesprovider.MessageProvider;
 import ru.clevertec.tasks.olga.exception.GeneralException;
-import ru.clevertec.tasks.olga.service.CartService;
-import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
 import ru.clevertec.tasks.olga.util.MessageLocaleService;
 
 import javax.servlet.ServletException;

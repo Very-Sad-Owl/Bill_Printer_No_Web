@@ -1,4 +1,4 @@
-package ru.clevertec.tasks.olga.controller.util.messages_provider;
+package ru.clevertec.tasks.olga.controller.util.messagesprovider;
 
 import ru.clevertec.tasks.olga.exception.*;
 
@@ -7,7 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static ru.clevertec.tasks.olga.controller.util.messages_provider.MessagesLocaleNames.*;
+import static ru.clevertec.tasks.olga.controller.util.messagesprovider.MessagesLocaleNames.*;
 
 public class MessageProvider {
     private Map<String, String> messages = new HashMap<>();

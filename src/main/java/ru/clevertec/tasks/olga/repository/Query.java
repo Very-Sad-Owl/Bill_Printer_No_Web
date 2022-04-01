@@ -37,20 +37,20 @@ public interface Query {
     String INSERT_DISCOUNT = "INSERT INTO card(birthday, discount_id) VALUES (?, ?);";
     String GET_DISCOUNTS = "select * from card join general_discount using(id) order by card.id limit ? offset ?";
     String FIND_DISCOUNT_BY_ID = "select * from card join general_discount using(id) where card.id = ?";
-    String UPDATE_DISCOUNT = "update card set birthday = ?, discount_id = ?, where id = ?";
+    String UPDATE_DISCOUNT = "update card set birthday = ?, discount_id = ? where id = ?";
     String DELETE_DISCOUNT = "delete from card where id = ?;";
 
     //product discount type
     String INSERT_PRODUCT_DISCOUNT_TYPE = "INSERT INTO product_discount(discount_title, discount_val, required_quantity) VALUES (?, ?, ?);";
-    String GET_PRODUCT_DISCOUNT_TYPES = "select * from product_discount order by card.id limit ? offset ?";
+    String GET_PRODUCT_DISCOUNT_TYPES = "select * from product_discount order by id limit ? offset ?";
     String FIND_PRODUCT_DISCOUNT_TYPE = "select * from product_discount where id = ?;";
     String UPDATE_PRODUCT_DISCOUNT_TYPE = "update product_discount set discount_title = ?, discount_val = ?, required_quantity = ? where id = ?;";
     String DELETE_PRODUCT_DISCOUNT_TYPE = "delete from product_discount where id = ?;";
 
     //discount type
     String INSERT_DISCOUNT_TYPE = "INSERT INTO general_discount(title, discount) VALUES (?, ?);";
-    String GET_DISCOUNT_TYPES = "select * from general_discount order by card.id limit ? offset ?;";
-    String FIND_DISCOUNT_TYPE = "select * from general_discount order by card.id limit ? offset ? where id = ?;";
-    String UPDATE_DISCOUNT_TYPE = "UPDATE general_discount title = ?, discount = ? WHERE id = ?;";
+    String GET_DISCOUNT_TYPES = "select * from general_discount order by id limit ? offset ?;";
+    String FIND_DISCOUNT_TYPE = "select * from general_discount where id = ?;";
+    String UPDATE_DISCOUNT_TYPE = "UPDATE general_discount set title = ?, discount = ? WHERE id = ?;";
     String DELETE_DISCOUNT_TYPE = "delete from general_discount WHERE id = ?;";
 }

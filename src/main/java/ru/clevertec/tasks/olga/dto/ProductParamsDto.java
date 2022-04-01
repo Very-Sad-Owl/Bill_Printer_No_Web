@@ -1,14 +1,14 @@
 package ru.clevertec.tasks.olga.dto;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString(callSuper=true)
 public class ProductParamsDto extends AbstractDto{
-    public long id;
     public String title;
     public double price;
     public long discount_id;

@@ -1,6 +1,7 @@
 package ru.clevertec.tasks.olga.util.argsparser;
 
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
+import ru.clevertec.tasks.olga.dto.RequestParamsDto;
 import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
 
@@ -11,21 +12,17 @@ import static ru.clevertec.tasks.olga.util.Constant.*;
 public class CartArgumentsSorter extends ArgumentsSorter<CartParamsDTO> {
 
     @Override
-    public CartParamsDTO retrieveArgs(Map<String, String[]> args){
+    public CartParamsDTO retrieveArgsFromMap(Map<String, String[]> args, RequestParamsDto requestParams){
         CartParamsDTO params = new CartParamsDTO();
-        retrieveBaseArgs(args, params);
         for (Map.Entry<String, String[]> pair : args.entrySet()){
             String key = pair.getKey();
             String[] values = pair.getValue();
             switch (key) {
                 case BILL_CARD_ID_PARAM:
-                    params.card_id = Long.parseLong(values[0]);
+                    params.card_uid = Long.parseLong(values[0]);
                     break;
                 case BILL_CASHIER_ID_PARAM:
-                    params.cashier_id = Long.parseLong(values[0]);
-                    break;
-                case ACTION_PARAM:
-                    params.action = values[0];
+                    params.cashier_uid = Long.parseLong(values[0]);
                     break;
                 case BILL_ID_PARAM:
                     params.id = Long.parseLong(values[0]);
@@ -37,18 +34,22 @@ public class CartArgumentsSorter extends ArgumentsSorter<CartParamsDTO> {
                         for (String idQPair : idQPairVals) {
                             String[] vals = idQPair.split("-");
                             goods.put(Long.parseLong(vals[0]), Integer.parseInt(vals[1]));
-                            params.goods = goods;
+                            params.products = goods;
                         }
                     }
                     break;
             }
         }
-        if (!checkRequiredArgs(args.keySet(), params.action)){
+        if (!checkRequiredArgs(args.keySet(), requestParams.action)){
             throw new NoRequiredArgsException();
         }
         return params;
     }
 
+//    @Override
+    public CartParamsDTO retrieveArgsFromCollection(Iterator<String> it) {
+        return null;
+    }
 
     private boolean checkRequiredArgs(Set<String> args, String action) {
         List<String> required = formCmdRequiredArgs(action);
@@ -64,15 +65,10 @@ public class CartArgumentsSorter extends ArgumentsSorter<CartParamsDTO> {
             case ACTION_SAVE:
                 required.add(BILL_CARD_ID_PARAM);
                 required.add(BILL_CASHIER_ID_PARAM);
-                required.add(ACTION_PARAM);
                 break;
             case ACTION_PRINT:
             case ACTION_UPDATE:
                 required.add(BILL_ID_PARAM);
-                break;
-            case ACTION_LOG:
-                required.add(PAGINATION_PARAM);
-                required.add(OFFSET_PARAM);
                 break;
         }
         return required;

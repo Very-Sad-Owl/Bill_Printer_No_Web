@@ -21,7 +21,7 @@ public class ProductServiceImpl
         implements ProductService {
 
     private static final ProductRepository productRepository = new ProductRepositoryImpl();
-    private static final ProductDiscountService discountService = new ProductDiscountImpl();
+    private static final ProductDiscountService discountService = new ProductDiscountServiceImpl();
 
     @Override
     public Product save(ProductParamsDto dto) {
@@ -48,7 +48,7 @@ public class ProductServiceImpl
 
     @Override
     public boolean delete(long id) {
-        return false;
+        return productRepository.delete(id);
     }
 
     @Override
