@@ -5,13 +5,13 @@ import ru.clevertec.tasks.olga.entity.AbstractModel;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
 
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
 
-public class DbHelper {
+public class CRUDHelper {
 
     public static <T extends AbstractModel> long save(T model, String query, NodeWorker<T> worker)
             throws ConnectionPoolException, SQLException {

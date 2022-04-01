@@ -1,7 +1,7 @@
-package ru.clevertec.tasks.olga.util.orm;
+package ru.clevertec.tasks.olga.util.tablemapper;
 
 import ru.clevertec.tasks.olga.entity.*;
-import ru.clevertec.tasks.olga.util.orm.impl.*;
+import ru.clevertec.tasks.olga.util.tablemapper.impl.*;
 import lombok.Getter;
 
 @Getter

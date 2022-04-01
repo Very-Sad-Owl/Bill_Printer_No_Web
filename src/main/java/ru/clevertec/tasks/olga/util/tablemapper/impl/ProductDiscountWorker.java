@@ -1,8 +1,8 @@
-package ru.clevertec.tasks.olga.util.orm.impl;
+package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
 import lombok.AllArgsConstructor;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

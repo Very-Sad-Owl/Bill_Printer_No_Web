@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
 import com.itextpdf.layout.Document;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
+import ru.clevertec.tasks.olga.util.localization.MessageLocaleService;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;

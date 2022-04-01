@@ -1,4 +1,4 @@
-package ru.clevertec.tasks.olga.controller.util.messagesprovider;
+package ru.clevertec.tasks.olga.util.localization.messagesprovider;
 
 public interface MessagesLocaleNames {
     String READING_EXC_MSG = "error.reading";

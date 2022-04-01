@@ -9,12 +9,12 @@ import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.repository.CartRepository;
-import ru.clevertec.tasks.olga.repository.common.DbHelper;
+import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.orm.WorkerFactory;
+import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.WorkerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,11 +42,11 @@ public class CartRepositoryImpl implements CartRepository {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
             con.setAutoCommit(false);
-            st = DbHelper.save(cart, INSERT_CART, cartWorker, con);
-            long insertedId = DbHelper.getGeneratedKey(st);
+            st = CRUDHelper.save(cart, INSERT_CART, cartWorker, con);
+            long insertedId = CRUDHelper.getGeneratedKey(st);
             for (Slot el : cart.getPositions()){
-                slotSt = DbHelper.save(el, INSERT_SLOT, slotWorker, con);
-                long insertedSlotId = DbHelper.getGeneratedKey(slotSt);
+                slotSt = CRUDHelper.save(el, INSERT_SLOT, slotWorker, con);
+                long insertedSlotId = CRUDHelper.getGeneratedKey(slotSt);
                 setSlotCartId(insertedSlotId, insertedId, con, slotSt);
             }
             con.commit();
@@ -72,7 +72,7 @@ public class CartRepositoryImpl implements CartRepository {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
             con.setAutoCommit(false);
-            cart = DbHelper.findById(FIND_CART_BY_ID, id, cartWorker, con, ps, rs);
+            cart = CRUDHelper.findById(FIND_CART_BY_ID, id, cartWorker, con, ps, rs);
             rs = findSlotsByCartId(id, con, ps);
             List<Slot> slots = new ArrayListImpl<>();
             while (rs.next()){
@@ -103,9 +103,9 @@ public class CartRepositoryImpl implements CartRepository {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
             con.setAutoCommit(false);
-            bills = DbHelper.getAll(GET_CARTS, cartWorker, con, ps, rs, limit, offset);
+            bills = CRUDHelper.getAll(GET_CARTS, cartWorker, con, ps, rs, limit, offset);
             for (Cart cart : bills){
-                slots = DbHelper.findAllById(FIND_SLOTS_BY_CART_ID, cart.getId(), slotWorker, con, ps, rs);
+                slots = CRUDHelper.findAllById(FIND_SLOTS_BY_CART_ID, cart.getId(), slotWorker, con, ps, rs);
                 cart.setPositions(slots);
             }
         } catch (ConnectionPoolException | SQLException e) {
@@ -129,12 +129,12 @@ public class CartRepositoryImpl implements CartRepository {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
             con.setAutoCommit(false);
-            st = DbHelper.update(cart, UPDATE_CART, cartWorker, con);
+            st = CRUDHelper.update(cart, UPDATE_CART, cartWorker, con);
             for (Slot el : cart.getPositions()){
                 if (el.getId() == Defaults.defaultValue(Long.TYPE)){
-                    st = DbHelper.save(el, INSERT_SLOT, slotWorker, con);
+                    st = CRUDHelper.save(el, INSERT_SLOT, slotWorker, con);
                 } else {
-                    st = DbHelper.update(el, UPDATE_SLOT, slotWorker, con);
+                    st = CRUDHelper.update(el, UPDATE_SLOT, slotWorker, con);
                 }
             }
             con.commit();
@@ -152,7 +152,7 @@ public class CartRepositoryImpl implements CartRepository {
     @Override
     public boolean delete(long id) {
         try {
-            return DbHelper.delete(DELETE_CART, id);
+            return CRUDHelper.delete(DELETE_CART, id);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");

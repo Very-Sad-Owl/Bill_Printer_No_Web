@@ -1,4 +1,4 @@
-package ru.clevertec.tasks.olga.util.orm;
+package ru.clevertec.tasks.olga.util.tablemapper;
 
 import ru.clevertec.tasks.olga.entity.AbstractModel;
 

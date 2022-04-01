@@ -5,10 +5,10 @@ import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
-import ru.clevertec.tasks.olga.repository.common.DbHelper;
+import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.orm.WorkerFactory;
+import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.WorkerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -24,7 +24,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public long save(Product product) {
         try {
-            return DbHelper.save(product, INSERT_PRODUCT, productWorker);
+            return CRUDHelper.save(product, INSERT_PRODUCT, productWorker);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");
@@ -34,7 +34,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> findById(long id) {
         try {
-            return DbHelper.findById(FIND_PRODUCT_BY_ID, id, productWorker);
+            return CRUDHelper.findById(FIND_PRODUCT_BY_ID, id, productWorker);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new ReadingException("error.reading");
@@ -44,7 +44,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public List<Product> getAll(int limit, int offset) {
         try {
-            return DbHelper.getAll(GET_PRODUCTS, productWorker, limit, offset);
+            return CRUDHelper.getAll(GET_PRODUCTS, productWorker, limit, offset);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new ReadingException("error.connection");
@@ -54,7 +54,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public boolean update(Product product) {
         try {
-            return DbHelper.update(product, UPDATE_PRODUCT, productWorker);
+            return CRUDHelper.update(product, UPDATE_PRODUCT, productWorker);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");
@@ -64,7 +64,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public boolean delete(long id) {
         try {
-            return DbHelper.delete(DELETE_PRODUCT, id);
+            return CRUDHelper.delete(DELETE_PRODUCT, id);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");

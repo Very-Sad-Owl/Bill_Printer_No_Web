@@ -5,10 +5,10 @@ import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
 import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
-import ru.clevertec.tasks.olga.repository.common.DbHelper;
+import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.orm.WorkerFactory;
+import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.WorkerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -25,7 +25,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     @Override
     public long save(DiscountCard discountCard) {
         try {
-            return DbHelper.save(discountCard, INSERT_DISCOUNT, discountWorker);
+            return CRUDHelper.save(discountCard, INSERT_DISCOUNT, discountWorker);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");
@@ -35,7 +35,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     @Override
     public Optional<DiscountCard> findById(long id) {
         try {
-            return DbHelper.findById(FIND_DISCOUNT_BY_ID, id, discountWorker);
+            return CRUDHelper.findById(FIND_DISCOUNT_BY_ID, id, discountWorker);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
             throw new ReadingException("error.reading");
@@ -45,7 +45,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     @Override
     public List<DiscountCard> getAll(int limit, int offset) {
         try {
-            return DbHelper.getAll(GET_DISCOUNTS, discountWorker, limit, offset);
+            return CRUDHelper.getAll(GET_DISCOUNTS, discountWorker, limit, offset);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
             throw new ReadingException("error.reading");
@@ -55,7 +55,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     @Override
     public boolean update(DiscountCard discountCard) {
         try {
-            return DbHelper.update(discountCard, UPDATE_DISCOUNT, discountWorker);
+            return CRUDHelper.update(discountCard, UPDATE_DISCOUNT, discountWorker);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");
@@ -65,7 +65,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     @Override
     public boolean delete(long id) {
         try {
-            return DbHelper.delete(DELETE_DISCOUNT, id);
+            return CRUDHelper.delete(DELETE_DISCOUNT, id);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");

@@ -5,10 +5,10 @@ import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.repository.ProductDiscountRepository;
-import ru.clevertec.tasks.olga.repository.common.DbHelper;
+import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.orm.WorkerFactory;
+import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.WorkerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -26,7 +26,7 @@ public class ProductDiscountRepositoryImpl implements ProductDiscountRepository 
     @Override
     public long save(ProductDiscountType discountCard) {
         try {
-            return DbHelper.save(discountCard, INSERT_PRODUCT_DISCOUNT_TYPE, discountWorker);
+            return CRUDHelper.save(discountCard, INSERT_PRODUCT_DISCOUNT_TYPE, discountWorker);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");
@@ -36,7 +36,7 @@ public class ProductDiscountRepositoryImpl implements ProductDiscountRepository 
     @Override
     public Optional<ProductDiscountType> findById(long id) {
         try {
-            return DbHelper.findById(FIND_PRODUCT_DISCOUNT_TYPE, id, discountWorker);
+            return CRUDHelper.findById(FIND_PRODUCT_DISCOUNT_TYPE, id, discountWorker);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
             throw new ReadingException("error.reading");
@@ -46,7 +46,7 @@ public class ProductDiscountRepositoryImpl implements ProductDiscountRepository 
     @Override
     public List<ProductDiscountType> getAll(int limit, int offset) {
         try {
-            return DbHelper.getAll(GET_PRODUCT_DISCOUNT_TYPES, discountWorker, limit, offset);
+            return CRUDHelper.getAll(GET_PRODUCT_DISCOUNT_TYPES, discountWorker, limit, offset);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
             throw new ReadingException("error.reading");
@@ -56,7 +56,7 @@ public class ProductDiscountRepositoryImpl implements ProductDiscountRepository 
     @Override
     public boolean update(ProductDiscountType discountCard) {
         try {
-            return DbHelper.update(discountCard, UPDATE_PRODUCT_DISCOUNT_TYPE, discountWorker);
+            return CRUDHelper.update(discountCard, UPDATE_PRODUCT_DISCOUNT_TYPE, discountWorker);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");
@@ -66,7 +66,7 @@ public class ProductDiscountRepositoryImpl implements ProductDiscountRepository 
     @Override
     public boolean delete(long id) {
         try {
-            return DbHelper.delete(DELETE_PRODUCT_DISCOUNT_TYPE, id);
+            return CRUDHelper.delete(DELETE_PRODUCT_DISCOUNT_TYPE, id);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
             throw new WritingException("error.writing");

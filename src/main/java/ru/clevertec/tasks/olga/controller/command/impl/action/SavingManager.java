@@ -3,7 +3,7 @@ package ru.clevertec.tasks.olga.controller.command.impl.action;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.controller.command.Command;
-import ru.clevertec.tasks.olga.controller.util.messagesprovider.MessageProvider;
+import ru.clevertec.tasks.olga.util.localization.messagesprovider.MessageProvider;
 import ru.clevertec.tasks.olga.controller.util.servlethelper.RequestUtils;
 import ru.clevertec.tasks.olga.controller.util.servlethelper.ResponseUtils;
 import ru.clevertec.tasks.olga.dto.*;
@@ -14,7 +14,6 @@ import ru.clevertec.tasks.olga.util.argsparser.ArgumentsSorter;
 import ru.clevertec.tasks.olga.util.jsonmapper.GsonFactory;
 import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;

@@ -1,4 +1,4 @@
-package ru.clevertec.tasks.olga.util;
+package ru.clevertec.tasks.olga.util.localization;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
