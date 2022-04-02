@@ -41,41 +41,36 @@ public class SavingManager implements Command {
         try {
             RequestParamsDto requestParams = ArgumentsSorter.retrieveBaseArgs(parameterMap);
             String requestBody = RequestUtils.readBody(reader);
+            ResponseUtils.setJsonType(response);
             switch (requestParams.category){
                 case CART:
                     CartParamsDTO cartParams =  gson.fromJson(requestBody, CartParamsDTO.class);
                     Cart cart = factory.getCartService().save(cartParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(cart));
                     break;
                 case PRODUCT:
                     ProductParamsDto productParams = gson.fromJson(requestBody, ProductParamsDto.class);
                     Product product = factory.getProductService().save(productParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(product));
                     break;
                 case CASHIER:
                     CashierParamsDTO cashierParams = gson.fromJson(requestBody, CashierParamsDTO.class);
                     Cashier cashier = factory.getCashierService().save(cashierParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(cashier));
                     break;
                 case CARD_TYPE:
                     CardTypeDto cardTypeParams = gson.fromJson(requestBody, CardTypeDto.class);
                     CardType cardType = factory.getCardTypeService().save(cardTypeParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(cardType));
                     break;
                 case CARD:
                     CardParamsDTO cardParams = gson.fromJson(requestBody, CardParamsDTO.class);
                     DiscountCard discountCard = factory.getDiscountCardService().save(cardParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(discountCard));
                     break;
                 case PRODUCT_DISCOUNT:
                     ProductDiscountDTO discountParams = gson.fromJson(requestBody, ProductDiscountDTO.class);
                     ProductDiscountType discountType = factory.getProductDiscount().save(discountParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(discountType));
                     break;
             }

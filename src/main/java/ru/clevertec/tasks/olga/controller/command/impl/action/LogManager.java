@@ -37,40 +37,35 @@ public class LogManager implements Command {
         try {
             Map<String, String[]> parameterMap = request.getParameterMap();
             RequestParamsDto requestParams = ArgumentsSorter.retrieveBaseArgs(parameterMap);
+            ResponseUtils.setJsonType(response);
             switch (requestParams.category){
                 case CART:
                     List<Cart> carts = cartService.getAll(requestParams.nodesPerPage, requestParams.offset);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(carts));
                     break;
                 case PRODUCT:
                     List<Product> products = factory.getProductService()
                             .getAll(requestParams.nodesPerPage, requestParams.offset);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(products));
                     break;
                 case CASHIER:
                     List<Cashier> cashiers = factory.getCashierService()
                             .getAll(requestParams.nodesPerPage, requestParams.offset);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(cashiers));
                     break;
                 case CARD:
                     List<DiscountCard> discountCard = factory.getDiscountCardService()
                             .getAll(requestParams.nodesPerPage, requestParams.offset);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(discountCard));
                     break;
                 case CARD_TYPE:
                     List<CardType> cardType = factory.getCardTypeService()
                             .getAll(requestParams.nodesPerPage, requestParams.offset);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(cardType));
                     break;
                 case PRODUCT_DISCOUNT:
                     List<ProductDiscountType> discountType = factory.getProductDiscount()
                             .getAll(requestParams.nodesPerPage, requestParams.offset);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(discountType));
                     break;
             }

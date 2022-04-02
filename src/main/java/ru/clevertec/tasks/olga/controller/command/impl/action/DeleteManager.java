@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.controller.command.Command;
 import ru.clevertec.tasks.olga.exception.UndefinedException;
+import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
 import ru.clevertec.tasks.olga.util.localization.messagesprovider.MessageProvider;
 import ru.clevertec.tasks.olga.controller.util.servlethelper.RequestUtils;
 import ru.clevertec.tasks.olga.controller.util.servlethelper.ResponseUtils;
@@ -39,47 +40,47 @@ public class DeleteManager implements Command {
         try (BufferedReader reader = request.getReader()) {
             String requestBody = RequestUtils.readBody(reader);
             RequestParamsDto requestParams = ArgumentsSorter.retrieveBaseArgs(parameterMap);
-
+            boolean isDeleted = false;
             switch (requestParams.category){
                 case CART:
                     CartParamsDTO cartParams = gson.fromJson(requestBody, CartParamsDTO.class);
-                    serviceFactory.getCartService().delete(cartParams.id);
-                    ResponseUtils.setPlainTextType(response);
-                    writer.write(MessageLocaleService.getMessage("label.delete_operation_success"));
+                    isDeleted = serviceFactory.getCartService().delete(cartParams.id);
                     break;
                 case PRODUCT:
                     ProductParamsDto productParams = gson.fromJson(requestBody, ProductParamsDto.class);
-                    serviceFactory.getProductService().delete(productParams.id);
-                    ResponseUtils.setPlainTextType(response);
-                    writer.write(MessageLocaleService.getMessage("label.delete_operation_success"));
+                    isDeleted = serviceFactory.getProductService().delete(productParams.id);
                     break;
                 case CASHIER:
                     CashierParamsDTO cashierParams = gson.fromJson(requestBody, CashierParamsDTO.class);
-                    serviceFactory.getCashierService().delete(cashierParams.id);
-                    ResponseUtils.setPlainTextType(response);
-                    writer.write(MessageLocaleService.getMessage("label.delete_operation_success"));
+                    isDeleted = serviceFactory.getCashierService().delete(cashierParams.id);
                     break;
                 case CARD:
                     CardParamsDTO cardParams = gson.fromJson(requestBody, CardParamsDTO.class);
-                    serviceFactory.getDiscountCardService()
+                    isDeleted = serviceFactory.getDiscountCardService()
                             .delete(cardParams.id);
-                    ResponseUtils.setJsonType(response);
-                    writer.write(MessageLocaleService.getMessage("label.delete_operation_success"));
                     break;
                 case CARD_TYPE:
                     CardTypeDto cardTypeParams = gson.fromJson(requestBody, CardTypeDto.class);
-                    serviceFactory.getCardTypeService()
+                    isDeleted = serviceFactory.getCardTypeService()
                             .delete(cardTypeParams.id);
-                    ResponseUtils.setJsonType(response);
-                    writer.write(MessageLocaleService.getMessage("label.delete_operation_success"));
                     break;
                 case PRODUCT_DISCOUNT:
                     ProductDiscountDTO discountParams = gson.fromJson(requestBody, ProductDiscountDTO.class);
-                    serviceFactory.getProductDiscount()
+                    isDeleted = serviceFactory.getProductDiscount()
                             .delete(discountParams.id);
-                    ResponseUtils.setJsonType(response);
-                    writer.write(MessageLocaleService.getMessage("label.delete_operation_success"));
                     break;
+            }
+            ResponseUtils.setJsonType(response);
+            if (isDeleted){
+                writer.write(JsonMapper.parseObject(
+                                MessageLocaleService.getMessage("label.delete_operation_success")
+                        )
+                );
+            } else {
+                writer.write(JsonMapper.parseObject(
+                                MessageLocaleService.getMessage("label.delete_operation_fail")
+                        )
+                );
             }
         } catch (GeneralException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

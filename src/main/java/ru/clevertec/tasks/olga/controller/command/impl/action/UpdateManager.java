@@ -37,6 +37,7 @@ public class UpdateManager implements Command {
         MessageProvider msgProvider = new MessageProvider(new Locale((String) request.getSession().getAttribute(LOCALE)));
         Map<String, String[]> parameterMap = request.getParameterMap();
         PrintWriter writer = response.getWriter();
+        ResponseUtils.setJsonType(response);
         try(BufferedReader reader = request.getReader() ) {
             String requestBody = RequestUtils.readBody(reader);
             RequestParamsDto requestParams = ArgumentsSorter.retrieveBaseArgs(parameterMap);
@@ -44,37 +45,31 @@ public class UpdateManager implements Command {
                 case CART:
                     CartParamsDTO cartParams = gson.fromJson(requestBody, CartParamsDTO.class);
                     Cart updatedCart = serviceFactory.getCartService().update(cartParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(updatedCart));
                     break;
                 case PRODUCT:
                     ProductParamsDto productParams = gson.fromJson(requestBody, ProductParamsDto.class);
                     Product updatedProduct = serviceFactory.getProductService().update(productParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(updatedProduct));
                     break;
                 case CASHIER:
                     CashierParamsDTO cashierParams = gson.fromJson(requestBody, CashierParamsDTO.class);
                     Cashier updatedCashier = serviceFactory.getCashierService().update(cashierParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(updatedCashier));
                     break;
                 case CARD:
                     CardParamsDTO cardParams = gson.fromJson(requestBody, CardParamsDTO.class);
                     DiscountCard discountCard = serviceFactory.getDiscountCardService().update(cardParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(discountCard));
                     break;
                 case CARD_TYPE:
                     CardTypeDto cardTypeParams = gson.fromJson(requestBody, CardTypeDto.class);
                     CardType cardType = serviceFactory.getCardTypeService().update(cardTypeParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(cardType));
                     break;
                 case PRODUCT_DISCOUNT:
                     ProductDiscountDTO discountParams = gson.fromJson(requestBody, ProductDiscountDTO.class);
                     ProductDiscountType discountType = serviceFactory.getProductDiscount().update(discountParams);
-                    ResponseUtils.setJsonType(response);
                     writer.write(JsonMapper.parseObject(discountType));
                     break;
             }
