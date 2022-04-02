@@ -1,6 +1,6 @@
 package ru.clevertec.tasks.olga.cache;
 
-public enum CacheDeletionStrategy {
+public enum CacheStrategy {
     LRU,
     LFU,
 }

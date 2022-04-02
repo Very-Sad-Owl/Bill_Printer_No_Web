@@ -9,7 +9,6 @@ import ru.clevertec.tasks.olga.util.resourceprovider.AppPropertiesService;
 
 import java.io.InputStream;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import static ru.clevertec.tasks.olga.util.Constant.*;
 
@@ -18,7 +17,7 @@ public class CacheFactory {
     private static final CacheFactory INSTANCE = new CacheFactory();
     @Getter
     private final Cache<Long, AbstractModel> cache;
-    private final CacheDeletionStrategy strategy;
+    private final CacheStrategy strategy;
     private final int capacity;
 
     {
@@ -28,7 +27,7 @@ public class CacheFactory {
                         AppPropertiesService.getMessage("cache_data.source")
                 );
         Map<String, Object> obj = yaml.load(inputStream);
-        strategy = CacheDeletionStrategy.valueOf(obj.get(CACHE_ALG).toString());
+        strategy = CacheStrategy.valueOf(obj.get(CACHE_ALG).toString());
         capacity = Integer.parseInt(obj.get(CACHE_CAPACITY).toString());
     }
 

@@ -4,6 +4,7 @@ import com.google.common.base.Defaults;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
+import ru.clevertec.tasks.olga.annotation.UseCache;
 import ru.clevertec.tasks.olga.exception.ReadingException;
 import ru.clevertec.tasks.olga.exception.WritingException;
 import ru.clevertec.tasks.olga.entity.Cart;
@@ -32,6 +33,7 @@ public class CartRepositoryImpl implements CartRepository {
     private static final NodeWorker<Cart> cartWorker = WorkerFactory.getInstance().getCartWorker();
     private static final NodeWorker<Slot> slotWorker = WorkerFactory.getInstance().getSlotWorker();
 
+
     @Override
     public long save(Cart cart) {
         PreparedStatement st = null;
@@ -44,7 +46,7 @@ public class CartRepositoryImpl implements CartRepository {
             con.setAutoCommit(false);
             st = CRUDHelper.save(cart, INSERT_CART, cartWorker, con);
             long insertedId = CRUDHelper.getGeneratedKey(st);
-            for (Slot el : cart.getPositions()){
+            for (Slot el : cart.getPositions()) {
                 slotSt = CRUDHelper.save(el, INSERT_SLOT, slotWorker, con);
                 long insertedSlotId = CRUDHelper.getGeneratedKey(slotSt);
                 setSlotCartId(insertedSlotId, insertedId, con, slotSt);
@@ -59,8 +61,9 @@ public class CartRepositoryImpl implements CartRepository {
                 pool.closeConnection(con, st);
             }
         }
-            }
+    }
 
+    @UseCache
     @Override
     public Optional<Cart> findById(long id) {
         Optional<Cart> cart;
@@ -120,6 +123,7 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
 
+    @UseCache
     @Override
     public boolean update(Cart cart) {
         PreparedStatement st = null;
@@ -149,6 +153,7 @@ public class CartRepositoryImpl implements CartRepository {
         return true;
     }
 
+    @UseCache
     @Override
     public boolean delete(long id) {
         try {

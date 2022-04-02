@@ -3,6 +3,7 @@ package ru.clevertec.tasks.olga.controller.command.impl.action;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.controller.command.Command;
+import ru.clevertec.tasks.olga.exception.UndefinedException;
 import ru.clevertec.tasks.olga.util.localization.messagesprovider.MessageProvider;
 import ru.clevertec.tasks.olga.controller.util.servlethelper.RequestUtils;
 import ru.clevertec.tasks.olga.controller.util.servlethelper.ResponseUtils;
@@ -83,7 +84,9 @@ public class DeleteManager implements Command {
         } catch (GeneralException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             writer.print(msgProvider.getMessage(e.getClass().getSimpleName()));
-            log.error(e.getMessage());
+            log.error(e.getClass().getSimpleName());
+        } catch (Exception e){
+            log.error(UndefinedException.class.getSimpleName());
         } finally {
             writer.flush();
             writer.close();
