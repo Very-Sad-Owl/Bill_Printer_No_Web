@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CommandProvider {
-	private Map<CommandName, Command> commands = new HashMap<>();
+	private final Map<CommandName, Command> commands = new HashMap<>();
 	
 	public CommandProvider() {
 		commands.put(CommandName.SWITCHLANGUAGE, new LanguageSwitcher());
