@@ -3,7 +3,7 @@ package ru.clevertec.tasks.olga.util.jsonmapper.impl;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.custom_collection.my_list.LinkedListImpl;
-import ru.clevertec.tasks.olga.model.Product;
+import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

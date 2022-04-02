@@ -1,63 +1,73 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import by.epam.training.jwd.task03.entity.Node;
-import by.epam.training.jwd.task03.service.exception.ServiceException;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.ProductNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.model.Product;
+import ru.clevertec.tasks.olga.exception.WritingException;
+import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
+import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
+import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
+import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.WorkerFactory;
 
+import java.sql.SQLException;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Optional;
 
-public class ProductRepositoryImpl extends AbstractRepository implements ProductRepository {
+import static ru.clevertec.tasks.olga.repository.Query.*;
 
-    @UseCache
-    @Override
-    public void save(Product product, String fileName) {
-        
-    }
+@Slf4j
+public class ProductRepositoryImpl implements ProductRepository {
 
-    @UseCache
-    @Override
-    public Product findById(long id, String filePath) {
-        List<Product> nodes = getAll(filePath);
-        for (Product product : nodes){
-            if (product.getId() == id){
-                return product;
-            }
-        }
-        throw new ProductNotFoundException("error.product_not_found");
-    }
+    private static final NodeWorker<Product> productWorker = WorkerFactory.getInstance().getProductWorker();
 
     @Override
-    public List<Product> getAll(String path) {
-        Node node;
-        NodeWorker<Product> worker = workerFactory.getProductWorker();
-        List<Product> products = new ArrayListImpl<>();
-        String fileName = path + ResourceBundle.getBundle("db").getString("path.product");
+    public long save(Product product) {
         try {
-            node = nodeTreeBuilder.parseXML(fileName);
-            worker.nodeToList(node, products);
-        } catch (ServiceException e) {
+            return CRUDHelper.save(product, INSERT_PRODUCT, productWorker);
+        } catch (SQLException | ConnectionPoolException e) {
+            log.error(e.getMessage());
+            throw new WritingException("error.writing");
+        }
+    }
+
+    @Override
+    public Optional<Product> findById(long id) {
+        try {
+            return CRUDHelper.findById(FIND_PRODUCT_BY_ID, id, productWorker);
+        } catch (SQLException | ConnectionPoolException e) {
+            log.error(e.getMessage());
             throw new ReadingException("error.reading");
         }
-        return products;
     }
 
-    @UseCache
     @Override
-    public boolean delete(Product product, String filePath) {
-        return false;
+    public List<Product> getAll(int limit, int offset) {
+        try {
+            return CRUDHelper.getAll(GET_PRODUCTS, productWorker, limit, offset);
+        } catch (SQLException | ConnectionPoolException e) {
+            log.error(e.getMessage());
+            throw new ReadingException("error.connection");
+        }
     }
 
-    @UseCache
     @Override
-    public Product update(Product product, String filePath) {
-        return null;
+    public boolean update(Product product) {
+        try {
+            return CRUDHelper.update(product, UPDATE_PRODUCT, productWorker);
+        } catch (SQLException | ConnectionPoolException e) {
+            log.error(e.getMessage());
+            throw new WritingException("error.writing");
+        }
+    }
+
+    @Override
+    public boolean delete(long id) {
+        try {
+            return CRUDHelper.delete(DELETE_PRODUCT, id);
+        } catch (SQLException | ConnectionPoolException e) {
+            log.error(e.getMessage());
+            throw new WritingException("error.writing");
+        }
     }
 }
