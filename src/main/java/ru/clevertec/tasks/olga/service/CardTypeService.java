@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.service;
 
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.CardType;
 import ru.clevertec.tasks.olga.dto.CardTypeDto;
 

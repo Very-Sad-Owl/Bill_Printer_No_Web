@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@NoArgsConstructor
+@Component
 public class CashierWorker extends NodeWorker<Cashier> {
 
     @Override

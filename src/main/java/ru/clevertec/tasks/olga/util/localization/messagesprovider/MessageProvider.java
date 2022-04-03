@@ -17,15 +17,15 @@ public class MessageProvider {
             }
             ResourceBundle.clearCache();
             ResourceBundle rb = ResourceBundle.getBundle(BUNDLE_BASE_TITLE, locale);
-            messages.put(CardNotFoundException.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_CARD_MSG));
-            messages.put(CartNotFoundException.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_CART_MSG));
-            messages.put(CashierNotFoundException.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_CASHIER_MSG));
-            messages.put(InvalidArgException.class.getSimpleName(), rb.getString(MessagesLocaleNames.INVALID_ARG_MSG));
-            messages.put(NoRequiredArgsException.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_ARGS_MSG));
-            messages.put(ProductNotFoundException.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_PRODUCT_MSG));
-            messages.put(ReadingException.class.getSimpleName(), rb.getString(MessagesLocaleNames.READING_EXC_MSG));
-            messages.put(WritingException.class.getSimpleName(), rb.getString(MessagesLocaleNames.WRITING_EXC_MSG));
-            messages.put(UndefinedException.class.getSimpleName(), rb.getString(MessagesLocaleNames.UNDEFINED_EXCEPTION_MSG));
+            messages.put(CardNotFoundExceptionCustom.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_CARD_MSG));
+            messages.put(CartNotFoundExceptionCustom.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_CART_MSG));
+            messages.put(CashierNotFoundExceptionCustom.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_CASHIER_MSG));
+            messages.put(InvalidArgExceptionCustom.class.getSimpleName(), rb.getString(MessagesLocaleNames.INVALID_ARG_MSG));
+            messages.put(NoRequiredArgsExceptionCustom.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_ARGS_MSG));
+            messages.put(ProductNotFoundExceptionCustom.class.getSimpleName(), rb.getString(MessagesLocaleNames.NO_PRODUCT_MSG));
+            messages.put(ReadingExceptionCustom.class.getSimpleName(), rb.getString(MessagesLocaleNames.READING_EXC_MSG));
+            messages.put(WritingExceptionCustom.class.getSimpleName(), rb.getString(MessagesLocaleNames.WRITING_EXC_MSG));
+            messages.put(UndefinedExceptionCustom.class.getSimpleName(), rb.getString(MessagesLocaleNames.UNDEFINED_EXCEPTION_MSG));
     }
 
     public String getMessage(String cause){

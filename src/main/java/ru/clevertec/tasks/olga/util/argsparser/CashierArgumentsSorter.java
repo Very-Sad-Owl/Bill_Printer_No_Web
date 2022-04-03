@@ -1,8 +1,9 @@
 package ru.clevertec.tasks.olga.util.argsparser;
 
+import org.springframework.stereotype.Component;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.dto.RequestParamsDto;
-import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
+import ru.clevertec.tasks.olga.exception.NoRequiredArgsExceptionCustom;
 import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import static ru.clevertec.tasks.olga.util.Constant.*;
 
+@Component
 public class CashierArgumentsSorter extends ArgumentsSorter<CashierParamsDTO> {
 
     @Override
@@ -33,7 +35,7 @@ public class CashierArgumentsSorter extends ArgumentsSorter<CashierParamsDTO> {
             }
         }
         if (!checkRequiredArgs(args.keySet(), requestParams.action)){
-            throw new NoRequiredArgsException();
+            throw new NoRequiredArgsExceptionCustom();
         }
         return params;
     }

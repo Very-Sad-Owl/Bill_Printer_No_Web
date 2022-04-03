@@ -1,12 +1,13 @@
 //package ru.clevertec.tasks.olga.service.impl;
 //
 //import org.junit.jupiter.api.Test;
+//import ru.clevertec.tasks.olga.entity.DiscountCard;
+//import ru.clevertec.tasks.olga.entity.Product;
+//import ru.clevertec.tasks.olga.entity.ProductDiscountType;
+//import ru.clevertec.tasks.olga.entity.Slot;
 //import ru.clevertec.tasks.olga.exception.CartNotFoundException;
-//import ru.clevertec.tasks.olga.model.*;
-//import ru.clevertec.tasks.olga.model.dto.CartDto;
 //import ru.clevertec.tasks.olga.service.CartService;
 //import java.text.ParseException;
-//import java.text.SimpleDateFormat;
 //import java.time.LocalDate;
 //import java.util.ArrayList;
 //import java.util.HashMap;

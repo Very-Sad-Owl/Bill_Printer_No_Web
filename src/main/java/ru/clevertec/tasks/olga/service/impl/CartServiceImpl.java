@@ -1,10 +1,12 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import com.google.common.base.Defaults;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.exception.CartNotFoundException;
-import ru.clevertec.tasks.olga.exception.InvalidArgException;
-import ru.clevertec.tasks.olga.exception.ReadingException;
+import ru.clevertec.tasks.olga.exception.CartNotFoundExceptionCustom;
+import ru.clevertec.tasks.olga.exception.InvalidArgExceptionCustom;
+import ru.clevertec.tasks.olga.exception.ReadingExceptionCustom;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
@@ -14,7 +16,6 @@ import ru.clevertec.tasks.olga.service.CartService;
 import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
 import ru.clevertec.tasks.olga.service.ProductService;
-import lombok.NoArgsConstructor;
 import ru.clevertec.tasks.olga.util.printer.template.AbstractBillFormatter;
 import ru.clevertec.tasks.olga.util.printer.template.PseudographicBillFormatter;
 
@@ -22,16 +23,37 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-@NoArgsConstructor
+@Service
 public class CartServiceImpl
-        extends AbstractService<Cart, CartParamsDTO, CartRepository>
+        extends AbstractService
         implements CartService {
 
-    private static final CartRepository cartRepository = repoFactory.getCartRepo();
-    private static final ProductService productService = new ProductServiceImpl();
-    private static final CashierService cashierService = new CashierServiceImpl();
-    private static final DiscountCardService cardService = new DiscountCardServiceImpl();
-    private static final PdfPrinter pdfPrinter = new PdfPrinter();
+    private final CartRepository cartRepository;
+    private final ProductService productService;
+    private final CashierService cashierService;
+    private final DiscountCardService cardService;
+    private final PdfPrinter pdfPrinter;
+    private AbstractBillFormatter formatter;
+
+    public CartServiceImpl(CartRepository cartRepository, ProductService productService, CashierService cashierService,
+                           DiscountCardService cardService, PdfPrinter pdfPrinter, AbstractBillFormatter formatter) {
+        this.cartRepository = cartRepository;
+        this.productService = productService;
+        this.cashierService = cashierService;
+        this.cardService = cardService;
+        this.pdfPrinter = pdfPrinter;
+        this.formatter = formatter;
+    }
+
+    @Autowired
+    public CartServiceImpl(CartRepository cartRepository, ProductService productService, CashierService cashierService,
+                           DiscountCardService cardService, PdfPrinter pdfPrinter) {
+        this.cartRepository = cartRepository;
+        this.productService = productService;
+        this.cashierService = cashierService;
+        this.cardService = cardService;
+        this.pdfPrinter = pdfPrinter;
+    }
 
     @Override
     public Cart save(CartParamsDTO dto) {
@@ -44,13 +66,13 @@ public class CartServiceImpl
     @Override
     public Cart findById(long id) {
         if (id < 0){
-            throw new InvalidArgException("error.invalid_arg");
+            throw new InvalidArgExceptionCustom("error.invalid_arg");
         }
         Optional<Cart> cart = cartRepository.findById(id);
         if (cart.isPresent()){
             return cart.get();
         } else {
-            throw new CartNotFoundException("error.cart_not_found");
+            throw new CartNotFoundExceptionCustom("error.cart_not_found");
         }
     }
 
@@ -58,7 +80,7 @@ public class CartServiceImpl
     public List<Cart> getAll(int limit, int offset) {
         List<Cart> bills = cartRepository.getAll(limit, offset);
         if (bills.isEmpty()){
-            throw new CartNotFoundException("error.cart_not_found");
+            throw new CartNotFoundExceptionCustom("error.cart_not_found");
         }
         return bills;
     }
@@ -98,7 +120,7 @@ public class CartServiceImpl
         if (cartRepository.update(updated)) {
             return updated;
         } else {
-            throw new ReadingException();
+            throw new ReadingExceptionCustom();
         }
     }
 
@@ -135,8 +157,7 @@ public class CartServiceImpl
 
     @Override
     public Path printBill(Cart cart, Locale locale) {
-        AbstractBillFormatter formatter = new PseudographicBillFormatter(locale);
         String absoluteWebPath = System.getProperty("catalina.home") + "/bin/";
-        return Paths.get(absoluteWebPath + pdfPrinter.print(formatter.format(cart)));
+        return Paths.get(absoluteWebPath + pdfPrinter.print(formatter.format(cart, locale)));
     }
 }

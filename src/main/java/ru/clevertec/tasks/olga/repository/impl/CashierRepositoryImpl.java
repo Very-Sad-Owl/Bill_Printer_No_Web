@@ -1,14 +1,15 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.exception.WritingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import ru.clevertec.tasks.olga.exception.ReadingExceptionCustom;
+import ru.clevertec.tasks.olga.exception.WritingExceptionCustom;
 import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
 import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
-import ru.clevertec.tasks.olga.util.tablemapper.WorkerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -17,9 +18,15 @@ import java.util.Optional;
 import static ru.clevertec.tasks.olga.repository.Query.*;
 
 @Slf4j
+@Repository
 public class CashierRepositoryImpl implements CashierRepository {
 
-    private static final NodeWorker<Cashier> cashierWorker = WorkerFactory.getInstance().getCashierWorker();
+    private final NodeWorker<Cashier> cashierWorker;
+
+    @Autowired
+    public CashierRepositoryImpl(NodeWorker<Cashier> cashierWorker) {
+        this.cashierWorker = cashierWorker;
+    }
 
     @Override
     public long save(Cashier cashier) {
@@ -27,7 +34,7 @@ public class CashierRepositoryImpl implements CashierRepository {
             return CRUDHelper.save(cashier, INSERT_CASHIER, cashierWorker);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         }
     }
 
@@ -37,7 +44,7 @@ public class CashierRepositoryImpl implements CashierRepository {
             return CRUDHelper.findById(FIND_CASHIER_BY_ID, id, cashierWorker);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
-            throw new ReadingException("error.reading");
+            throw new ReadingExceptionCustom("error.reading");
         }
     }
 
@@ -47,7 +54,7 @@ public class CashierRepositoryImpl implements CashierRepository {
             return CRUDHelper.getAll(GET_CASHIERS, cashierWorker, limit, offset);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         }
     }
 
@@ -57,7 +64,7 @@ public class CashierRepositoryImpl implements CashierRepository {
             return CRUDHelper.update(cashier, UPDATE_CASHIER, cashierWorker);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         }
     }
 
@@ -67,7 +74,7 @@ public class CashierRepositoryImpl implements CashierRepository {
             return CRUDHelper.delete(DELETE_CASHIER, id);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
-            throw new WritingException("");
+            throw new WritingExceptionCustom("");
         }
     }
 }

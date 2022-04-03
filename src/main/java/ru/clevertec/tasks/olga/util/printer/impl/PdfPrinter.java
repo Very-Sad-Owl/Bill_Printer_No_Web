@@ -17,10 +17,9 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.layout.renderer.IRenderer;
 import com.itextpdf.layout.renderer.TextRenderer;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import ru.clevertec.tasks.olga.exception.WritingException;
+import org.springframework.stereotype.Component;
+import ru.clevertec.tasks.olga.exception.WritingExceptionCustom;
 import ru.clevertec.tasks.olga.util.resourceprovider.AppPropertiesService;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
 import com.itextpdf.layout.Document;
@@ -35,10 +34,9 @@ import java.util.List;
 
 import static ru.clevertec.tasks.olga.util.Constant.FILENAME_PDF_FORMAT;
 
-@NoArgsConstructor
+@Component
 public class PdfPrinter extends AbstractPrinter {
 
-    @Setter
     private static final String PRINT_PATH = AppPropertiesService.getMessage("path.default");
     private static final String BACKGROUND_PDF = AppPropertiesService.getMessage("bill.template");
     private final char delimiter = MessageLocaleService
@@ -105,7 +103,7 @@ public class PdfPrinter extends AbstractPrinter {
             document.close();
             return path.toString();
         } catch (IOException e) {
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         }
     }
 

@@ -2,12 +2,13 @@ package ru.clevertec.tasks.olga.util.printer.impl;
 
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
 import ru.clevertec.tasks.olga.util.resourceprovider.MessageLocaleService;
 
 import java.util.List;
 
-@NoArgsConstructor
+@Component
 public class ConsolePrinter extends AbstractPrinter {
     private final char delimiter = MessageLocaleService
             .getMessage("label.pseudographics_delimiter").charAt(0);

@@ -1,6 +1,8 @@
 package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.*;
 import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
 
@@ -8,11 +10,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@AllArgsConstructor
+@Component
 public class CartWorker extends NodeWorker<Cart> {
 
-    private static final NodeWorker<Cashier> cashierWorker = new CashierWorker();
-    private static final NodeWorker<DiscountCard> discountWorker = new DiscountCardWorker();
+    private final NodeWorker<Cashier> cashierWorker;
+    private final NodeWorker<DiscountCard> discountWorker;
+
+    @Autowired
+    public CartWorker(NodeWorker<Cashier> cashierWorker, NodeWorker<DiscountCard> discountWorker) {
+        this.cashierWorker = cashierWorker;
+        this.discountWorker = discountWorker;
+    }
 
     @Override
     public Cart nodeToModel(ResultSet rs, boolean isJoinQuery) throws SQLException {

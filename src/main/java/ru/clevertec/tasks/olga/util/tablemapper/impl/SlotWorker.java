@@ -1,5 +1,7 @@
 package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
@@ -8,9 +10,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Component
 public class SlotWorker extends NodeWorker<Slot> {
 
-    private static final NodeWorker<Product> productWorker = new ProductWorker();
+    private final NodeWorker<Product> productWorker;
+
+    @Autowired
+    public SlotWorker(NodeWorker<Product> productWorker) {
+        this.productWorker = productWorker;
+    }
 
     @Override
     public Slot nodeToModel(ResultSet rs, boolean isJoin) throws SQLException {

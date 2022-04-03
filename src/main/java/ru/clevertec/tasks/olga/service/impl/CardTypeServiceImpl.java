@@ -1,7 +1,9 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import com.google.common.base.Defaults;
-import ru.clevertec.tasks.olga.exception.CardNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.clevertec.tasks.olga.exception.CardNotFoundExceptionCustom;
 import ru.clevertec.tasks.olga.entity.CardType;
 import ru.clevertec.tasks.olga.dto.CardTypeDto;
 import ru.clevertec.tasks.olga.repository.CardTypeRepository;
@@ -10,11 +12,17 @@ import ru.clevertec.tasks.olga.service.CardTypeService;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class CardTypeServiceImpl
-        extends AbstractService<CardType, CardTypeDto, CardTypeRepository>
+        extends AbstractService
         implements CardTypeService {
 
-    private static final CardTypeRepository discountRepo = repoFactory.getCardTypeRepository();
+    private final CardTypeRepository discountRepo;
+
+    @Autowired
+    public CardTypeServiceImpl(CardTypeRepository discountRepo) {
+        this.discountRepo = discountRepo;
+    }
 
     @Override
     public CardType save(CardTypeDto dto) {
@@ -30,7 +38,7 @@ public class CardTypeServiceImpl
         if (discount.isPresent()){
             return discount.get();
         } else {
-            throw new CardNotFoundException("error.card_not_found");
+            throw new CardNotFoundExceptionCustom("error.card_not_found");
         }
     }
 

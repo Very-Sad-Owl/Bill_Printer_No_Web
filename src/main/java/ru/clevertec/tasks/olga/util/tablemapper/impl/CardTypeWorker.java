@@ -1,6 +1,7 @@
 package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.CardType;
 import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
 
@@ -8,7 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@AllArgsConstructor
+@Component
 public class CardTypeWorker extends NodeWorker<CardType> {
 
     @Override

@@ -1,11 +1,12 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import com.google.common.base.Defaults;
-import ru.clevertec.tasks.olga.exception.CardNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.clevertec.tasks.olga.exception.CardNotFoundExceptionCustom;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
 import ru.clevertec.tasks.olga.dto.CardParamsDTO;
-import ru.clevertec.tasks.olga.exception.ProductNotFoundException;
-import ru.clevertec.tasks.olga.exception.WritingException;
+import ru.clevertec.tasks.olga.exception.ProductNotFoundExceptionCustom;
 import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
 import ru.clevertec.tasks.olga.service.CardTypeService;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
@@ -14,12 +15,19 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class DiscountCardServiceImpl
-        extends AbstractService<DiscountCard, CardParamsDTO, DiscountCardRepository>
+        extends AbstractService
         implements DiscountCardService {
 
-    private static final DiscountCardRepository cardRepo = repoFactory.getDiscountCardRepository();
-    private static final CardTypeService discountService = new CardTypeServiceImpl();
+    private final DiscountCardRepository cardRepo;
+    private final CardTypeService discountService;
+
+    @Autowired
+    public DiscountCardServiceImpl(DiscountCardRepository cardRepo, CardTypeService discountService) {
+       this.cardRepo = cardRepo;
+       this.discountService = discountService;
+    }
 
     @Override
     public DiscountCard save(CardParamsDTO dto) {
@@ -35,7 +43,7 @@ public class DiscountCardServiceImpl
         if (card.isPresent()){
             return card.get();
         } else {
-            throw new CardNotFoundException("error.card_not_found");
+            throw new CardNotFoundExceptionCustom("error.card_not_found");
         }
     }
 
@@ -65,7 +73,7 @@ public class DiscountCardServiceImpl
         if (cardRepo.update(updated)) {
             return updated;
         } else {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundExceptionCustom();
         }
     }
 

@@ -2,16 +2,17 @@ package ru.clevertec.tasks.olga.controller.command.impl.action;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.controller.command.Command;
-import ru.clevertec.tasks.olga.exception.UndefinedException;
+import ru.clevertec.tasks.olga.exception.UndefinedExceptionCustom;
+import ru.clevertec.tasks.olga.service.*;
 import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
-import ru.clevertec.tasks.olga.util.localization.messagesprovider.MessageProvider;
 import ru.clevertec.tasks.olga.controller.util.servlethelper.RequestUtils;
 import ru.clevertec.tasks.olga.controller.util.servlethelper.ResponseUtils;
 import ru.clevertec.tasks.olga.dto.*;
-import ru.clevertec.tasks.olga.exception.GeneralException;
-import ru.clevertec.tasks.olga.service.factory.ServiceFactory;
-import ru.clevertec.tasks.olga.util.resourceprovider.MessageLocaleService;
+import ru.clevertec.tasks.olga.exception.CustomGeneralException;
 import ru.clevertec.tasks.olga.util.argsparser.ArgumentsSorter;
 import ru.clevertec.tasks.olga.util.jsonmapper.GsonFactory;
 
@@ -27,67 +28,79 @@ import static ru.clevertec.tasks.olga.controller.command.resource.CommandParam.*
 import static ru.clevertec.tasks.olga.controller.command.resource.SessionAttr.LOCALE;
 
 @Slf4j
+@Component
 public class DeleteManager implements Command {
 
-    public static final ServiceFactory serviceFactory = ServiceFactory.getInstance();
     private final Gson gson = GsonFactory.getInstance().getGson();
+    private CartService cartService;
+    private DiscountCardService cardService;
+    private CashierService cashierService;
+    private ProductService productService;
+    private ProductDiscountService productDiscountService;
+    private CardTypeService cardTypeService;
+    private MessageSource messageSource;
+
+    @Autowired
+    public DeleteManager(CartService cartService, DiscountCardService cardService, CashierService cashierService,
+                         ProductService productService, ProductDiscountService productDiscountService,
+                         CardTypeService cardTypeService, MessageSource messageSource) {
+        this.cartService = cartService;
+        this.cardService = cardService;
+        this.cashierService = cashierService;
+        this.productService = productService;
+        this.productDiscountService = productDiscountService;
+        this.cardTypeService = cardTypeService;
+        this.messageSource = messageSource;
+    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        MessageProvider msgProvider = new MessageProvider(new Locale((String) request.getSession().getAttribute(LOCALE)));
         Map<String, String[]> parameterMap = request.getParameterMap();
         PrintWriter writer = response.getWriter();
-        try (BufferedReader reader = request.getReader()) {
+        BufferedReader reader = request.getReader();
+        Locale locale = new Locale((String) request.getSession().getAttribute(LOCALE));
+        try {
             String requestBody = RequestUtils.readBody(reader);
             RequestParamsDto requestParams = ArgumentsSorter.retrieveBaseArgs(parameterMap);
             boolean isDeleted = false;
-            switch (requestParams.category){
+            switch (requestParams.category) {
                 case CART:
                     CartParamsDTO cartParams = gson.fromJson(requestBody, CartParamsDTO.class);
-                    isDeleted = serviceFactory.getCartService().delete(cartParams.id);
+                    isDeleted = cartService.delete(cartParams.id);
                     break;
                 case PRODUCT:
                     ProductParamsDto productParams = gson.fromJson(requestBody, ProductParamsDto.class);
-                    isDeleted = serviceFactory.getProductService().delete(productParams.id);
+                    isDeleted = productService.delete(productParams.id);
                     break;
                 case CASHIER:
                     CashierParamsDTO cashierParams = gson.fromJson(requestBody, CashierParamsDTO.class);
-                    isDeleted = serviceFactory.getCashierService().delete(cashierParams.id);
+                    isDeleted = cashierService.delete(cashierParams.id);
                     break;
                 case CARD:
                     CardParamsDTO cardParams = gson.fromJson(requestBody, CardParamsDTO.class);
-                    isDeleted = serviceFactory.getDiscountCardService()
-                            .delete(cardParams.id);
+                    isDeleted = cardService.delete(cardParams.id);
                     break;
                 case CARD_TYPE:
                     CardTypeDto cardTypeParams = gson.fromJson(requestBody, CardTypeDto.class);
-                    isDeleted = serviceFactory.getCardTypeService()
-                            .delete(cardTypeParams.id);
+                    isDeleted = cardTypeService.delete(cardTypeParams.id);
                     break;
                 case PRODUCT_DISCOUNT:
                     ProductDiscountDTO discountParams = gson.fromJson(requestBody, ProductDiscountDTO.class);
-                    isDeleted = serviceFactory.getProductDiscount()
-                            .delete(discountParams.id);
+                    isDeleted = productDiscountService.delete(discountParams.id);
                     break;
             }
             ResponseUtils.setJsonType(response);
-            if (isDeleted){
+            if (isDeleted) {
                 writer.write(JsonMapper.parseObject(
-                                MessageLocaleService.getMessage("label.delete_operation_success")
+                                messageSource.getMessage("label.delete_operation_success", null, locale)
                         )
                 );
             } else {
                 writer.write(JsonMapper.parseObject(
-                                MessageLocaleService.getMessage("label.delete_operation_fail")
+                                messageSource.getMessage("label.delete_operation_fail", null, locale)
                         )
                 );
             }
-        } catch (GeneralException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            writer.print(msgProvider.getMessage(e.getClass().getSimpleName()));
-            log.error(e.getClass().getSimpleName());
-        } catch (Exception e){
-            log.error(UndefinedException.class.getSimpleName());
         } finally {
             writer.flush();
             writer.close();

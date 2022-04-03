@@ -1,6 +1,7 @@
 package ru.clevertec.tasks.olga.controller.command.impl.action;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.controller.command.Command;
 
 import javax.servlet.ServletException;
@@ -13,6 +14,7 @@ import static ru.clevertec.tasks.olga.controller.command.resource.RequestParam.*
 import static ru.clevertec.tasks.olga.controller.command.resource.SessionAttr.LOCALE;
 
 @Slf4j
+@Component
 public class LanguageSwitcher implements Command {
 
     @Override

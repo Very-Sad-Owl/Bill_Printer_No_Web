@@ -1,6 +1,8 @@
 package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
@@ -9,10 +11,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@NoArgsConstructor
+@Component
 public class ProductWorker extends NodeWorker<Product> {
 
-    private static final NodeWorker<ProductDiscountType> discountWorker = new ProductDiscountWorker();
+    private final NodeWorker<ProductDiscountType> discountWorker;
+
+    @Autowired
+    public ProductWorker(NodeWorker<ProductDiscountType> discountWorker) {
+        this.discountWorker = discountWorker;
+    }
 
     @Override
     public Product nodeToModel(ResultSet rs, boolean isJoin) throws SQLException {

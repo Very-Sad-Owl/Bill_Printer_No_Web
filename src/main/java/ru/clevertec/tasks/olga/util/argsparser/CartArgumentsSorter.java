@@ -1,14 +1,16 @@
 package ru.clevertec.tasks.olga.util.argsparser;
 
+import org.springframework.stereotype.Component;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.dto.RequestParamsDto;
-import ru.clevertec.tasks.olga.exception.NoRequiredArgsException;
+import ru.clevertec.tasks.olga.exception.NoRequiredArgsExceptionCustom;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
 
 import java.util.*;
 
 import static ru.clevertec.tasks.olga.util.Constant.*;
 
+@Component
 public class CartArgumentsSorter extends ArgumentsSorter<CartParamsDTO> {
 
     @Override
@@ -41,7 +43,7 @@ public class CartArgumentsSorter extends ArgumentsSorter<CartParamsDTO> {
             }
         }
         if (!checkRequiredArgs(args.keySet(), requestParams.action)){
-            throw new NoRequiredArgsException();
+            throw new NoRequiredArgsExceptionCustom();
         }
         return params;
     }

@@ -1,14 +1,15 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.exception.WritingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import ru.clevertec.tasks.olga.exception.ReadingExceptionCustom;
+import ru.clevertec.tasks.olga.exception.WritingExceptionCustom;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
 import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
 import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
-import ru.clevertec.tasks.olga.util.tablemapper.WorkerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -18,9 +19,15 @@ import static ru.clevertec.tasks.olga.repository.Query.*;
 
 
 @Slf4j
+@Repository
 public class DiscountCardRepositoryImpl implements DiscountCardRepository {
 
-    private static final NodeWorker<DiscountCard> discountWorker = WorkerFactory.getInstance().getDiscountWorker();
+    private final NodeWorker<DiscountCard> discountWorker;
+
+    @Autowired
+    public DiscountCardRepositoryImpl(NodeWorker<DiscountCard> discountWorker) {
+        this.discountWorker = discountWorker;
+    }
 
     @Override
     public long save(DiscountCard discountCard) {
@@ -28,7 +35,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
             return CRUDHelper.save(discountCard, INSERT_DISCOUNT, discountWorker);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         }
     }
 
@@ -38,7 +45,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
             return CRUDHelper.findById(FIND_DISCOUNT_BY_ID, id, discountWorker);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
-            throw new ReadingException("error.reading");
+            throw new ReadingExceptionCustom("error.reading");
         }
     }
 
@@ -48,7 +55,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
             return CRUDHelper.getAll(GET_DISCOUNTS, discountWorker, limit, offset);
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
-            throw new ReadingException("error.reading");
+            throw new ReadingExceptionCustom("error.reading");
         }
     }
 
@@ -58,7 +65,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
             return CRUDHelper.update(discountCard, UPDATE_DISCOUNT, discountWorker);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         }
     }
 
@@ -68,7 +75,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
             return CRUDHelper.delete(DELETE_DISCOUNT, id);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         }
     }
 }

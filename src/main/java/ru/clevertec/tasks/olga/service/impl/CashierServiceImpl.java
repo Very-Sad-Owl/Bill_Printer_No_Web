@@ -1,22 +1,27 @@
 package ru.clevertec.tasks.olga.service.impl;
 
-import ru.clevertec.tasks.olga.exception.CashierNotFoundException;
-import ru.clevertec.tasks.olga.exception.WritingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.clevertec.tasks.olga.exception.CashierNotFoundExceptionCustom;
 import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.service.CashierService;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 
-@NoArgsConstructor
+@Service
 public class CashierServiceImpl
-        extends AbstractService<Cashier, CashierParamsDTO, CashierRepository>
+        extends AbstractService
         implements CashierService {
 
-    private static final CashierRepository cashierRepository = repoFactory.getCashierRepository();
+    private final CashierRepository cashierRepository;
+
+    @Autowired
+    public CashierServiceImpl(CashierRepository cashierRepository) {
+        this.cashierRepository = cashierRepository;
+    }
 
     @Override
     public Cashier save(CashierParamsDTO dto) {
@@ -32,7 +37,7 @@ public class CashierServiceImpl
         if (cashier.isPresent()) {
             return cashier.get();
         } else {
-            throw new CashierNotFoundException("error.cashier_not_found");
+            throw new CashierNotFoundExceptionCustom("error.cashier_not_found");
         }
     }
 
@@ -40,7 +45,7 @@ public class CashierServiceImpl
     public List<Cashier> getAll(int limit, int offset) {
         List<Cashier> found = cashierRepository.getAll(limit, offset);
         if (found.isEmpty()){
-            throw new CashierNotFoundException();
+            throw new CashierNotFoundExceptionCustom();
         } else {
             return found;
         }
@@ -63,7 +68,7 @@ public class CashierServiceImpl
         if (cashierRepository.update(updated)){
             return updated;
         } else {
-            throw new CashierNotFoundException();
+            throw new CashierNotFoundExceptionCustom();
         }
     }
 

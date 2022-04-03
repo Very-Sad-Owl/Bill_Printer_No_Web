@@ -1,12 +1,13 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
 import com.google.common.base.Defaults;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.exception.WritingException;
+import ru.clevertec.tasks.olga.exception.ReadingExceptionCustom;
+import ru.clevertec.tasks.olga.exception.WritingExceptionCustom;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.repository.CartRepository;
@@ -15,7 +16,6 @@ import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
 import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
-import ru.clevertec.tasks.olga.util.tablemapper.WorkerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,13 +26,18 @@ import java.util.Optional;
 
 import static ru.clevertec.tasks.olga.repository.Query.*;
 
-@NoArgsConstructor
+@Repository
 @Slf4j
 public class CartRepositoryImpl implements CartRepository {
 
-    private static final NodeWorker<Cart> cartWorker = WorkerFactory.getInstance().getCartWorker();
-    private static final NodeWorker<Slot> slotWorker = WorkerFactory.getInstance().getSlotWorker();
+    private final NodeWorker<Cart> cartWorker;
+    private final NodeWorker<Slot> slotWorker;
 
+    @Autowired
+    public CartRepositoryImpl(NodeWorker<Cart> cartWorker, NodeWorker<Slot> slotWorker) {
+        this.cartWorker = cartWorker;
+        this.slotWorker = slotWorker;
+    }
 
     @Override
     public long save(Cart cart) {
@@ -55,7 +60,7 @@ public class CartRepositoryImpl implements CartRepository {
             return insertedId;
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, st);
@@ -85,7 +90,7 @@ public class CartRepositoryImpl implements CartRepository {
             con.commit();
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
-            throw new ReadingException("error.reading");
+            throw new ReadingExceptionCustom("error.reading");
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps, rs);
@@ -113,7 +118,7 @@ public class CartRepositoryImpl implements CartRepository {
             }
         } catch (ConnectionPoolException | SQLException e) {
             log.error(e.getMessage());
-            throw new ReadingException("error.connection");
+            throw new ReadingExceptionCustom("error.connection");
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps, rs);
@@ -144,7 +149,7 @@ public class CartRepositoryImpl implements CartRepository {
             con.commit();
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, st);
@@ -160,7 +165,7 @@ public class CartRepositoryImpl implements CartRepository {
             return CRUDHelper.delete(DELETE_CART, id);
         } catch (SQLException | ConnectionPoolException e) {
             log.error(e.getMessage());
-            throw new WritingException("error.writing");
+            throw new WritingExceptionCustom("error.writing");
         }
     }
 

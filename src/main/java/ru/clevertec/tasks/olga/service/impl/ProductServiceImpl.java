@@ -2,26 +2,31 @@ package ru.clevertec.tasks.olga.service.impl;
 
 
 import com.google.common.base.Defaults;
-import ru.clevertec.tasks.olga.exception.ProductNotFoundException;
-import ru.clevertec.tasks.olga.exception.WritingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.clevertec.tasks.olga.exception.ProductNotFoundExceptionCustom;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.dto.ProductParamsDto;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
-import ru.clevertec.tasks.olga.repository.impl.ProductRepositoryImpl;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 import ru.clevertec.tasks.olga.service.ProductService;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 
-@NoArgsConstructor
+@Service
 public class ProductServiceImpl
-        extends AbstractService<Product, ProductParamsDto, ProductRepository>
+        extends AbstractService
         implements ProductService {
 
-    private static final ProductRepository productRepository = new ProductRepositoryImpl();
-    private static final ProductDiscountService discountService = new ProductDiscountServiceImpl();
+    private final ProductRepository productRepository;
+    private final ProductDiscountService discountService;
+
+    @Autowired
+    public ProductServiceImpl(ProductRepository productRepository, ProductDiscountService discountService){
+        this.productRepository  = productRepository;
+        this.discountService = discountService;
+    }
 
     @Override
     public Product save(ProductParamsDto dto) {
@@ -37,7 +42,7 @@ public class ProductServiceImpl
         if(product.isPresent()){
             return product.get();
         } else {
-            throw new ProductNotFoundException("error.product_not_found");
+            throw new ProductNotFoundExceptionCustom("error.product_not_found");
         }
     }
 
@@ -70,7 +75,7 @@ public class ProductServiceImpl
         if (productRepository.update(updated)) {
             return original;
         } else {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundExceptionCustom();
         }
     }
 
