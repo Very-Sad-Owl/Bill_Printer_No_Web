@@ -34,6 +34,8 @@ public abstract class ArgumentsSorter<T extends AbstractDto> implements Sorter<T
                 case PAGINATION_PARAM:
                     dest.offset = Integer.parseInt(values[0]);
                     break;
+                case LANGUAGE:
+                    dest.locale = values[0];
             }
         }
         return dest;

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.controller.command.Command;
+import ru.clevertec.tasks.olga.controller.util.servlethelper.RequestUtils;
 import ru.clevertec.tasks.olga.exception.UndefinedExceptionCustom;
 import ru.clevertec.tasks.olga.service.*;
 import ru.clevertec.tasks.olga.util.localization.messagesprovider.MessageProvider;
@@ -42,7 +43,7 @@ public class PrinterManager implements Command {
 
     @Autowired
     public PrinterManager(CartService cartService, DiscountCardService cardService, CashierService cashierService,
-                         ProductService productService, ProductDiscountService productDiscountService, CardTypeService cardTypeService) {
+                          ProductService productService, ProductDiscountService productDiscountService, CardTypeService cardTypeService) {
         this.cartService = cartService;
         this.cardService = cardService;
         this.cashierService = cashierService;
@@ -51,64 +52,48 @@ public class PrinterManager implements Command {
         this.cardTypeService = cardTypeService;
     }
 
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Locale locale = new Locale((String)request.getSession().getAttribute(LOCALE));
-        ServletOutputStream writer = response.getOutputStream();
+    @Override
+    public Object execute(String requestBody, Map<String, String[]> params) {
         try {
+            requestBody = RequestUtils.readBody(requestBody);
+            RequestParamsDto requestParams = ArgumentsSorter.retrieveBaseArgs(params);
             Path savedBillPath;
-            Map<String, String[]> parameterMap = request.getParameterMap();
-            RequestParamsDto requestParams = ArgumentsSorter.retrieveBaseArgs(parameterMap);
-            switch (requestParams.category){
+            switch (requestParams.category) {
                 case CART:
-                    CartParamsDTO cartParams = sorterFactory.getCartSorter().retrieveArgsFromMap(parameterMap, requestParams);
+                    CartParamsDTO cartParams = sorterFactory.getCartSorter()
+                            .retrieveArgsFromMap(params, requestParams);
                     Cart cart = cartService.findById(cartParams.id);
-                    savedBillPath = cartService.printBill(cart, locale);
-                    byte[]content = Files.readAllBytes(savedBillPath);
-
-                    ResponseUtils.setPdfType(response, savedBillPath.getFileName());
-                    response.setContentLength(content.length);
-
-                    writer.write(content);
-                    break;
+                    savedBillPath = cartService.printBill(cart, new Locale(requestParams.locale));
+                    return Files.readAllBytes(savedBillPath);
                 case PRODUCT:
                     ProductParamsDto productParams = sorterFactory.getProductSorter()
-                            .retrieveArgsFromMap(parameterMap, requestParams);
+                            .retrieveArgsFromMap(params, requestParams);
                     Product product = productService.findById(productParams.id);
-                    ResponseUtils.setJsonType(response);
-                    writer.write(JsonMapper.parseObject(product).getBytes(StandardCharsets.UTF_8));
-                    break;
+                    return JsonMapper.parseObject(product).getBytes(StandardCharsets.UTF_8);
                 case CASHIER:
                     CashierParamsDTO cashierParams = sorterFactory.getCashierSorter()
-                            .retrieveArgsFromMap(parameterMap, requestParams);
+                            .retrieveArgsFromMap(params, requestParams);
                     Cashier cashier = cashierService.findById(cashierParams.id);
-                    ResponseUtils.setJsonType(response);
-                    writer.write(JsonMapper.parseObject(cashier).getBytes(StandardCharsets.UTF_8));
-                    break;
+                    return JsonMapper.parseObject(cashier).getBytes(StandardCharsets.UTF_8);
                 case CARD:
                     CardParamsDTO cardParams = sorterFactory.getCardSorter()
-                            .retrieveArgsFromMap(parameterMap, requestParams);
+                            .retrieveArgsFromMap(params, requestParams);
                     DiscountCard discountCard = cardService.findById(cardParams.id);
-                    ResponseUtils.setJsonType(response);
-                    writer.write(JsonMapper.parseObject(discountCard).getBytes(StandardCharsets.UTF_8));
-                    break;
+                    return JsonMapper.parseObject(discountCard).getBytes(StandardCharsets.UTF_8);
                 case CARD_TYPE:
                     CardTypeDto cardTypeParams = sorterFactory.getCardTypeSorter()
-                            .retrieveArgsFromMap(parameterMap, requestParams);
+                            .retrieveArgsFromMap(params, requestParams);
                     CardType cardType = cardTypeService.findById(cardTypeParams.id);
-                    ResponseUtils.setJsonType(response);
-                    writer.write(JsonMapper.parseObject(cardType).getBytes(StandardCharsets.UTF_8));
-                    break;
+                    return JsonMapper.parseObject(cardType).getBytes(StandardCharsets.UTF_8);
                 case PRODUCT_DISCOUNT:
                     ProductDiscountDTO discountParams = sorterFactory.getProductDiscountSorter()
-                            .retrieveArgsFromMap(parameterMap, requestParams);
+                            .retrieveArgsFromMap(params, requestParams);
                     ProductDiscountType discountType = productDiscountService.findById(discountParams.id);
-                    ResponseUtils.setJsonType(response);
-                    writer.write(JsonMapper.parseObject(discountType).getBytes(StandardCharsets.UTF_8));
-                    break;
+                    return JsonMapper.parseObject(discountType).getBytes(StandardCharsets.UTF_8);
             }
-        } finally {
-            writer.flush();
-            writer.close();
+        } catch (IOException e) {
+            log.error(e.getMessage());
         }
+        return "null";
     }
 }

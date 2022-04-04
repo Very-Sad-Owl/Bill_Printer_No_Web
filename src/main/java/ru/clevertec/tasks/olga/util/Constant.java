@@ -6,6 +6,7 @@ public interface Constant {
     String OFFSET_PARAM = "offset";
     String CATEGORY = "table";
     String ACTION_PARAM = "command";
+    String LANGUAGE = "language";
 
     //card
     String CARD_ID_PARAM = "id";

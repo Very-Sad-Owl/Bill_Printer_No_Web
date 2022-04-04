@@ -10,10 +10,10 @@ import java.util.Locale;
 
 @Component
 public abstract class AbstractBillFormatter {
-    protected abstract void drawMetaInfo(long cartId, List<String> destination);
-    protected abstract void drawCashierInfo(Cashier cashier, List<String> destination);
-    protected abstract void drawSlotInfo(Slot slot, List<String> destination);
-    protected abstract void drawPaymentInfo(Cart cart, List<String> destination);
+    protected abstract void drawMetaInfo(long cartId, List<String> destination, Locale locale);
+    protected abstract void drawCashierInfo(Cashier cashier, List<String> destination, Locale locale);
+    protected abstract void drawSlotInfo(Slot slot, List<String> destination, Locale locale);
+    protected abstract void drawPaymentInfo(Cart cart, List<String> destination, Locale locale);
     public abstract List<String> format(Cart cart, Locale locale);
     public abstract List<String> formatAll(List<Cart> cart, Locale locale);
     protected abstract String drawLine(char delimiter);

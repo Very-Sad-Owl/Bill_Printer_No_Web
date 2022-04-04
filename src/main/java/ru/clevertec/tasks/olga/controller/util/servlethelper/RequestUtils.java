@@ -5,8 +5,7 @@ import java.io.Reader;
 
 public class RequestUtils {
 
-    public static String readBody(BufferedReader reader){
-        return reader.lines()
-                .reduce(" ", String::concat);
+    public static String readBody(String body){
+        return body.replaceAll(" ", "");
     }
 }

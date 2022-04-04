@@ -11,4 +11,5 @@ public class RequestParamsDto {
     public int nodesPerPage = 0;
     @SerializedName("page")
     public int offset = 0;
+    public String locale = "en";
 }

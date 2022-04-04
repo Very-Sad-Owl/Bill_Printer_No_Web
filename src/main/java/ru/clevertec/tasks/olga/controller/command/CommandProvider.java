@@ -30,7 +30,6 @@ public class CommandProvider {
 			if (el.getClass() == GuidePage.class) commands.put(CommandName.GUIDE, el);
 			if (el.getClass() == LogManager.class) commands.put(CommandName.LOG, el);
 			if (el.getClass() == PrinterManager.class) commands.put(CommandName.PRINT, el);
-			if (el.getClass() == LanguageSwitcher.class) commands.put(CommandName.SWITCHLANGUAGE, el);
 		}
 	}
 

@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Locale;
@@ -23,54 +24,55 @@ import static ru.clevertec.tasks.olga.controller.command.resource.SessionAttr.LO
 
 @Slf4j
 @RestController
+@RequestMapping("/")
 public class Controller {
 
-    private static final long serialVersionUID = 1L;
-
-    @GetMapping("/")
+    @GetMapping
     protected void doGet(@RequestParam(value = "command", defaultValue = "guide") String action,
-                         @RequestParam(value = "table", defaultValue = "cart") String category,
-						 @RequestBody Map<String, String> json) {
-//		String callingUrl = request.getHeader("referer");
-//		if (callingUrl == null){
-//            callingUrl = "Controller?command=guide";
-//		}
-//		String callingCommand = callingUrl.replaceFirst("(.)*/", "");
-//		log.info(callingCommand + "\n");
-//		request.getSession().setAttribute("previousUrl", callingCommand);
-//
-        process(action, category, json);
+                         @RequestParam(value = "table") String table,
+                         @RequestParam(value = "language", defaultValue = "en") String lang,
+						 @RequestBody String json,
+                         @RequestParam Map<String, String[]> params,
+                         @RequestHeader("referer") String referer,
+                         HttpSession session) {
+		if (referer == null){
+            referer = "Controller?command=guide";
+		}
+		String callingCommand = referer.replaceFirst("(.)*/", "");
+		log.info(callingCommand + "\n");
+		session.setAttribute("previousUrl", callingCommand);
+
+        process(params, json, action, table, lang, session);
     }
 
-    @PostMapping("/")
+    @PostMapping
     protected void doPost(@RequestParam(value = "command", defaultValue = "guide") String action,
-                          @RequestParam(value = "table", defaultValue = "cart") String category,
-                          @RequestBody Map<String, String> json)
-            throws ServletException, IOException {
-        process(json);
+                          @RequestParam(value = "table") String table,
+                          @RequestParam(value = "language", defaultValue = "en") String lang,
+                          @RequestBody String json,
+                          @RequestParam Map<String, String[]> params,
+                          HttpSession session) {
+        process(params, json, action, table, lang, session);
     }
 
-    private void process(Map<String, String> body, String...params) throws ServletException, IOException {
-//		String name;
-//		String language;
-//		Command command;
-//
-//		language = request.getParameter(CHOSEN_LANGUAGE);
-//		if (language != null && !language.isEmpty()){
-//			request.getSession().setAttribute(LOCALE, language);
-//		} else if (request.getSession() != null
-//				&& request.getSession().getAttribute(LOCALE) == null){
-//			request.getSession().setAttribute(LOCALE, "en");
-//		}
-//
-//		name = request.getParameter("command");
-//		log.info("command = " + name + "\n");
-//		if (name == null || name.isEmpty()) name = "guide";
-//		command = CommandProvider.takeCommand(name);
-//
-//		log.info(String.format("%s, %s\n", request.getMethod(), name));
-//
-//		command.execute(request, response);
+    private void process(Map<String, String[]> params,
+                         String body,
+                         String commandName,
+                         String category,
+                         String language,
+                         HttpSession session) {
+        Command command;
+		if (language != null && !language.isEmpty()){
+			session.setAttribute(LOCALE, language);
+		} else if (session != null
+				&& session.getAttribute(LOCALE) == null){
+			session.setAttribute(LOCALE, "en");
+		}
+
+		log.info("command = " + commandName + "\n");
+		command = CommandProvider.takeCommand(commandName);
+
+		command.execute(body, params);
     }
 
 }
