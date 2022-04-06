@@ -45,58 +45,38 @@ public class CardController {
 
     @GetMapping("/log")
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam (required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam (required = false, defaultValue = "0") Integer page) {
-        try {
-            List<DiscountCard> cards = cardService.getAll(nodesPerPage, page);
-            return JsonMapper.parseObject(cards);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String log(@RequestParam(required = false, defaultValue = "0") Integer nodesPerPage,
+                      @RequestParam(required = false, defaultValue = "0") Integer page) {
+        List<DiscountCard> cards = cardService.getAll(nodesPerPage, page);
+        return JsonMapper.parseObject(cards);
     }
 
     @GetMapping("/find")
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id){
-        try {
-            DiscountCard card = cardService.findById(id);
-            return JsonMapper.parseObject(card);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String find(@RequestParam Integer id) {
+        DiscountCard card = cardService.findById(id);
+        return JsonMapper.parseObject(card);
     }
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     public String save(@RequestBody String json) {
-        try {
-            CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
-            DiscountCard card = cardService.save(cardParamsDTO);
-            return JsonMapper.parseObject(card);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+        CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
+        DiscountCard card = cardService.save(cardParamsDTO);
+        return JsonMapper.parseObject(card);
     }
 
     @PatchMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json){
-        try {
-            CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
-            DiscountCard card = cardService.update(cardParamsDTO);
-            return JsonMapper.parseObject(card);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String update(@RequestBody String json) {
+        CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
+        DiscountCard card = cardService.update(cardParamsDTO);
+        return JsonMapper.parseObject(card);
     }
 
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestParam Integer id){
-        try {
-            cardService.delete(id);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public void delete(@RequestParam Integer id) {
+        cardService.delete(id);
     }
 }

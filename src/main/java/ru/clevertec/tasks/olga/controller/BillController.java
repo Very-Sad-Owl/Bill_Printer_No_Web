@@ -46,58 +46,38 @@ public class BillController {
 
     @GetMapping("/log")
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam (required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam (required = false, defaultValue = "0") Integer page) {
-        try {
-            List<Cart> carts = cartService.getAll(nodesPerPage, page);
-            return JsonMapper.parseObject(carts);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String log(@RequestParam(required = false, defaultValue = "0") Integer nodesPerPage,
+                      @RequestParam(required = false, defaultValue = "0") Integer page) {
+        List<Cart> carts = cartService.getAll(nodesPerPage, page);
+        return JsonMapper.parseObject(carts);
     }
 
     @GetMapping("/find")
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id){
-        try {
-            Cart card = cartService.findById(id);
-            return JsonMapper.parseObject(card);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String find(@RequestParam Integer id) {
+        Cart card = cartService.findById(id);
+        return JsonMapper.parseObject(card);
     }
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     public String save(@RequestBody String json) {
-        try {
-            CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);
-            Cart card = cartService.save(cartParamsDTO);
-            return JsonMapper.parseObject(card);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+        CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);
+        Cart card = cartService.save(cartParamsDTO);
+        return JsonMapper.parseObject(card);
     }
 
     @PatchMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json){
-        try {
-            CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);
-            Cart cart = cartService.update(cartParamsDTO);
-            return JsonMapper.parseObject(cart);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String update(@RequestBody String json) {
+        CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);
+        Cart cart = cartService.update(cartParamsDTO);
+        return JsonMapper.parseObject(cart);
     }
 
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestParam Integer id){
-        try {
-            cartService.delete(id);
-        }  catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public void delete(@RequestParam Integer id) {
+        cartService.delete(id);
     }
 }

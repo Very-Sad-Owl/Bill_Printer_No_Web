@@ -44,58 +44,38 @@ public class ProductDiscountController {
 
     @GetMapping("/log")
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam (required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam (required = false, defaultValue = "0") Integer page) {
-        try {
-            List<ProductDiscountType> productDiscountTypes = productDiscountService.getAll(nodesPerPage, page);
-            return JsonMapper.parseObject(productDiscountTypes);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String log(@RequestParam(required = false, defaultValue = "0") Integer nodesPerPage,
+                      @RequestParam(required = false, defaultValue = "0") Integer page) {
+        List<ProductDiscountType> productDiscountTypes = productDiscountService.getAll(nodesPerPage, page);
+        return JsonMapper.parseObject(productDiscountTypes);
     }
 
     @GetMapping("/find")
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id){
-        try {
-            ProductDiscountType discountType = productDiscountService.findById(id);
-            return JsonMapper.parseObject(discountType);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String find(@RequestParam Integer id) {
+        ProductDiscountType discountType = productDiscountService.findById(id);
+        return JsonMapper.parseObject(discountType);
     }
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     public String save(@RequestBody String json) {
-        try {
-            ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
-            ProductDiscountType discountType = productDiscountService.save(paramsDTO);
-            return JsonMapper.parseObject(discountType);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+        ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
+        ProductDiscountType discountType = productDiscountService.save(paramsDTO);
+        return JsonMapper.parseObject(discountType);
     }
 
     @PatchMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json){
-        try {
-            ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
-            ProductDiscountType discountType = productDiscountService.update(paramsDTO);
-            return JsonMapper.parseObject(discountType);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String update(@RequestBody String json) {
+        ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
+        ProductDiscountType discountType = productDiscountService.update(paramsDTO);
+        return JsonMapper.parseObject(discountType);
     }
 
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestParam Integer id){
-        try {
-            productDiscountService.delete(id);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public void delete(@RequestParam Integer id) {
+        productDiscountService.delete(id);
     }
 }

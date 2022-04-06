@@ -44,58 +44,38 @@ public class ProductController {
 
     @GetMapping("/log")
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam (required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam (required = false, defaultValue = "0") Integer page) {
-        try {
-            List<Product> products = productService.getAll(nodesPerPage, page);
-            return JsonMapper.parseObject(products);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String log(@RequestParam(required = false, defaultValue = "0") Integer nodesPerPage,
+                      @RequestParam(required = false, defaultValue = "0") Integer page) {
+        List<Product> products = productService.getAll(nodesPerPage, page);
+        return JsonMapper.parseObject(products);
     }
 
     @GetMapping("/find")
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id){
-        try {
-            Product product = productService.findById(id);
-            return JsonMapper.parseObject(product);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String find(@RequestParam Integer id) {
+        Product product = productService.findById(id);
+        return JsonMapper.parseObject(product);
     }
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     public String save(@RequestBody String json) {
-        try {
-            ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);
-            Product product = productService.save(productParams);
-            return JsonMapper.parseObject(product);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+        ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);
+        Product product = productService.save(productParams);
+        return JsonMapper.parseObject(product);
     }
 
     @PatchMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json){
-        try {
-            ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);
-            Product product = productService.update(productParams);
-            return JsonMapper.parseObject(product);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String update(@RequestBody String json) {
+        ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);
+        Product product = productService.update(productParams);
+        return JsonMapper.parseObject(product);
     }
 
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestParam Integer id){
-        try {
-            productService.delete(id);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public void delete(@RequestParam Integer id) {
+        productService.delete(id);
     }
 }

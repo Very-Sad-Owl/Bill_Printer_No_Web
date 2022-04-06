@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
 import ru.clevertec.tasks.olga.entity.Cashier;
-import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
-import ru.clevertec.tasks.olga.exception.statusdefier.HandledGeneralException;
 import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
 
@@ -41,58 +39,38 @@ public class CashierController {
 
     @GetMapping("/log")
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam (required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam (required = false, defaultValue = "0") Integer page) {
-        try {
-            List<Cashier> cashiers = cashierService.getAll(nodesPerPage, page);
-            return JsonMapper.parseObject(cashiers);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String log(@RequestParam(required = false, defaultValue = "0") Integer nodesPerPage,
+                      @RequestParam(required = false, defaultValue = "0") Integer page) {
+        List<Cashier> cashiers = cashierService.getAll(nodesPerPage, page);
+        return JsonMapper.parseObject(cashiers);
     }
 
     @GetMapping("/find")
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id){
-        try {
-            Cashier cashier = cashierService.findById(id);
-            return JsonMapper.parseObject(cashier);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String find(@RequestParam Integer id) {
+        Cashier cashier = cashierService.findById(id);
+        return JsonMapper.parseObject(cashier);
     }
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     public String save(@RequestBody String json) {
-        try {
-            CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);
-            Cashier cashier = cashierService.save(cashierParams);
-            return JsonMapper.parseObject(cashier);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+        CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);
+        Cashier cashier = cashierService.save(cashierParams);
+        return JsonMapper.parseObject(cashier);
     }
 
     @PatchMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json){
-        try {
-            CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);
-            Cashier updatedCashier = cashierService.update(cashierParams);
-            return JsonMapper.parseObject(updatedCashier);
-        }  catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public String update(@RequestBody String json) {
+        CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);
+        Cashier updatedCashier = cashierService.update(cashierParams);
+        return JsonMapper.parseObject(updatedCashier);
     }
 
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestParam Integer id){
-        try {
-            cashierService.delete(id);
-        } catch (ServiceException e) {
-            throw new HandledGeneralException(e);
-        }
+    public void delete(@RequestParam Integer id) {
+        cashierService.delete(id);
     }
 }
