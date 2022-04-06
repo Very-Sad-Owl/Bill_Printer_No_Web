@@ -1,10 +1,15 @@
 package ru.clevertec.tasks.olga.service.impl;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.exception.CashierNotFoundExceptionCustom;
 import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
+import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
+import ru.clevertec.tasks.olga.exception.serviceexc.DeletionExceptionHandled;
+import ru.clevertec.tasks.olga.exception.serviceexc.NotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.serviceexc.SavingExceptionHandled;
+import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.service.CashierService;
 
@@ -24,6 +29,7 @@ public class CashierServiceImpl
     }
 
     @Override
+    @SneakyThrows
     public Cashier save(CashierParamsDTO dto) {
         Cashier cashier = formCashier(dto);
         long insertedId = cashierRepository.save(cashier);
@@ -37,26 +43,24 @@ public class CashierServiceImpl
         if (cashier.isPresent()) {
             return cashier.get();
         } else {
-            throw new CashierNotFoundExceptionCustom("error.cashier_not_found");
+            return null;
         }
     }
 
     @Override
+    @SneakyThrows
     public List<Cashier> getAll(int limit, int offset) {
-        List<Cashier> found = cashierRepository.getAll(limit, offset);
-        if (found.isEmpty()){
-            throw new CashierNotFoundExceptionCustom();
-        } else {
-            return found;
-        }
+        return cashierRepository.getAll(limit, offset);
     }
 
     @Override
-    public boolean delete(long id) {
-        return cashierRepository.delete(id);
+    @SneakyThrows
+    public void delete(long id) {
+        cashierRepository.delete(id);
     }
 
     @Override
+    @SneakyThrows
     public Cashier update(CashierParamsDTO dto) {
         Cashier original = findById(dto.id);
         CashierParamsDTO newCashier = CashierParamsDTO.builder()
@@ -65,11 +69,8 @@ public class CashierServiceImpl
                 .surname(dto.surname == null ? original.getSurname() : dto.surname)
                 .build();
         Cashier updated = formCashier(newCashier);
-        if (cashierRepository.update(updated)){
-            return updated;
-        } else {
-            throw new CashierNotFoundExceptionCustom();
-        }
+        cashierRepository.update(updated);
+        return updated;
     }
 
     @Override

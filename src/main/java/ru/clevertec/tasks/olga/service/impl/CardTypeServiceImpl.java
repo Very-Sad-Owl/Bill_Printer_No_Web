@@ -1,9 +1,11 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import com.google.common.base.Defaults;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.exception.CardNotFoundExceptionCustom;
+import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
+import ru.clevertec.tasks.olga.exception.serviceexc.*;
 import ru.clevertec.tasks.olga.entity.CardType;
 import ru.clevertec.tasks.olga.dto.CardTypeDto;
 import ru.clevertec.tasks.olga.repository.CardTypeRepository;
@@ -25,6 +27,7 @@ public class CardTypeServiceImpl
     }
 
     @Override
+    @SneakyThrows
     public CardType save(CardTypeDto dto) {
         CardType type = formDiscount(dto);
         long insertedId = discountRepo.save(type);
@@ -33,26 +36,32 @@ public class CardTypeServiceImpl
     }
 
     @Override
+    @SneakyThrows
     public CardType findById(long id) {
         Optional<CardType> discount = discountRepo.findById(id);
-        if (discount.isPresent()){
+        if (discount.isPresent()) {
             return discount.get();
         } else {
-            throw new CardNotFoundExceptionCustom("error.card_not_found");
+            throw new NotFoundExceptionHandled();
         }
     }
 
     @Override
+    @SneakyThrows
     public List<CardType> getAll(int limit, int offset) {
         return discountRepo.getAll(limit, offset);
     }
 
     @Override
-    public boolean delete(long id) {
-        return discountRepo.delete(id);
+    @SneakyThrows
+    public void delete(long id) {
+        if (!discountRepo.delete(id)) {
+            throw new NotFoundExceptionHandled();
+        }
     }
 
     @Override
+    @SneakyThrows
     public CardType update(CardTypeDto dto) {
         CardType toUpdate = findById(dto.id);
         toUpdate = CardType.builder()

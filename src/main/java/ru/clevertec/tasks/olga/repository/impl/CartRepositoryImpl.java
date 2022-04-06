@@ -1,13 +1,16 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
 import com.google.common.base.Defaults;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.ReadingExceptionCustom;
-import ru.clevertec.tasks.olga.exception.WritingExceptionCustom;
+import ru.clevertec.tasks.olga.exception.repoexc.ConnectionException;
+import ru.clevertec.tasks.olga.exception.repoexc.ReadingException;
+import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
+import ru.clevertec.tasks.olga.exception.repoexc.WritingException;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.repository.CartRepository;
@@ -40,6 +43,8 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
+    @UseCache
+    @SneakyThrows
     public long save(Cart cart) {
         PreparedStatement st = null;
         PreparedStatement slotSt;
@@ -58,9 +63,10 @@ public class CartRepositoryImpl implements CartRepository {
             }
             con.commit();
             return insertedId;
-        } catch (SQLException | ConnectionPoolException e) {
-            log.error(e.getMessage());
-            throw new WritingExceptionCustom("error.writing");
+        } catch (SQLException e) {
+            throw new WritingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, st);
@@ -70,6 +76,7 @@ public class CartRepositoryImpl implements CartRepository {
 
     @UseCache
     @Override
+    @SneakyThrows
     public Optional<Cart> findById(long id) {
         Optional<Cart> cart;
         PreparedStatement ps = null;
@@ -88,9 +95,10 @@ public class CartRepositoryImpl implements CartRepository {
             }
             if (cart.isPresent()) cart.get().setPositions(slots);
             con.commit();
-        } catch (ConnectionPoolException | SQLException e) {
-            log.error(e.getMessage());
-            throw new ReadingExceptionCustom("error.reading");
+        } catch (SQLException e) {
+            throw new ReadingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps, rs);
@@ -100,6 +108,7 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
+    @SneakyThrows
     public List<Cart> getAll(int limit, int offset) {
         PreparedStatement ps = null;
         ConnectionPool pool = null;
@@ -116,9 +125,10 @@ public class CartRepositoryImpl implements CartRepository {
                 slots = CRUDHelper.findAllById(FIND_SLOTS_BY_CART_ID, cart.getId(), slotWorker, con, ps, rs);
                 cart.setPositions(slots);
             }
-        } catch (ConnectionPoolException | SQLException e) {
-            log.error(e.getMessage());
-            throw new ReadingExceptionCustom("error.connection");
+        } catch (SQLException e) {
+            throw new ReadingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps, rs);
@@ -130,6 +140,7 @@ public class CartRepositoryImpl implements CartRepository {
 
     @UseCache
     @Override
+    @SneakyThrows
     public boolean update(Cart cart) {
         PreparedStatement st = null;
         ConnectionPool pool = null;
@@ -147,9 +158,10 @@ public class CartRepositoryImpl implements CartRepository {
                 }
             }
             con.commit();
-        } catch (SQLException | ConnectionPoolException e) {
-            log.error(e.getMessage());
-            throw new WritingExceptionCustom("error.writing");
+        } catch (SQLException e) {
+            throw new WritingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, st);
@@ -158,14 +170,16 @@ public class CartRepositoryImpl implements CartRepository {
         return true;
     }
 
-    @UseCache
     @Override
+    @UseCache
+    @SneakyThrows
     public boolean delete(long id) {
         try {
             return CRUDHelper.delete(DELETE_CART, id);
-        } catch (SQLException | ConnectionPoolException e) {
-            log.error(e.getMessage());
-            throw new WritingExceptionCustom("error.writing");
+        } catch (SQLException e) {
+            throw new WritingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         }
     }
 

@@ -1,12 +1,16 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import com.google.common.base.Defaults;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.exception.CardNotFoundExceptionCustom;
+import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
+import ru.clevertec.tasks.olga.exception.serviceexc.DeletionExceptionHandled;
+import ru.clevertec.tasks.olga.exception.serviceexc.NotFoundExceptionHandled;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
 import ru.clevertec.tasks.olga.dto.CardParamsDTO;
-import ru.clevertec.tasks.olga.exception.ProductNotFoundExceptionCustom;
+import ru.clevertec.tasks.olga.exception.serviceexc.SavingExceptionHandled;
+import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
 import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
 import ru.clevertec.tasks.olga.service.CardTypeService;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
@@ -30,34 +34,39 @@ public class DiscountCardServiceImpl
     }
 
     @Override
+    @SneakyThrows
     public DiscountCard save(CardParamsDTO dto) {
-        DiscountCard card = formCard(dto);
-        long insertedId =  cardRepo.save(card);
-        card.setId(insertedId);
-        return card;
+            DiscountCard card = formCard(dto);
+            long insertedId = cardRepo.save(card);
+            card.setId(insertedId);
+            return card;
     }
 
     @Override
+    @SneakyThrows
     public DiscountCard findById(long id) {
-        Optional<DiscountCard> card = cardRepo.findById(id);
-        if (card.isPresent()){
-            return card.get();
-        } else {
-            throw new CardNotFoundExceptionCustom("error.card_not_found");
-        }
+            Optional<DiscountCard> card = cardRepo.findById(id);
+            if (card.isPresent()) {
+                return card.get();
+            } else {
+                throw new NotFoundExceptionHandled("error.card_not_found");
+            }
     }
 
     @Override
+    @SneakyThrows
     public List<DiscountCard> getAll(int limit, int offset) {
-        return cardRepo.getAll(limit, offset);
+            return cardRepo.getAll(limit, offset);
     }
 
     @Override
-    public boolean delete(long id) {
-        return cardRepo.delete(id);
+    @SneakyThrows
+    public void delete(long id) {
+            cardRepo.delete(id);
     }
 
     @Override
+    @SneakyThrows
     public DiscountCard update(CardParamsDTO params) {
         DiscountCard original = findById(params.id);
         CardParamsDTO newProduct = CardParamsDTO.builder()
@@ -70,11 +79,8 @@ public class DiscountCardServiceImpl
                         : params.discountId)
                 .build();
         DiscountCard updated = formCard(newProduct);
-        if (cardRepo.update(updated)) {
+            cardRepo.update(updated);
             return updated;
-        } else {
-            throw new ProductNotFoundExceptionCustom();
-        }
     }
 
     @Override

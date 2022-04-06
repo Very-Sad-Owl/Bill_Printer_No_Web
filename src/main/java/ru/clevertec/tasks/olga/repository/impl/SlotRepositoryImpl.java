@@ -1,10 +1,14 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import ru.clevertec.tasks.olga.exception.ReadingExceptionCustom;
-import ru.clevertec.tasks.olga.exception.WritingExceptionCustom;
+import ru.clevertec.tasks.olga.annotation.UseCache;
+import ru.clevertec.tasks.olga.exception.repoexc.ConnectionException;
+import ru.clevertec.tasks.olga.exception.repoexc.ReadingException;
+import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
+import ru.clevertec.tasks.olga.exception.repoexc.WritingException;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.repository.SlotRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
@@ -28,52 +32,66 @@ public class SlotRepositoryImpl implements SlotRepository {
     }
 
     @Override
-    public long save(Slot slot) {
+    @UseCache
+    @SneakyThrows
+    public long save(Slot slot) throws RepositoryException {
         try {
             return CRUDHelper.save(slot, INSERT_SLOT, slotWorker);
-        } catch (ConnectionPoolException | SQLException e) {
-            log.error(e.getMessage());
-            throw new WritingExceptionCustom("error.writing");
+        } catch (SQLException e) {
+            throw new WritingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         }
     }
 
     @Override
-    public Optional<Slot> findById(long id) {
+    @UseCache
+    @SneakyThrows
+    public Optional<Slot> findById(long id) throws RepositoryException {
         try {
             return CRUDHelper.findById(FIND_SLOT_BY_ID, id, slotWorker);
-        } catch (ConnectionPoolException | SQLException e) {
-            log.error(e.getMessage());
-            throw new ReadingExceptionCustom("error.reading");
+        } catch (SQLException e) {
+            throw new ReadingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         }
     }
 
     @Override
-    public List<Slot> getAll(int limit, int offset) {
+    @SneakyThrows
+    public List<Slot> getAll(int limit, int offset) throws RepositoryException {
         try {
             return CRUDHelper.getAll(GET_SLOTS, slotWorker, limit, offset);
-        } catch (ConnectionPoolException | SQLException e) {
-            log.error(e.getMessage());
-            throw new ReadingExceptionCustom("error.connection");
+        } catch (SQLException e) {
+            throw new ReadingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         }
     }
 
     @Override
-    public boolean update(Slot slot) {
+    @UseCache
+    @SneakyThrows
+    public boolean update(Slot slot) throws RepositoryException {
         try {
             return CRUDHelper.update(slot, UPDATE_SLOT, slotWorker);
-        } catch (SQLException | ConnectionPoolException e) {
-            log.error(e.getMessage());
-            throw new WritingExceptionCustom("error.writing");
+        } catch (SQLException e) {
+            throw new WritingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         }
     }
 
     @Override
+    @UseCache
+    @SneakyThrows
     public boolean delete(long id) {
         try {
             return CRUDHelper.delete(DELETE_SLOT, id);
-        } catch (SQLException | ConnectionPoolException e) {
-            log.error(e.getMessage());
-            throw new WritingExceptionCustom("error.writing");
+        } catch (SQLException e) {
+            throw new WritingException();
+        } catch (ConnectionPoolException e){
+            throw new ConnectionException();
         }
     }
 

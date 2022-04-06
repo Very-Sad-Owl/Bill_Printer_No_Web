@@ -1,12 +1,16 @@
 package ru.clevertec.tasks.olga.service.impl;
 
 import com.google.common.base.Defaults;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.exception.CardNotFoundExceptionCustom;
+import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
+import ru.clevertec.tasks.olga.exception.serviceexc.DeletionExceptionHandled;
+import ru.clevertec.tasks.olga.exception.serviceexc.NotFoundExceptionHandled;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.dto.ProductDiscountDTO;
-import ru.clevertec.tasks.olga.exception.ProductNotFoundExceptionCustom;
+import ru.clevertec.tasks.olga.exception.serviceexc.SavingExceptionHandled;
+import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
 import ru.clevertec.tasks.olga.repository.ProductDiscountRepository;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 
@@ -26,6 +30,7 @@ public class ProductDiscountServiceImpl
     }
 
     @Override
+    @SneakyThrows
     public ProductDiscountType save(ProductDiscountDTO dto) {
         ProductDiscountType type = formDiscount(dto);
         long insertedId = discountRepo.save(type);
@@ -34,26 +39,29 @@ public class ProductDiscountServiceImpl
     }
 
     @Override
+    @SneakyThrows
     public ProductDiscountType findById(long id) {
         Optional<ProductDiscountType> discount = discountRepo.findById(id);
         if (discount.isPresent()) {
             return discount.get();
         } else {
-            throw new CardNotFoundExceptionCustom("error.card_not_found");
+            throw new NotFoundExceptionHandled("error.card_not_found");
         }
     }
 
     @Override
+    @SneakyThrows
     public List<ProductDiscountType> getAll(int limit, int offset) {
         return discountRepo.getAll(limit, offset);
     }
 
     @Override
-    public boolean delete(long id) {
-        return discountRepo.delete(id);
+    public void delete(long id) {
+        discountRepo.delete(id);
     }
 
     @Override
+    @SneakyThrows
     public ProductDiscountType update(ProductDiscountDTO params) {
         ProductDiscountType original = findById(params.id);
         ProductDiscountDTO newProduct = ProductDiscountDTO.builder()
@@ -66,11 +74,8 @@ public class ProductDiscountServiceImpl
                         : params.requiredQuantity)
                 .build();
         ProductDiscountType updated = formDiscount(newProduct);
-        if (discountRepo.update(updated)) {
-            return updated;
-        } else {
-            throw new ProductNotFoundExceptionCustom();
-        }
+        discountRepo.update(updated);
+        return updated;
     }
 
     @Override

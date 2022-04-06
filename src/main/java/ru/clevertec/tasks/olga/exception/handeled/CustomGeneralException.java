@@ -1,6 +1,6 @@
-package ru.clevertec.tasks.olga.exception;
+package ru.clevertec.tasks.olga.exception.handeled;
 
-public class CustomGeneralException extends RuntimeException {
+public class CustomGeneralException extends Exception {
 
     public CustomGeneralException() {
         super();
