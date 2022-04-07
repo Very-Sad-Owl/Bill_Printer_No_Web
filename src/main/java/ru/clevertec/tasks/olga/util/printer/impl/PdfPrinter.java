@@ -17,9 +17,10 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.layout.renderer.IRenderer;
 import com.itextpdf.layout.renderer.TextRenderer;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import ru.clevertec.tasks.olga.exception.repoexc.WritingException;
+import ru.clevertec.tasks.olga.exception.handeled.WritingException;
 import ru.clevertec.tasks.olga.util.resourceprovider.AppPropertiesService;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
 import com.itextpdf.layout.Document;
@@ -45,6 +46,7 @@ public class PdfPrinter extends AbstractPrinter {
             .getMessage("label.pseudographics_char").charAt(0);
 
     @Override
+    @SneakyThrows
     public String print(List<String> content) {
         try {
             PdfFont font = PdfFontFactory.createFont(
@@ -103,7 +105,7 @@ public class PdfPrinter extends AbstractPrinter {
             document.close();
             return path.toString();
         } catch (IOException e) {
-            throw new WritingException("error.writing");
+            throw new WritingException();
         }
     }
 

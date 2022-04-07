@@ -1,8 +1,6 @@
-package ru.clevertec.tasks.olga.exception.repoexc;
+package ru.clevertec.tasks.olga.exception.handeled;
 
-import ru.clevertec.tasks.olga.exception.handeled.CustomGeneralException;
-
-public class ReadingException extends RepositoryException {
+public class ReadingException extends HandledGeneralException {
     public ReadingException() {
         super();
     }

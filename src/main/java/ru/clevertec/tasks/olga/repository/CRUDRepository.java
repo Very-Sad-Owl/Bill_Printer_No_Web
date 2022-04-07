@@ -1,7 +1,6 @@
 package ru.clevertec.tasks.olga.repository;
 
 import ru.clevertec.tasks.olga.entity.AbstractModel;
-import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
 
 import java.util.List;
 import java.util.Optional;

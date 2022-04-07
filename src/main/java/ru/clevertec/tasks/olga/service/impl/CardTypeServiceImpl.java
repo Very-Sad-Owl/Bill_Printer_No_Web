@@ -4,15 +4,15 @@ import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
-import ru.clevertec.tasks.olga.exception.serviceexc.*;
+import ru.clevertec.tasks.olga.exception.handeled.NotFoundExceptionHandled;
 import ru.clevertec.tasks.olga.entity.CardType;
 import ru.clevertec.tasks.olga.dto.CardTypeDto;
 import ru.clevertec.tasks.olga.repository.CardTypeRepository;
 import ru.clevertec.tasks.olga.service.CardTypeService;
-
 import java.util.List;
 import java.util.Optional;
+
+import static ru.clevertec.tasks.olga.util.validation.CRUDParamsValidator.*;
 
 @Service
 public class CardTypeServiceImpl
@@ -29,6 +29,7 @@ public class CardTypeServiceImpl
     @Override
     @SneakyThrows
     public CardType save(CardTypeDto dto) {
+        validateDtoForSave(dto);
         CardType type = formDiscount(dto);
         long insertedId = discountRepo.save(type);
         type.setId(insertedId);
@@ -38,6 +39,7 @@ public class CardTypeServiceImpl
     @Override
     @SneakyThrows
     public CardType findById(long id) {
+        validateId(id);
         Optional<CardType> discount = discountRepo.findById(id);
         if (discount.isPresent()) {
             return discount.get();
@@ -55,14 +57,14 @@ public class CardTypeServiceImpl
     @Override
     @SneakyThrows
     public void delete(long id) {
-        if (!discountRepo.delete(id)) {
-            throw new NotFoundExceptionHandled();
-        }
+        validateId(id);
+        discountRepo.delete(id);
     }
 
     @Override
     @SneakyThrows
     public CardType update(CardTypeDto dto) {
+        validatePartlyFilledObject(dto);
         CardType toUpdate = findById(dto.id);
         toUpdate = CardType.builder()
                 .id(dto.id)

@@ -5,13 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
 import ru.clevertec.tasks.olga.dto.ProductDiscountDTO;
-import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
-import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
-import ru.clevertec.tasks.olga.exception.statusdefier.HandledGeneralException;
 import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
@@ -35,42 +32,42 @@ public class ProductDiscountController {
         this.productDiscountService = productDiscountService;
     }
 
-    @GetMapping
+    @GetMapping(produces = {"application/json"})
     public String welcome(Locale loc) {
-        return JsonMapper.parseObject(
+        return gson.toJson(
                 messageSource.getMessage("label.guide",
                         null, loc));
     }
 
-    @GetMapping("/log")
+    @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam(required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam(required = false, defaultValue = "0") Integer page) {
+    public String log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+                      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
         List<ProductDiscountType> productDiscountTypes = productDiscountService.getAll(nodesPerPage, page);
-        return JsonMapper.parseObject(productDiscountTypes);
+        return gson.toJson(productDiscountTypes);
     }
 
-    @GetMapping("/find")
+    @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String find(@RequestParam Integer id) {
         ProductDiscountType discountType = productDiscountService.findById(id);
-        return JsonMapper.parseObject(discountType);
+        return gson.toJson(discountType);
     }
 
-    @PostMapping("/save")
+    @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public String save(@RequestBody String json) {
         ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
         ProductDiscountType discountType = productDiscountService.save(paramsDTO);
-        return JsonMapper.parseObject(discountType);
+        return gson.toJson(discountType);
     }
 
-    @PatchMapping("/update")
+    @PatchMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
         ProductDiscountType discountType = productDiscountService.update(paramsDTO);
-        return JsonMapper.parseObject(discountType);
+        return gson.toJson(discountType);
     }
 
     @DeleteMapping("/delete")

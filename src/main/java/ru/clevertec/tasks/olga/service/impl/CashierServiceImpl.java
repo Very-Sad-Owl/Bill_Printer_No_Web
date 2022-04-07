@@ -5,16 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
-import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
-import ru.clevertec.tasks.olga.exception.serviceexc.DeletionExceptionHandled;
-import ru.clevertec.tasks.olga.exception.serviceexc.NotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.serviceexc.SavingExceptionHandled;
-import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
+import ru.clevertec.tasks.olga.exception.handeled.NotFoundExceptionHandled;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.service.CashierService;
 
 import java.util.List;
 import java.util.Optional;
+import static ru.clevertec.tasks.olga.util.validation.CRUDParamsValidator.*;
 
 @Service
 public class CashierServiceImpl
@@ -31,6 +28,7 @@ public class CashierServiceImpl
     @Override
     @SneakyThrows
     public Cashier save(CashierParamsDTO dto) {
+        validateDtoForSave(dto);
         Cashier cashier = formCashier(dto);
         long insertedId = cashierRepository.save(cashier);
         cashier.setId(insertedId);
@@ -38,12 +36,14 @@ public class CashierServiceImpl
     }
 
     @Override
+    @SneakyThrows
     public Cashier findById(long id) {
+        validateId(id);
         Optional<Cashier> cashier = cashierRepository.findById(id);
         if (cashier.isPresent()) {
             return cashier.get();
         } else {
-            return null;
+            throw new NotFoundExceptionHandled();
         }
     }
 
@@ -56,12 +56,14 @@ public class CashierServiceImpl
     @Override
     @SneakyThrows
     public void delete(long id) {
+        validateId(id);
         cashierRepository.delete(id);
     }
 
     @Override
     @SneakyThrows
     public Cashier update(CashierParamsDTO dto) {
+        validatePartlyFilledObject(dto);
         Cashier original = findById(dto.id);
         CashierParamsDTO newCashier = CashierParamsDTO.builder()
                 .id(dto.id)

@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.repoexc.ConnectionException;
-import ru.clevertec.tasks.olga.exception.repoexc.ReadingException;
-import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
-import ru.clevertec.tasks.olga.exception.repoexc.WritingException;
+import ru.clevertec.tasks.olga.exception.handeled.ReadingException;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
+import ru.clevertec.tasks.olga.exception.handeled.DeletionExceptionHandled;
+import ru.clevertec.tasks.olga.exception.handeled.SavingExceptionHandled;
+import ru.clevertec.tasks.olga.exception.handeled.UpdatingExceptionHandled;
 import ru.clevertec.tasks.olga.repository.CartRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
@@ -43,7 +43,6 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
-    @UseCache
     @SneakyThrows
     public long save(Cart cart) {
         PreparedStatement st = null;
@@ -63,10 +62,8 @@ public class CartRepositoryImpl implements CartRepository {
             }
             con.commit();
             return insertedId;
-        } catch (SQLException e) {
-            throw new WritingException();
-        } catch (ConnectionPoolException e){
-            throw new ConnectionException();
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new SavingExceptionHandled(e);
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, st);
@@ -75,7 +72,6 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @UseCache
-    @Override
     @SneakyThrows
     public Optional<Cart> findById(long id) {
         Optional<Cart> cart;
@@ -95,10 +91,8 @@ public class CartRepositoryImpl implements CartRepository {
             }
             if (cart.isPresent()) cart.get().setPositions(slots);
             con.commit();
-        } catch (SQLException e) {
-            throw new ReadingException();
-        } catch (ConnectionPoolException e){
-            throw new ConnectionException();
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new ReadingException(e);
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps, rs);
@@ -125,10 +119,8 @@ public class CartRepositoryImpl implements CartRepository {
                 slots = CRUDHelper.findAllById(FIND_SLOTS_BY_CART_ID, cart.getId(), slotWorker, con, ps, rs);
                 cart.setPositions(slots);
             }
-        } catch (SQLException e) {
-            throw new ReadingException();
-        } catch (ConnectionPoolException e){
-            throw new ConnectionException();
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new ReadingException(e);
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps, rs);
@@ -137,8 +129,6 @@ public class CartRepositoryImpl implements CartRepository {
         return bills;
     }
 
-
-    @UseCache
     @Override
     @SneakyThrows
     public boolean update(Cart cart) {
@@ -158,10 +148,8 @@ public class CartRepositoryImpl implements CartRepository {
                 }
             }
             con.commit();
-        } catch (SQLException e) {
-            throw new WritingException();
-        } catch (ConnectionPoolException e){
-            throw new ConnectionException();
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new UpdatingExceptionHandled(e);
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, st);
@@ -171,15 +159,12 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
-    @UseCache
     @SneakyThrows
     public boolean delete(long id) {
         try {
             return CRUDHelper.delete(DELETE_CART, id);
-        } catch (SQLException e) {
-            throw new WritingException();
-        } catch (ConnectionPoolException e){
-            throw new ConnectionException();
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DeletionExceptionHandled(e);
         }
     }
 

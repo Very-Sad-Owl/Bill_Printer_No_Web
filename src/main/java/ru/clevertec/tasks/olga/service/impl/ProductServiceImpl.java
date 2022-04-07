@@ -7,17 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.dto.ProductParamsDto;
-import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
-import ru.clevertec.tasks.olga.exception.serviceexc.DeletionExceptionHandled;
-import ru.clevertec.tasks.olga.exception.serviceexc.NotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.serviceexc.SavingExceptionHandled;
-import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
+import ru.clevertec.tasks.olga.exception.handeled.NotFoundExceptionHandled;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 import ru.clevertec.tasks.olga.service.ProductService;
 
 import java.util.List;
 import java.util.Optional;
+import static ru.clevertec.tasks.olga.util.validation.CRUDParamsValidator.*;
 
 @Service
 public class ProductServiceImpl
@@ -36,6 +33,7 @@ public class ProductServiceImpl
     @Override
     @SneakyThrows
     public Product save(ProductParamsDto dto) {
+        validateDtoForSave(dto);
         Product product = formProduct(dto);
         long insertedId = productRepository.save(product);
         product.setId(insertedId);
@@ -45,6 +43,7 @@ public class ProductServiceImpl
     @Override
     @SneakyThrows
     public Product findById(long id) {
+        validateId(id);
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
             return product.get();
@@ -62,12 +61,14 @@ public class ProductServiceImpl
     @Override
     @SneakyThrows
     public void delete(long id) {
+        validateId(id);
         productRepository.delete(id);
     }
 
     @Override
     @SneakyThrows
     public Product update(ProductParamsDto params) {
+        validatePartlyFilledObject(params);
         Product original = findById(params.id);
         ProductParamsDto newProduct = ProductParamsDto.builder()
                 .id(params.id)

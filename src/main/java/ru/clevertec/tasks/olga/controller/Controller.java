@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
@@ -22,7 +23,7 @@ public class Controller {
         this.messageSource = messageSource;
     }
 
-    @GetMapping
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     public String welcome(Locale loc) {
         return JsonMapper.parseObject(
                 messageSource.getMessage("label.guide",

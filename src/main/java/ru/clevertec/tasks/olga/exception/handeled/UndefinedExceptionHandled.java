@@ -1,7 +1,5 @@
 package ru.clevertec.tasks.olga.exception.handeled;
 
-import ru.clevertec.tasks.olga.exception.statusdefier.HandledGeneralException;
-
 public class UndefinedExceptionHandled extends HandledGeneralException {
 
     public UndefinedExceptionHandled(String message) {

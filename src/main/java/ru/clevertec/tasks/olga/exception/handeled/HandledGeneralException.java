@@ -1,6 +1,6 @@
-package ru.clevertec.tasks.olga.exception.statusdefier;
+package ru.clevertec.tasks.olga.exception.handeled;
 
-public class HandledGeneralException extends RuntimeException {
+public class HandledGeneralException extends Exception {
 
     public HandledGeneralException() {
         super();

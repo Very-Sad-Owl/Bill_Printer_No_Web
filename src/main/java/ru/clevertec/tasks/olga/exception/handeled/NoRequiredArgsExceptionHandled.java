@@ -1,6 +1,4 @@
-package ru.clevertec.tasks.olga.exception.serviceexc;
-
-import ru.clevertec.tasks.olga.exception.statusdefier.HandledGeneralException;
+package ru.clevertec.tasks.olga.exception.handeled;
 
 public class NoRequiredArgsExceptionHandled extends HandledGeneralException {
     public NoRequiredArgsExceptionHandled() {

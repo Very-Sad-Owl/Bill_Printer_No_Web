@@ -1,10 +1,8 @@
 package ru.clevertec.tasks.olga.service;
 
-import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
-import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
 
 import java.nio.file.Path;
 import java.util.List;

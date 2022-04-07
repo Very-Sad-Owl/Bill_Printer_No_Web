@@ -4,18 +4,15 @@ import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
-import ru.clevertec.tasks.olga.exception.serviceexc.DeletionExceptionHandled;
-import ru.clevertec.tasks.olga.exception.serviceexc.NotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.handeled.NotFoundExceptionHandled;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.dto.ProductDiscountDTO;
-import ru.clevertec.tasks.olga.exception.serviceexc.SavingExceptionHandled;
-import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
 import ru.clevertec.tasks.olga.repository.ProductDiscountRepository;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 
 import java.util.List;
 import java.util.Optional;
+import static ru.clevertec.tasks.olga.util.validation.CRUDParamsValidator.*;
 
 @Service
 public class ProductDiscountServiceImpl
@@ -32,6 +29,7 @@ public class ProductDiscountServiceImpl
     @Override
     @SneakyThrows
     public ProductDiscountType save(ProductDiscountDTO dto) {
+        validateDtoForSave(dto);
         ProductDiscountType type = formDiscount(dto);
         long insertedId = discountRepo.save(type);
         type.setId(insertedId);
@@ -45,7 +43,7 @@ public class ProductDiscountServiceImpl
         if (discount.isPresent()) {
             return discount.get();
         } else {
-            throw new NotFoundExceptionHandled("error.card_not_found");
+            throw new NotFoundExceptionHandled();
         }
     }
 
@@ -57,12 +55,14 @@ public class ProductDiscountServiceImpl
 
     @Override
     public void delete(long id) {
+        validateId(id);
         discountRepo.delete(id);
     }
 
     @Override
     @SneakyThrows
     public ProductDiscountType update(ProductDiscountDTO params) {
+        validatePartlyFilledObject(params);
         ProductDiscountType original = findById(params.id);
         ProductDiscountDTO newProduct = ProductDiscountDTO.builder()
                 .id(params.id)

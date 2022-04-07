@@ -5,15 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.CardParamsDTO;
-import ru.clevertec.tasks.olga.dto.CardTypeDto;
-import ru.clevertec.tasks.olga.entity.CardType;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
-import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
-import ru.clevertec.tasks.olga.exception.statusdefier.HandledGeneralException;
-import ru.clevertec.tasks.olga.service.CardTypeService;
-import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
 import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
 
@@ -22,7 +17,7 @@ import java.util.Locale;
 
 @Slf4j
 @RestController
-@RequestMapping("/card_types")
+@RequestMapping("/cards")
 public class CardController {
 
     private final Gson gson;
@@ -36,42 +31,42 @@ public class CardController {
         this.cardService = cardService;
     }
 
-    @GetMapping
+    @GetMapping(produces = {"application/json"})
     public String welcome(Locale loc) {
-        return JsonMapper.parseObject(
+        return gson.toJson(
                 messageSource.getMessage("label.guide",
                         null, loc));
     }
 
-    @GetMapping("/log")
+    @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam(required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam(required = false, defaultValue = "0") Integer page) {
+    public String log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+                      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
         List<DiscountCard> cards = cardService.getAll(nodesPerPage, page);
-        return JsonMapper.parseObject(cards);
+        return gson.toJson(cards);
     }
 
-    @GetMapping("/find")
+    @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String find(@RequestParam Integer id) {
         DiscountCard card = cardService.findById(id);
-        return JsonMapper.parseObject(card);
+        return gson.toJson(card);
     }
 
-    @PostMapping("/save")
+    @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public String save(@RequestBody String json) {
         CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
         DiscountCard card = cardService.save(cardParamsDTO);
-        return JsonMapper.parseObject(card);
+        return gson.toJson(card);
     }
 
-    @PatchMapping("/update")
+    @PatchMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
         DiscountCard card = cardService.update(cardParamsDTO);
-        return JsonMapper.parseObject(card);
+        return gson.toJson(card);
     }
 
     @DeleteMapping("/delete")

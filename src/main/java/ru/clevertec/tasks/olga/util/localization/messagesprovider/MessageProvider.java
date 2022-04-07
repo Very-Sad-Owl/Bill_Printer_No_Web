@@ -1,10 +1,9 @@
 package ru.clevertec.tasks.olga.util.localization.messagesprovider;
 
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.exception.handeled.*;
-import ru.clevertec.tasks.olga.exception.repoexc.ReadingException;
-import ru.clevertec.tasks.olga.exception.repoexc.WritingException;
-import ru.clevertec.tasks.olga.exception.serviceexc.*;
+import ru.clevertec.tasks.olga.exception.handeled.ReadingException;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -16,14 +15,12 @@ import static ru.clevertec.tasks.olga.util.localization.messagesprovider.Message
 
 @Component
 public class MessageProvider {
-    private Map<String, String> messages = new HashMap<>();
+    private final Map<String, String> messages = new HashMap<>();
     private static final String BUNDLE_BASE_TITLE = "messages";
 
     @PostConstruct
-    public void init(Locale locale) {
-        if (locale == null) {
-            locale = Locale.getDefault();
-        }
+    public void init() {
+        Locale locale = LocaleContextHolder.getLocale();
         ResourceBundle.clearCache();
         ResourceBundle rb = ResourceBundle.getBundle(BUNDLE_BASE_TITLE, locale);
         messages.put(NotFoundExceptionHandled.class.getSimpleName(), rb.getString(NOT_FOUND_MSG));

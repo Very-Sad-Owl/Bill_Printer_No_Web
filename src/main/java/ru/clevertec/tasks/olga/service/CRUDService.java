@@ -2,7 +2,6 @@ package ru.clevertec.tasks.olga.service;
 
 import ru.clevertec.tasks.olga.entity.AbstractModel;
 import ru.clevertec.tasks.olga.dto.AbstractDto;
-import ru.clevertec.tasks.olga.exception.serviceexc.ServiceException;
 
 import java.util.List;
 

@@ -1,8 +1,6 @@
-package ru.clevertec.tasks.olga.exception.serviceexc;
+package ru.clevertec.tasks.olga.exception.handeled;
 
-import ru.clevertec.tasks.olga.exception.statusdefier.HandledGeneralException;
-
-public class NotFoundExceptionHandled extends ServiceException {
+public class NotFoundExceptionHandled extends HandledGeneralException {
 
     public NotFoundExceptionHandled() {
         super();

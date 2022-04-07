@@ -5,12 +5,10 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.exception.serviceexc.InvalidArgExceptionHandled;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
-import ru.clevertec.tasks.olga.exception.repoexc.RepositoryException;
-import ru.clevertec.tasks.olga.exception.serviceexc.*;
+import ru.clevertec.tasks.olga.exception.handeled.NotFoundExceptionHandled;
 import ru.clevertec.tasks.olga.util.printer.impl.PdfPrinter;
 import ru.clevertec.tasks.olga.repository.CartRepository;
 import ru.clevertec.tasks.olga.service.CartService;
@@ -22,6 +20,7 @@ import ru.clevertec.tasks.olga.util.printer.template.AbstractBillFormatter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import static ru.clevertec.tasks.olga.util.validation.CRUDParamsValidator.*;
 
 @Service
 public class CartServiceImpl
@@ -33,8 +32,9 @@ public class CartServiceImpl
     private final CashierService cashierService;
     private final DiscountCardService cardService;
     private final PdfPrinter pdfPrinter;
-    private AbstractBillFormatter formatter;
+    private final AbstractBillFormatter formatter;
 
+    @Autowired
     public CartServiceImpl(CartRepository cartRepository, ProductService productService, CashierService cashierService,
                            DiscountCardService cardService, PdfPrinter pdfPrinter, AbstractBillFormatter formatter) {
         this.cartRepository = cartRepository;
@@ -45,19 +45,11 @@ public class CartServiceImpl
         this.formatter = formatter;
     }
 
-    @Autowired
-    public CartServiceImpl(CartRepository cartRepository, ProductService productService, CashierService cashierService,
-                           DiscountCardService cardService, PdfPrinter pdfPrinter) {
-        this.cartRepository = cartRepository;
-        this.productService = productService;
-        this.cashierService = cashierService;
-        this.cardService = cardService;
-        this.pdfPrinter = pdfPrinter;
-    }
 
     @Override
     @SneakyThrows
     public Cart save(CartParamsDTO dto) {
+        validateDtoForSave(dto);
         Cart cart = formCart(dto);
         long insertedId = cartRepository.save(cart);
         cart.setId(insertedId);
@@ -67,14 +59,12 @@ public class CartServiceImpl
     @Override
     @SneakyThrows
     public Cart findById(long id) {
-        if (id < 0) {
-            throw new InvalidArgExceptionHandled("error.invalid_arg");
-        }
+        validateId(id);
         Optional<Cart> cart = cartRepository.findById(id);
         if (cart.isPresent()) {
             return cart.get();
         } else {
-            throw new NotFoundExceptionHandled("error.cart_not_found");
+            throw new NotFoundExceptionHandled();
         }
     }
 
@@ -87,12 +77,14 @@ public class CartServiceImpl
     @Override
     @SneakyThrows
     public void delete(long id) {
+        validateId(id);
         cartRepository.delete(id);
     }
 
     @SneakyThrows
     @Override
     public Cart update(CartParamsDTO dto) {
+        validatePartlyFilledObject(dto);
         Cart original = findById(dto.id);
         CartParamsDTO newCart = CartParamsDTO.builder()
                 .id(dto.id)

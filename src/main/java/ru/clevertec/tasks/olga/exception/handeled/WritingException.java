@@ -1,6 +1,6 @@
-package ru.clevertec.tasks.olga.exception.repoexc;
+package ru.clevertec.tasks.olga.exception.handeled;
 
-public class WritingException extends RepositoryException {
+public class WritingException extends HandledGeneralException {
     public WritingException() {
         super();
     }
@@ -15,5 +15,10 @@ public class WritingException extends RepositoryException {
 
     public WritingException(Throwable cause) {
         super(cause);
+    }
+
+    @Override
+    public synchronized Throwable getCause() {
+        return super.getCause();
     }
 }
