@@ -80,7 +80,9 @@ public class BillController {
         }
     }
 
-    @PatchMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+//    @PatchMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+//    @PutMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);

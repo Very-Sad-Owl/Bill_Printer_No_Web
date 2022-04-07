@@ -27,21 +27,22 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
                 + e.getMessage());
     }
 
-    @ExceptionHandler({HandledGeneralException.class})
-    public void handlerService(HandledGeneralException e, HttpServletResponse response, PrintWriter writer) {
-        if (e.getClass() == NoRequiredArgsExceptionHandled.class
-                || e.getClass() == InvalidArgExceptionHandled.class) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            writer.print(messageProvider.getMessage(e.getClass().getSimpleName()));
-        } else if (e.getClass() == DeletionExceptionHandled.class
-                || e.getClass() == UpdatingExceptionHandled.class
-                || e.getClass() == SavingExceptionHandled.class) {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            writer.print(messageProvider.getMessage(e.getClass().getSimpleName()));
-        } else if (e.getClass() == NotFoundExceptionHandled.class) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            writer.print(messageProvider.getMessage(e.getClass().getSimpleName()));
-        }
+    @ExceptionHandler({NoRequiredArgsExceptionHandled.class, InvalidArgExceptionHandled.class})
+    public void badRequestHandler(HandledGeneralException e, HttpServletResponse response, PrintWriter writer) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        writer.print(messageProvider.getMessage(e.getClass().getSimpleName()));
+    }
+
+    @ExceptionHandler({DeletionExceptionHandled.class, UpdatingExceptionHandled.class, SavingExceptionHandled.class})
+    public void postHandler(HandledGeneralException e, HttpServletResponse response, PrintWriter writer) {
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        writer.print(messageProvider.getMessage(e.getClass().getSimpleName()));
+    }
+
+    @ExceptionHandler({NotFoundExceptionHandled.class})
+    public void notFoundHandler(HandledGeneralException e, HttpServletResponse response, PrintWriter writer) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        writer.print(messageProvider.getMessage(e.getClass().getSimpleName()));
     }
 
 }

@@ -8,7 +8,6 @@ import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.entity.Slot;
-import ru.clevertec.tasks.olga.util.resourceprovider.MessageLocaleService;
 
 import java.util.List;
 import java.util.Locale;
@@ -125,7 +124,7 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
                 )
         );
         billBuilder.add(drawSplittedLine(
-                        messageSource.getMessage("label.tottal_discount", null, locale) +
+                        messageSource.getMessage("label.total_discount", null, locale) +
                                 messageSource.getMessage("label.definition", null, locale),
                         cart.getTotalDiscount() +
                                 messageSource.getMessage("label.discount_percentage", null, locale) +
