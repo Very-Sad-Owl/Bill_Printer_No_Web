@@ -20,7 +20,7 @@ import com.itextpdf.layout.renderer.TextRenderer;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import ru.clevertec.tasks.olga.exception.handeled.WritingException;
+import ru.clevertec.tasks.olga.exception.repository.WritingException;
 import ru.clevertec.tasks.olga.util.resourceprovider.AppPropertiesService;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
 import com.itextpdf.layout.Document;
@@ -105,7 +105,7 @@ public class PdfPrinter extends AbstractPrinter {
             document.close();
             return path.toString();
         } catch (IOException e) {
-            throw new WritingException();
+            throw new WritingException(e.getMessage());
         }
     }
 

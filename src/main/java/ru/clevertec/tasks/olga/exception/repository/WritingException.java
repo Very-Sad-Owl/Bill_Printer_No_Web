@@ -1,6 +1,6 @@
-package ru.clevertec.tasks.olga.exception.handeled;
+package ru.clevertec.tasks.olga.exception.repository;
 
-public class WritingException extends HandledGeneralException {
+public class WritingException extends RepositoryException {
     public WritingException() {
         super();
     }

@@ -140,22 +140,18 @@ public class CRUDHelper {
             con = pool.takeConnection();
             ps = con.prepareStatement(query);
             worker.modelToExisingNode(model, ps);
-            ps.executeUpdate();
+            return ps.executeUpdate() != 0;
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps);
             }
         }
-        return true;
     }
 
-    public static <T extends AbstractModel> PreparedStatement update(T model, String query, NodeWorker<T> worker, Connection con)
+    public static <T extends AbstractModel> boolean update(T model, NodeWorker<T> worker, PreparedStatement ps)
             throws SQLException {
-        PreparedStatement ps;
-        ps = con.prepareStatement(query);
         worker.modelToExisingNode(model, ps);
-        ps.executeUpdate();
-        return ps;
+        return ps.executeUpdate() != 0;
     }
 
     public static <T extends AbstractModel> PreparedStatement prepareToUpdate(T model, String query, NodeWorker<T> worker, Connection con)
@@ -179,13 +175,12 @@ public class CRUDHelper {
             ps = con.prepareStatement(query);
             ps.setLong(1, id);
             res = ps.executeUpdate();
+            return res != 0;
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps);
             }
         }
-
-        return res != 0;
     }
 
     public static long getGeneratedKey(PreparedStatement st) throws SQLException {

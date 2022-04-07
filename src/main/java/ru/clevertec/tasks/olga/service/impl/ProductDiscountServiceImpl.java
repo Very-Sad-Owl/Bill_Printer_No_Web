@@ -4,14 +4,20 @@ import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.exception.handeled.NotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.exception.crud.*;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.dto.ProductDiscountDTO;
+import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.crud.notfound.ProductDiscountNotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.crud.notfound.ProductNotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
 import ru.clevertec.tasks.olga.repository.ProductDiscountRepository;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 
 import java.util.List;
 import java.util.Optional;
+
 import static ru.clevertec.tasks.olga.util.validation.CRUDParamsValidator.*;
 
 @Service
@@ -27,23 +33,31 @@ public class ProductDiscountServiceImpl
     }
 
     @Override
-    @SneakyThrows
     public ProductDiscountType save(ProductDiscountDTO dto) {
-        validateDtoForSave(dto);
-        ProductDiscountType type = formDiscount(dto);
-        long insertedId = discountRepo.save(type);
-        type.setId(insertedId);
-        return type;
+        validateFullyFilledDto(dto);
+        try {
+            ProductDiscountType type = formDiscount(dto);
+            long insertedId = discountRepo.save(type);
+            type.setId(insertedId);
+            return type;
+        } catch (RepositoryException | NotFoundExceptionHandled e) {
+            throw new SavingExceptionHandled(e);
+        }
     }
 
     @Override
     @SneakyThrows
     public ProductDiscountType findById(long id) {
-        Optional<ProductDiscountType> discount = discountRepo.findById(id);
-        if (discount.isPresent()) {
-            return discount.get();
-        } else {
-            throw new NotFoundExceptionHandled();
+        validateId(id);
+        try {
+            Optional<ProductDiscountType> discount = discountRepo.findById(id);
+            if (discount.isPresent()) {
+                return discount.get();
+            } else {
+                throw new ProductDiscountNotFoundExceptionHandled(id + "");
+            }
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e.getMessage());
         }
     }
 
@@ -56,36 +70,68 @@ public class ProductDiscountServiceImpl
     @Override
     public void delete(long id) {
         validateId(id);
-        discountRepo.delete(id);
+        try {
+            if (!discountRepo.delete(id)) {
+                throw new BillNotFoundExceptionHandled(id + "");
+            }
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e);
+        }
     }
 
     @Override
-    @SneakyThrows
-    public ProductDiscountType update(ProductDiscountDTO params) {
+    public ProductDiscountType patch(ProductDiscountDTO params) {
         validatePartlyFilledObject(params);
-        ProductDiscountType original = findById(params.id);
-        ProductDiscountDTO newProduct = ProductDiscountDTO.builder()
-                .id(params.id)
-                .title(params.title == null
-                        ? original.getTitle()
-                        : params.title)
-                .requiredQuantity(params.requiredQuantity == Defaults.defaultValue(Integer.TYPE)
-                        ? original.getRequiredMinQuantity()
-                        : params.requiredQuantity)
-                .build();
-        ProductDiscountType updated = formDiscount(newProduct);
-        discountRepo.update(updated);
-        return updated;
+        ProductDiscountType updated;
+        try {
+            ProductDiscountType original = findById(params.id);
+            ProductDiscountDTO newProduct = ProductDiscountDTO.builder()
+                    .id(params.id)
+                    .title(params.title == null
+                            ? original.getTitle()
+                            : params.title)
+                    .requiredQuantity(params.requiredQuantity == Defaults.defaultValue(Integer.TYPE)
+                            ? original.getRequiredMinQuantity()
+                            : params.requiredQuantity)
+                    .build();
+            updated = formDiscount(newProduct);
+        } catch (NotFoundExceptionHandled e) {
+            throw new UpdatingExceptionHandled(e);
+        }
+        try {
+            discountRepo.update(updated);
+            return updated;
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e.getMessage());
+        }
+    }
+
+    @Override
+    public ProductDiscountType put(ProductDiscountDTO dto) {
+        validateFullyFilledDto(dto);
+        try {
+            ProductDiscountType updated = formDiscount(dto);
+            if (!discountRepo.update(updated)) {
+                throw new UpdatingExceptionHandled(new ProductDiscountNotFoundExceptionHandled(dto.id + ""));
+            }
+            return updated;
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e.getMessage());
+        }
     }
 
     @Override
     public ProductDiscountType formDiscount(ProductDiscountDTO dto) {
-        return ProductDiscountType.builder()
-                .id(dto.id)
-                .title(dto.title)
-                .discount(dto.val)
-                .requiredMinQuantity(dto.requiredQuantity)
-                .build();
+        try {
+            return ProductDiscountType.builder()
+                    .id(dto.id)
+                    .title(dto.title)
+                    .discount(dto.val)
+                    .requiredMinQuantity(dto.requiredQuantity)
+                    .build();
+        } catch (NotFoundExceptionHandled e) {
+            throw new NotFoundExceptionHandled(e);
+        }
     }
 }
 

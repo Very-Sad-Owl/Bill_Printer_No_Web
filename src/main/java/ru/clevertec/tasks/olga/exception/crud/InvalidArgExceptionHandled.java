@@ -1,4 +1,4 @@
-package ru.clevertec.tasks.olga.exception.handeled;
+package ru.clevertec.tasks.olga.exception.crud;
 
 public class InvalidArgExceptionHandled extends HandledGeneralException {
 

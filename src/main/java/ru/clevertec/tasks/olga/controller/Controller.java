@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import ru.clevertec.tasks.olga.service.CashierService;
-import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
 
 import java.util.Locale;
 
@@ -17,15 +15,17 @@ import java.util.Locale;
 public class Controller {
 
     private final MessageSource messageSource;
+    private final Gson gson;
 
     @Autowired
-    public Controller(MessageSource messageSource) {
+    public Controller(MessageSource messageSource, Gson gson) {
         this.messageSource = messageSource;
+        this.gson = gson;
     }
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     public String welcome(Locale loc) {
-        return JsonMapper.parseObject(
+        return gson.toJson(
                 messageSource.getMessage("label.guide",
                         null, loc));
     }

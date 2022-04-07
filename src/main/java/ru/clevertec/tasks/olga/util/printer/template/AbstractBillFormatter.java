@@ -8,7 +8,6 @@ import ru.clevertec.tasks.olga.entity.Slot;
 import java.util.List;
 import java.util.Locale;
 
-@Component
 public abstract class AbstractBillFormatter {
     protected abstract void drawMetaInfo(long cartId, List<String> destination, Locale locale);
     protected abstract void drawCashierInfo(Cashier cashier, List<String> destination, Locale locale);

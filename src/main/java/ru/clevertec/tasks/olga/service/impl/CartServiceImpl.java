@@ -8,7 +8,10 @@ import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
-import ru.clevertec.tasks.olga.exception.handeled.NotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.crud.*;
+import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.crud.notfound.ProductNotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
 import ru.clevertec.tasks.olga.util.printer.impl.PdfPrinter;
 import ru.clevertec.tasks.olga.repository.CartRepository;
 import ru.clevertec.tasks.olga.service.CartService;
@@ -20,6 +23,7 @@ import ru.clevertec.tasks.olga.util.printer.template.AbstractBillFormatter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
 import static ru.clevertec.tasks.olga.util.validation.CRUDParamsValidator.*;
 
 @Service
@@ -47,24 +51,30 @@ public class CartServiceImpl
 
 
     @Override
-    @SneakyThrows
     public Cart save(CartParamsDTO dto) {
-        validateDtoForSave(dto);
-        Cart cart = formCart(dto);
-        long insertedId = cartRepository.save(cart);
-        cart.setId(insertedId);
-        return cart;
+        validateFullyFilledDto(dto);
+        try {
+            Cart cart = formCart(dto);
+            long insertedId = cartRepository.save(cart);
+            cart.setId(insertedId);
+            return cart;
+        } catch (RepositoryException | NotFoundExceptionHandled e) {
+            throw new SavingExceptionHandled(e);
+        }
     }
 
     @Override
-    @SneakyThrows
     public Cart findById(long id) {
         validateId(id);
-        Optional<Cart> cart = cartRepository.findById(id);
-        if (cart.isPresent()) {
-            return cart.get();
-        } else {
-            throw new NotFoundExceptionHandled();
+        try {
+            Optional<Cart> cart = cartRepository.findById(id);
+            if (cart.isPresent()) {
+                return cart.get();
+            } else {
+                throw new BillNotFoundExceptionHandled(id + "");
+            }
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e.getMessage());
         }
     }
 
@@ -75,28 +85,52 @@ public class CartServiceImpl
     }
 
     @Override
-    @SneakyThrows
     public void delete(long id) {
         validateId(id);
-        cartRepository.delete(id);
+        try {
+            if (!cartRepository.delete(id)) {
+                throw new BillNotFoundExceptionHandled(id + "");
+            }
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e);
+        }
     }
 
-    @SneakyThrows
     @Override
-    public Cart update(CartParamsDTO dto) {
+    public Cart put(CartParamsDTO dto) {
+        validateFullyFilledDto(dto);
+        try {
+            Cart updated = formCart(dto);
+            if (!cartRepository.update(updated)) {
+                throw new UpdatingExceptionHandled(new BillNotFoundExceptionHandled(dto.id + ""));
+            }
+            return updated;
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e.getMessage());
+        }
+    }
+
+    @Override
+    public Cart patch(CartParamsDTO dto) {
         validatePartlyFilledObject(dto);
-        Cart original = findById(dto.id);
-        CartParamsDTO newCart = CartParamsDTO.builder()
-                .id(dto.id)
-                .card_uid(dto.card_uid != Defaults.defaultValue(Long.TYPE)
-                        ? dto.card_uid
-                        : original.getDiscountCard().getId())
-                .cashier_uid(dto.cashier_uid != Defaults.defaultValue(Long.TYPE)
-                        ? dto.cashier_uid
-                        : original.getCashier().getId())
-                .build();
-        newCart.products = dto.products;
-        Cart updated = formCart(newCart);
+        Cart updated;
+        Cart original;
+        try {
+            original = findById(dto.id);
+            CartParamsDTO newCart = CartParamsDTO.builder()
+                    .id(dto.id)
+                    .card_uid(dto.card_uid != Defaults.defaultValue(Long.TYPE)
+                            ? dto.card_uid
+                            : original.getDiscountCard().getId())
+                    .cashier_uid(dto.cashier_uid != Defaults.defaultValue(Long.TYPE)
+                            ? dto.cashier_uid
+                            : original.getCashier().getId())
+                    .build();
+            newCart.products = dto.products;
+            updated = formCart(newCart);
+        } catch (NotFoundExceptionHandled e) {
+            throw new UpdatingExceptionHandled(e);
+        }
 
         if (dto.products == null || dto.products.isEmpty()) {
             updated.setPositions(original.getPositions());
@@ -110,8 +144,12 @@ public class CartServiceImpl
             }
         }
         updated.calculatePrice();
-        cartRepository.update(updated);
-        return updated;
+        try {
+            cartRepository.update(updated);
+            return updated;
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e.getMessage());
+        }
     }
 
     @Override
@@ -134,15 +172,18 @@ public class CartServiceImpl
 
     @Override
     public Cart formCart(CartParamsDTO cartParamsDTO) {
-        Cart cart = Cart.builder()
-                .id(cartParamsDTO.id)
-                .positions(formSlots(cartParamsDTO.products))
-                .discountCard(cardService.findById(cartParamsDTO.card_uid))
-                .cashier(cashierService.findById(cartParamsDTO.cashier_uid))
-                .build();
-        cart.calculatePrice();
-        return cart;
-
+        try {
+            Cart cart = Cart.builder()
+                    .id(cartParamsDTO.id)
+                    .positions(formSlots(cartParamsDTO.products))
+                    .discountCard(cardService.findById(cartParamsDTO.card_uid))
+                    .cashier(cashierService.findById(cartParamsDTO.cashier_uid))
+                    .build();
+            cart.calculatePrice();
+            return cart;
+        } catch (NotFoundExceptionHandled e) {
+            throw new NotFoundExceptionHandled(e);
+        }
     }
 
     @Override

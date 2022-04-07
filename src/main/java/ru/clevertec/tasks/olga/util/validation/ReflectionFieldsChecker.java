@@ -1,12 +1,8 @@
 package ru.clevertec.tasks.olga.util.validation;
 
 import com.google.common.base.Defaults;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.ClassUtils;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 
-import java.lang.reflect.Field;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -14,20 +10,29 @@ import java.util.Map;
 
 public class ReflectionFieldsChecker {
 
-    public static boolean inNullOrDefault(Object o) {
+    public static boolean isNullOrDefault(Object o) {
         if (o == null) {
-            return false;
+            return true;
         } else if (TypeIdentifier.isTextOrEnum(o.getClass())) {
-            return !o.equals("");
+            return o.equals("");
         } else if (TypeIdentifier.isCollection(o.getClass())) {
-            return !((Collection<?>)o).contains(null);
+            return ((Collection<?>)o).contains(null);
         } else if (TypeIdentifier.isMap(o.getClass())) {
-            return !((Map<?, ?>)o).containsKey(Defaults.defaultValue(Long.TYPE))
+            return ((Map<?, ?>)o).containsKey(Defaults.defaultValue(Long.TYPE))
                     && !((Map<?, ?>)o).containsValue(Defaults.defaultValue(Integer.TYPE));
         } else if (TypeIdentifier.isArray(o.getClass())) {
-            return !Arrays.asList(o).contains(null);
+            return Arrays.asList(o).contains(null);
         } else if (TypeIdentifier.isWrapper(o.getClass())){
-            return o != Defaults.defaultValue(Double.TYPE);
+            if (o.getClass() == Double.class){
+                return Double.parseDouble(o + "") == Defaults.defaultValue(Double.TYPE);
+            } else if (o.getClass() == Float.class){
+                return Float.parseFloat(o + "") == Defaults.defaultValue(Float.TYPE);
+            } else if (o.getClass() == Integer.class){
+                return Integer.parseInt(o + "") == Defaults.defaultValue(Integer.TYPE);
+            } else if (o.getClass() == Long.class){
+                return Long.parseLong(o+"") == Defaults.defaultValue(Long.TYPE);
+            }
+
         }
         return true;
     }

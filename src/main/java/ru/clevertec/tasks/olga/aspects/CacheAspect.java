@@ -37,9 +37,11 @@ public class CacheAspect {
     @Around("useCache() && execution(* *..save*(..))")
     public Object saveTriggered(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] arguments = joinPoint.getArgs();
-        AbstractModel res = (AbstractModel)joinPoint.proceed(arguments);
-        cache.put(res.getId(), res);
-        return res.getId();
+        long res = (Long) joinPoint.proceed(arguments);
+        AbstractModel model = (AbstractModel) arguments[0];
+        model.setId(res);
+        cache.put(res, model);
+        return res;
     }
 
     @Around("useCache() && execution(* *..delete*(..))")

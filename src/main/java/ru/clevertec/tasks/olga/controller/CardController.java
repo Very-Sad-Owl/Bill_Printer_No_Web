@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.CardParamsDTO;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
-import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -61,11 +59,19 @@ public class CardController {
         return gson.toJson(card);
     }
 
-    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public String patch(@RequestBody String json) {
+        CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
+        DiscountCard card = cardService.patch(cardParamsDTO);
+        return gson.toJson(card);
+    }
+
+    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
-        DiscountCard card = cardService.update(cardParamsDTO);
+        DiscountCard card = cardService.put(cardParamsDTO);
         return gson.toJson(card);
     }
 

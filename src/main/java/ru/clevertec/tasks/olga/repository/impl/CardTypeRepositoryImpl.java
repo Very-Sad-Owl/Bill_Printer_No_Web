@@ -1,14 +1,11 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.handeled.ReadingException;
 import ru.clevertec.tasks.olga.entity.CardType;
-import ru.clevertec.tasks.olga.exception.handeled.DeletionExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.SavingExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.UpdatingExceptionHandled;
+import ru.clevertec.tasks.olga.exception.repository.ReadingException;
+import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.repository.WritingException;
 import ru.clevertec.tasks.olga.repository.CardTypeRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
@@ -31,52 +28,47 @@ public class CardTypeRepositoryImpl implements CardTypeRepository {
     }
 
     @Override
-    @SneakyThrows
-    public long save(CardType discountCard) {
+    public long save(CardType discountCard) throws RepositoryException {
         try {
             return CRUDHelper.save(discountCard, INSERT_DISCOUNT_TYPE, discountWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new SavingExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public Optional<CardType> findById(long id) {
+    public Optional<CardType> findById(long id) throws RepositoryException {
         try {
             return CRUDHelper.findById(FIND_DISCOUNT_TYPE, id, discountWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e);
+            throw new ReadingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public List<CardType> getAll(int limit, int offset) {
+    public List<CardType> getAll(int limit, int offset) throws RepositoryException {
         try {
             return CRUDHelper.getAll(GET_DISCOUNT_TYPES, discountWorker, limit, offset);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e);
+            throw new ReadingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public boolean update(CardType discountCard) {
+    public boolean update(CardType discountCard) throws RepositoryException {
         try {
             return CRUDHelper.update(discountCard, UPDATE_DISCOUNT_TYPE, discountWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new UpdatingExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public boolean delete(long id) {
+    public boolean delete(long id) throws RepositoryException {
         try {
             return CRUDHelper.delete(DELETE_DISCOUNT_TYPE, id);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new DeletionExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 }

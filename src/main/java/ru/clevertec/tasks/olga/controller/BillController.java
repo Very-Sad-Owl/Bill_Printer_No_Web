@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
 import ru.clevertec.tasks.olga.entity.Cart;
-import ru.clevertec.tasks.olga.exception.handeled.WritingException;
+import ru.clevertec.tasks.olga.exception.repository.WritingException;
 import ru.clevertec.tasks.olga.service.CartService;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -80,13 +80,19 @@ public class BillController {
         }
     }
 
-//    @PatchMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
-//    @PutMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public String patch(@RequestBody String json) {
+        CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);
+        Cart cart = cartService.patch(cartParamsDTO);
+        return gson.toJson(cart);
+    }
+
+    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);
-        Cart cart = cartService.update(cartParamsDTO);
+        Cart cart = cartService.put(cartParamsDTO);
         return gson.toJson(cart);
     }
 

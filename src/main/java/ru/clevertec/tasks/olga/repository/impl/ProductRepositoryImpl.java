@@ -1,15 +1,13 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.handeled.ReadingException;
 import ru.clevertec.tasks.olga.entity.Product;
-import ru.clevertec.tasks.olga.exception.handeled.DeletionExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.SavingExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.UpdatingExceptionHandled;
+import ru.clevertec.tasks.olga.exception.repository.ReadingException;
+import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.repository.WritingException;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
@@ -34,55 +32,50 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     @UseCache
-    @SneakyThrows
-    public long save(Product product) {
+    public long save(Product product) throws RepositoryException {
         try {
             return CRUDHelper.save(product, INSERT_PRODUCT, productWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new SavingExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 
     @Override
     @UseCache
-    @SneakyThrows
-    public Optional<Product> findById(long id) {
+    public Optional<Product> findById(long id) throws RepositoryException {
         try {
             return CRUDHelper.findById(FIND_PRODUCT_BY_ID, id, productWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e);
+            throw new ReadingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public List<Product> getAll(int limit, int offset) {
+    public List<Product> getAll(int limit, int offset) throws RepositoryException {
         try {
             return CRUDHelper.getAll(GET_PRODUCTS, productWorker, limit, offset);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e);
+            throw new ReadingException(e.getMessage());
         }
     }
 
     @Override
     @UseCache
-    @SneakyThrows
-    public boolean update(Product product) {
+    public boolean update(Product product) throws RepositoryException {
         try {
             return CRUDHelper.update(product, UPDATE_PRODUCT, productWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new UpdatingExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 
     @Override
     @UseCache
-    @SneakyThrows
-    public boolean delete(long id) {
+    public boolean delete(long id) throws RepositoryException {
         try {
             return CRUDHelper.delete(DELETE_PRODUCT, id);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new DeletionExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 }

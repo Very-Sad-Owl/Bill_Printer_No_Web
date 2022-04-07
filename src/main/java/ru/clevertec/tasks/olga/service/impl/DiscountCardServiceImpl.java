@@ -4,9 +4,14 @@ import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.exception.handeled.NotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.exception.crud.*;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
 import ru.clevertec.tasks.olga.dto.CardParamsDTO;
+import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.crud.notfound.CardNotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.crud.notfound.ProductNotFoundExceptionHandled;
+import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
 import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
 import ru.clevertec.tasks.olga.service.CardTypeService;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
@@ -32,24 +37,31 @@ public class DiscountCardServiceImpl
     }
 
     @Override
-    @SneakyThrows
     public DiscountCard save(CardParamsDTO dto) {
-        validateDtoForSave(dto);
-        DiscountCard card = formCard(dto);
-        long insertedId = cardRepo.save(card);
-        card.setId(insertedId);
-        return card;
+        validateFullyFilledDto(dto);
+        try {
+            DiscountCard card = formCard(dto);
+            long insertedId = cardRepo.save(card);
+            card.setId(insertedId);
+            return card;
+        } catch (RepositoryException | NotFoundExceptionHandled e) {
+            throw new SavingExceptionHandled(e);
+        }
     }
 
     @Override
     @SneakyThrows
     public DiscountCard findById(long id) {
         validateId(id);
-        Optional<DiscountCard> card = cardRepo.findById(id);
-        if (card.isPresent()) {
-            return card.get();
-        } else {
-            throw new NotFoundExceptionHandled();
+        try {
+            Optional<DiscountCard> card = cardRepo.findById(id);
+            if (card.isPresent()) {
+                return card.get();
+            } else {
+                throw new CardNotFoundExceptionHandled(id + "");
+            }
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e.getMessage());
         }
     }
 
@@ -60,37 +72,68 @@ public class DiscountCardServiceImpl
     }
 
     @Override
-    @SneakyThrows
     public void delete(long id) {
         validateId(id);
-        cardRepo.delete(id);
+        try {
+            if (!cardRepo.delete(id)) {
+                throw new BillNotFoundExceptionHandled(id + "");
+            }
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e);
+        }
     }
 
     @Override
-    @SneakyThrows
-    public DiscountCard update(CardParamsDTO params) {
+    public DiscountCard patch(CardParamsDTO params) {
         validatePartlyFilledObject(params);
-        DiscountCard original = findById(params.id);
-        CardParamsDTO newProduct = CardParamsDTO.builder()
-                .id(params.id)
-                .birthday(params.birthday == null
-                        ? original.getBirthday() + ""
-                        : params.birthday)
-                .discountId(params.discountId == Defaults.defaultValue(Long.TYPE)
-                        ? original.getCardType().getId()
-                        : params.discountId)
-                .build();
-        DiscountCard updated = formCard(newProduct);
-        cardRepo.update(updated);
-        return updated;
+        DiscountCard updated;
+        try {
+            DiscountCard original = findById(params.id);
+            CardParamsDTO newProduct = CardParamsDTO.builder()
+                    .id(params.id)
+                    .birthday(params.birthday == null
+                            ? original.getBirthday() + ""
+                            : params.birthday)
+                    .discountId(params.discountId == Defaults.defaultValue(Long.TYPE)
+                            ? original.getCardType().getId()
+                            : params.discountId)
+                    .build();
+            updated = formCard(newProduct);
+        } catch (NotFoundExceptionHandled e) {
+            throw new UpdatingExceptionHandled(e);
+        }
+        try {
+            cardRepo.update(updated);
+            return updated;
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e.getMessage());
+        }
+    }
+
+    @Override
+    public DiscountCard put(CardParamsDTO dto) {
+        validateFullyFilledDto(dto);
+        try {
+            DiscountCard updated = formCard(dto);
+            if (!cardRepo.update(updated)) {
+                throw new UpdatingExceptionHandled(new CardNotFoundExceptionHandled(dto.id + ""));
+            }
+            return updated;
+        } catch (RepositoryException e) {
+            throw new UndefinedExceptionHandled(e.getMessage());
+        }
     }
 
     @Override
     public DiscountCard formCard(CardParamsDTO dto) {
-        return DiscountCard.builder()
-                .id(dto.id)
-                .birthday(LocalDate.parse(dto.birthday))
-                .cardType(discountService.findById(dto.discountId))
-                .build();
+        try {
+            return DiscountCard.builder()
+                    .id(dto.id)
+                    .birthday(LocalDate.parse(dto.birthday))
+                    .cardType(discountService.findById(dto.discountId))
+                    .build();
+        } catch (NotFoundExceptionHandled e) {
+            throw new NotFoundExceptionHandled(e);
+        }
     }
 }

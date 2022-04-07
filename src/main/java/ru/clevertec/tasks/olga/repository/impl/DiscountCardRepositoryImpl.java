@@ -1,15 +1,12 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.handeled.ReadingException;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
-import ru.clevertec.tasks.olga.exception.handeled.DeletionExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.SavingExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.UpdatingExceptionHandled;
+import ru.clevertec.tasks.olga.exception.repository.ReadingException;
+import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.repository.WritingException;
 import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
@@ -34,52 +31,47 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     }
 
     @Override
-    @SneakyThrows
-    public long save(DiscountCard discountCard) {
+    public long save(DiscountCard discountCard) throws RepositoryException {
         try {
             return CRUDHelper.save(discountCard, INSERT_DISCOUNT, discountWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new SavingExceptionHandled();
+            throw new WritingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public Optional<DiscountCard> findById(long id) {
+    public Optional<DiscountCard> findById(long id) throws RepositoryException {
         try {
             return CRUDHelper.findById(FIND_DISCOUNT_BY_ID, id, discountWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException();
+            throw new ReadingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public List<DiscountCard> getAll(int limit, int offset) {
+    public List<DiscountCard> getAll(int limit, int offset) throws RepositoryException {
         try {
             return CRUDHelper.getAll(GET_DISCOUNTS, discountWorker, limit, offset);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException();
+            throw new ReadingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public boolean update(DiscountCard discountCard) {
+    public boolean update(DiscountCard discountCard) throws RepositoryException {
         try {
             return CRUDHelper.update(discountCard, UPDATE_DISCOUNT, discountWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new UpdatingExceptionHandled();
+            throw new WritingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public boolean delete(long id) {
+    public boolean delete(long id) throws RepositoryException {
         try {
             return CRUDHelper.delete(DELETE_DISCOUNT, id);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new DeletionExceptionHandled();
+            throw new WritingException(e.getMessage());
         }
     }
 }

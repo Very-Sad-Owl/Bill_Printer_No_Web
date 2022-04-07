@@ -1,18 +1,15 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
 import com.google.common.base.Defaults;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.handeled.ReadingException;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
-import ru.clevertec.tasks.olga.exception.handeled.DeletionExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.SavingExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.UpdatingExceptionHandled;
+import ru.clevertec.tasks.olga.exception.repository.ReadingException;
+import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.repository.WritingException;
 import ru.clevertec.tasks.olga.repository.CartRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
@@ -43,8 +40,7 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
-    @SneakyThrows
-    public long save(Cart cart) {
+    public long save(Cart cart) throws RepositoryException {
         PreparedStatement st = null;
         PreparedStatement slotSt;
         ConnectionPool pool = null;
@@ -63,7 +59,7 @@ public class CartRepositoryImpl implements CartRepository {
             con.commit();
             return insertedId;
         } catch (SQLException | ConnectionPoolException e) {
-            throw new SavingExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, st);
@@ -71,9 +67,7 @@ public class CartRepositoryImpl implements CartRepository {
         }
     }
 
-    @UseCache
-    @SneakyThrows
-    public Optional<Cart> findById(long id) {
+    public Optional<Cart> findById(long id) throws RepositoryException {
         Optional<Cart> cart;
         PreparedStatement ps = null;
         ConnectionPool pool = null;
@@ -92,7 +86,7 @@ public class CartRepositoryImpl implements CartRepository {
             if (cart.isPresent()) cart.get().setPositions(slots);
             con.commit();
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e);
+            throw new ReadingException(e.getMessage());
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps, rs);
@@ -102,8 +96,7 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
-    @SneakyThrows
-    public List<Cart> getAll(int limit, int offset) {
+    public List<Cart> getAll(int limit, int offset) throws RepositoryException {
         PreparedStatement ps = null;
         ConnectionPool pool = null;
         Connection con = null;
@@ -120,7 +113,7 @@ public class CartRepositoryImpl implements CartRepository {
                 cart.setPositions(slots);
             }
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e);
+            throw new ReadingException(e.getMessage());
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, ps, rs);
@@ -130,8 +123,7 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
-    @SneakyThrows
-    public boolean update(Cart cart) {
+    public boolean update(Cart cart) throws RepositoryException {
         PreparedStatement st = null;
         ConnectionPool pool = null;
         Connection con = null;
@@ -139,17 +131,19 @@ public class CartRepositoryImpl implements CartRepository {
             pool = ConnectionProvider.getConnectionPool();
             con = pool.takeConnection();
             con.setAutoCommit(false);
-            st = CRUDHelper.update(cart, UPDATE_CART, cartWorker, con);
+            st = CRUDHelper.prepareToUpdate(cart, UPDATE_CART, cartWorker, con);
+            if (!CRUDHelper.update(cart, cartWorker, st)) return false;
             for (Slot el : cart.getPositions()){
                 if (el.getId() == Defaults.defaultValue(Long.TYPE)){
                     st = CRUDHelper.save(el, INSERT_SLOT, slotWorker, con);
                 } else {
-                    st = CRUDHelper.update(el, UPDATE_SLOT, slotWorker, con);
+                    st = CRUDHelper.prepareToUpdate(el, UPDATE_SLOT, slotWorker, con);
+                    if (!CRUDHelper.update(el, slotWorker, st)) return false;
                 }
             }
             con.commit();
         } catch (SQLException | ConnectionPoolException e) {
-            throw new UpdatingExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         } finally {
             if (pool != null) {
                 pool.closeConnection(con, st);
@@ -159,12 +153,11 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
-    @SneakyThrows
-    public boolean delete(long id) {
+    public boolean delete(long id) throws RepositoryException {
         try {
             return CRUDHelper.delete(DELETE_CART, id);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new DeletionExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 

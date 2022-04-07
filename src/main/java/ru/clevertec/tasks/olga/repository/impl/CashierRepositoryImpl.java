@@ -1,15 +1,12 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.handeled.ReadingException;
 import ru.clevertec.tasks.olga.entity.Cashier;
-import ru.clevertec.tasks.olga.exception.handeled.DeletionExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.SavingExceptionHandled;
-import ru.clevertec.tasks.olga.exception.handeled.UpdatingExceptionHandled;
+import ru.clevertec.tasks.olga.exception.repository.ReadingException;
+import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.repository.WritingException;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
@@ -33,52 +30,47 @@ public class CashierRepositoryImpl implements CashierRepository {
     }
 
     @Override
-    @SneakyThrows
-    public long save(Cashier cashier) {
+    public long save(Cashier cashier) throws RepositoryException {
         try {
             return CRUDHelper.save(cashier, INSERT_CASHIER, cashierWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new SavingExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public Optional<Cashier> findById(long id) {
+    public Optional<Cashier> findById(long id) throws RepositoryException {
         try {
             return CRUDHelper.findById(FIND_CASHIER_BY_ID, id, cashierWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e);
+            throw new ReadingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public List<Cashier> getAll(int limit, int offset) {
+    public List<Cashier> getAll(int limit, int offset) throws RepositoryException {
         try {
             return CRUDHelper.getAll(GET_CASHIERS, cashierWorker, limit, offset);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e);
+            throw new ReadingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public boolean update(Cashier cashier) {
+    public boolean update(Cashier cashier) throws RepositoryException {
         try {
             return CRUDHelper.update(cashier, UPDATE_CASHIER, cashierWorker);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new UpdatingExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 
     @Override
-    @SneakyThrows
-    public boolean delete(long id) {
+    public boolean delete(long id) throws RepositoryException {
         try {
             return CRUDHelper.delete(DELETE_CASHIER, id);
         } catch (SQLException | ConnectionPoolException e) {
-            throw new DeletionExceptionHandled(e);
+            throw new WritingException(e.getMessage());
         }
     }
 }

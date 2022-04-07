@@ -11,8 +11,6 @@ import ru.clevertec.tasks.olga.dto.ProductDiscountDTO;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
-import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -62,11 +60,19 @@ public class ProductDiscountController {
         return gson.toJson(discountType);
     }
 
-    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public String patch(@RequestBody String json) {
+        ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
+        ProductDiscountType discountType = productDiscountService.patch(paramsDTO);
+        return gson.toJson(discountType);
+    }
+
+    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
-        ProductDiscountType discountType = productDiscountService.update(paramsDTO);
+        ProductDiscountType discountType = productDiscountService.put(paramsDTO);
         return gson.toJson(discountType);
     }
 

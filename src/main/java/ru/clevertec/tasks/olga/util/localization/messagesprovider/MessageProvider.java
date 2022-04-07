@@ -2,8 +2,9 @@ package ru.clevertec.tasks.olga.util.localization.messagesprovider;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
-import ru.clevertec.tasks.olga.exception.handeled.*;
-import ru.clevertec.tasks.olga.exception.handeled.ReadingException;
+import ru.clevertec.tasks.olga.exception.crud.*;
+import ru.clevertec.tasks.olga.exception.repository.ReadingException;
+import ru.clevertec.tasks.olga.exception.repository.WritingException;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;

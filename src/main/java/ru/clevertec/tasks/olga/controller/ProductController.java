@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.ProductParamsDto;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.service.ProductService;
-import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -61,11 +59,19 @@ public class ProductController {
         return gson.toJson(product);
     }
 
-    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public String patch(@RequestBody String json) {
+        ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);
+        Product product = productService.patch(productParams);
+        return gson.toJson(product);
+    }
+
+    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);
-        Product product = productService.update(productParams);
+        Product product = productService.put(productParams);
         return gson.toJson(product);
     }
 

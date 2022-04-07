@@ -36,7 +36,7 @@ public interface Query {
     //discount card
     String INSERT_DISCOUNT = "INSERT INTO card(birthday, discount_id) VALUES (?, ?);";
     String GET_DISCOUNTS = "select * from card join general_discount using(id) order by card.id limit ? offset ?";
-    String FIND_DISCOUNT_BY_ID = "select * from card join general_discount using(id) where card.id = ?";
+    String FIND_DISCOUNT_BY_ID = "select * from card join general_discount on card.discount_id = general_discount.id where card.id = ?";
     String UPDATE_DISCOUNT = "update card set birthday = ?, discount_id = ? where id = ?";
     String DELETE_DISCOUNT = "delete from card where id = ?;";
 

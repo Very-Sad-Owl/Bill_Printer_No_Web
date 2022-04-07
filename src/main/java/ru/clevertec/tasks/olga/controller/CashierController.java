@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
 import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.service.CashierService;
-import ru.clevertec.tasks.olga.util.jsonmapper.JsonMapper;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -61,11 +59,19 @@ public class CashierController {
         return gson.toJson(cashier);
     }
 
-    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public String patch(@RequestBody String json) {
+        CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);
+        Cashier updatedCashier = cashierService.patch(cashierParams);
+        return gson.toJson(updatedCashier);
+    }
+
+    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);
-        Cashier updatedCashier = cashierService.update(cashierParams);
+        Cashier updatedCashier = cashierService.put(cashierParams);
         return gson.toJson(updatedCashier);
     }
 

@@ -1,4 +1,8 @@
-package ru.clevertec.tasks.olga.exception.handeled;
+package ru.clevertec.tasks.olga.exception.crud;
+
+import org.springframework.context.MessageSource;
+
+import java.util.Locale;
 
 public class NotFoundExceptionHandled extends HandledGeneralException {
 
@@ -17,4 +21,11 @@ public class NotFoundExceptionHandled extends HandledGeneralException {
     public NotFoundExceptionHandled(Throwable cause) {
         super(cause);
     }
+
+
+    public String getReasonMessage(MessageSource messageSource, Locale locale){
+        return super.getMessage();
+    }
+
+
 }
