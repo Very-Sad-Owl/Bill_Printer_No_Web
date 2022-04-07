@@ -61,7 +61,7 @@ public class CashierController {
         return gson.toJson(cashier);
     }
 
-    @PatchMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);

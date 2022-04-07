@@ -61,7 +61,7 @@ public class ProductController {
         return gson.toJson(product);
     }
 
-    @PatchMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);

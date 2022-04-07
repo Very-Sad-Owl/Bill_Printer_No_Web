@@ -61,7 +61,7 @@ public class CardTypeController {
         return gson.toJson(cardType);
     }
 
-    @PatchMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         CardTypeDto cardTypeDto = gson.fromJson(json, CardTypeDto.class);

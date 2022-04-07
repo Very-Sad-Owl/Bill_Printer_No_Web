@@ -62,7 +62,7 @@ public class ProductDiscountController {
         return gson.toJson(discountType);
     }
 
-    @PatchMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody String json) {
         ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
