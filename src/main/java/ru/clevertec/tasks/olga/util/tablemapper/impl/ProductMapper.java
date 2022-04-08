@@ -1,23 +1,22 @@
 package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class ProductWorker extends NodeWorker<Product> {
+public class ProductMapper extends ModelRowMapper<Product> {
 
-    private final NodeWorker<ProductDiscountType> discountWorker;
+    private final ModelRowMapper<ProductDiscountType> discountWorker;
 
     @Autowired
-    public ProductWorker(NodeWorker<ProductDiscountType> discountWorker) {
+    public ProductMapper(ModelRowMapper<ProductDiscountType> discountWorker) {
         this.discountWorker = discountWorker;
     }
 

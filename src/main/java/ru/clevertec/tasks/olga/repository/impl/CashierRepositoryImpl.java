@@ -10,7 +10,7 @@ import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,10 +22,10 @@ import static ru.clevertec.tasks.olga.repository.Query.*;
 @Repository
 public class CashierRepositoryImpl implements CashierRepository {
 
-    private final NodeWorker<Cashier> cashierWorker;
+    private final ModelRowMapper<Cashier> cashierWorker;
 
     @Autowired
-    public CashierRepositoryImpl(NodeWorker<Cashier> cashierWorker) {
+    public CashierRepositoryImpl(ModelRowMapper<Cashier> cashierWorker) {
         this.cashierWorker = cashierWorker;
     }
 

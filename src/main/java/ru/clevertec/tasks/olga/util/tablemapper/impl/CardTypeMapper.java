@@ -1,16 +1,15 @@
 package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.CardType;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class CardTypeWorker extends NodeWorker<CardType> {
+public class CardTypeMapper extends ModelRowMapper<CardType> {
 
     @Override
     public CardType nodeToModel(ResultSet rs, boolean isJoinQuery) throws SQLException {

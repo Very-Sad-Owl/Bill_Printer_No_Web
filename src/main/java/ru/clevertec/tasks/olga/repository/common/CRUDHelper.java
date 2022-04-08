@@ -5,7 +5,7 @@ import ru.clevertec.tasks.olga.entity.AbstractModel;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.*;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public class CRUDHelper {
 
-    public static <T extends AbstractModel> long save(T model, String query, NodeWorker<T> worker)
+    public static <T extends AbstractModel> long save(T model, String query, ModelRowMapper<T> worker)
             throws ConnectionPoolException, SQLException {
         PreparedStatement st = null;
         ConnectionPool pool = null;
@@ -32,7 +32,7 @@ public class CRUDHelper {
         }
     }
 
-    public static <T extends AbstractModel> PreparedStatement save(T model, String query, NodeWorker<T> worker,
+    public static <T extends AbstractModel> PreparedStatement save(T model, String query, ModelRowMapper<T> worker,
                                                                    Connection con) throws SQLException {
         PreparedStatement st = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
         worker.modelToNewNode(model, st);
@@ -40,7 +40,7 @@ public class CRUDHelper {
         return st;
     }
 
-    public static <T extends AbstractModel> List<T> getAll(String query, NodeWorker<T> worker, int offset, int limit)
+    public static <T extends AbstractModel> List<T> getAll(String query, ModelRowMapper<T> worker, int offset, int limit)
             throws ConnectionPoolException, SQLException {
         PreparedStatement ps = null;
         ConnectionPool pool = null;
@@ -65,7 +65,7 @@ public class CRUDHelper {
         return found;
     }
 
-    public static <T extends AbstractModel> List<T> getAll(String query, NodeWorker<T> worker,
+    public static <T extends AbstractModel> List<T> getAll(String query, ModelRowMapper<T> worker,
                                                            Connection con, PreparedStatement ps, ResultSet rs,
                                                            int offset, int limit)
             throws SQLException {
@@ -84,7 +84,7 @@ public class CRUDHelper {
         return found;
     }
 
-    public static <T extends AbstractModel> Optional<T> findById(String query, long id, NodeWorker<T> worker)
+    public static <T extends AbstractModel> Optional<T> findById(String query, long id, ModelRowMapper<T> worker)
             throws ConnectionPoolException, SQLException {
         PreparedStatement ps = null;
         ConnectionPool pool = null;
@@ -103,7 +103,7 @@ public class CRUDHelper {
         }
     }
 
-    public static <T extends AbstractModel> Optional<T> findById(String query, long id, NodeWorker<T> worker,
+    public static <T extends AbstractModel> Optional<T> findById(String query, long id, ModelRowMapper<T> worker,
                                                                  Connection con, PreparedStatement ps, ResultSet rs)
             throws SQLException {
         ps = con.prepareStatement(query);
@@ -116,7 +116,7 @@ public class CRUDHelper {
 
     }
 
-    public static <T extends AbstractModel> List<T> findAllById(String query, long id, NodeWorker<T> worker,
+    public static <T extends AbstractModel> List<T> findAllById(String query, long id, ModelRowMapper<T> worker,
                                                                  Connection con, PreparedStatement ps, ResultSet rs)
             throws SQLException {
         List<T> found = new ArrayListImpl<>();
@@ -130,7 +130,7 @@ public class CRUDHelper {
 
     }
 
-    public static <T extends AbstractModel> boolean update(T model, String query, NodeWorker<T> worker)
+    public static <T extends AbstractModel> boolean update(T model, String query, ModelRowMapper<T> worker)
             throws SQLException, ConnectionPoolException {
         ConnectionPool pool = null;
         Connection con = null;
@@ -148,13 +148,13 @@ public class CRUDHelper {
         }
     }
 
-    public static <T extends AbstractModel> boolean update(T model, NodeWorker<T> worker, PreparedStatement ps)
+    public static <T extends AbstractModel> boolean update(T model, ModelRowMapper<T> worker, PreparedStatement ps)
             throws SQLException {
         worker.modelToExisingNode(model, ps);
         return ps.executeUpdate() != 0;
     }
 
-    public static <T extends AbstractModel> PreparedStatement prepareToUpdate(T model, String query, NodeWorker<T> worker, Connection con)
+    public static <T extends AbstractModel> PreparedStatement prepareToUpdate(T model, String query, ModelRowMapper<T> worker, Connection con)
             throws SQLException {
         PreparedStatement ps;
         ps = con.prepareStatement(query);

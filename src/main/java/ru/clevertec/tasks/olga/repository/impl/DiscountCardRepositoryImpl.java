@@ -10,7 +10,7 @@ import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -23,10 +23,10 @@ import static ru.clevertec.tasks.olga.repository.Query.*;
 @Repository
 public class DiscountCardRepositoryImpl implements DiscountCardRepository {
 
-    private final NodeWorker<DiscountCard> discountWorker;
+    private final ModelRowMapper<DiscountCard> discountWorker;
 
     @Autowired
-    public DiscountCardRepositoryImpl(NodeWorker<DiscountCard> discountWorker) {
+    public DiscountCardRepositoryImpl(ModelRowMapper<DiscountCard> discountWorker) {
         this.discountWorker = discountWorker;
     }
 

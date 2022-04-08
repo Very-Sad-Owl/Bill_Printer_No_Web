@@ -11,7 +11,7 @@ import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -23,10 +23,10 @@ import static ru.clevertec.tasks.olga.repository.Query.*;
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
 
-    private final NodeWorker<Product> productWorker;
+    private final ModelRowMapper<Product> productWorker;
 
     @Autowired
-    public ProductRepositoryImpl(NodeWorker<Product> productWorker) {
+    public ProductRepositoryImpl(ModelRowMapper<Product> productWorker) {
         this.productWorker = productWorker;
     }
 

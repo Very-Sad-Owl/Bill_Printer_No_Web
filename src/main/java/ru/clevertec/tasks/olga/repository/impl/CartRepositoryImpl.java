@@ -15,7 +15,7 @@ import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
 import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,11 +30,11 @@ import static ru.clevertec.tasks.olga.repository.Query.*;
 @Slf4j
 public class CartRepositoryImpl implements CartRepository {
 
-    private final NodeWorker<Cart> cartWorker;
-    private final NodeWorker<Slot> slotWorker;
+    private final ModelRowMapper<Cart> cartWorker;
+    private final ModelRowMapper<Slot> slotWorker;
 
     @Autowired
-    public CartRepositoryImpl(NodeWorker<Cart> cartWorker, NodeWorker<Slot> slotWorker) {
+    public CartRepositoryImpl(ModelRowMapper<Cart> cartWorker, ModelRowMapper<Slot> slotWorker) {
         this.cartWorker = cartWorker;
         this.slotWorker = slotWorker;
     }

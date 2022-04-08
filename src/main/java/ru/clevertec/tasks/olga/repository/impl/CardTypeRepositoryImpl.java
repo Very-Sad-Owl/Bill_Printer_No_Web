@@ -9,7 +9,7 @@ import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.CardTypeRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,10 +20,10 @@ import static ru.clevertec.tasks.olga.repository.Query.*;
 @Repository
 public class CardTypeRepositoryImpl implements CardTypeRepository {
 
-    private final NodeWorker<CardType> discountWorker;
+    private final ModelRowMapper<CardType> discountWorker;
 
     @Autowired
-    public CardTypeRepositoryImpl(NodeWorker<CardType> discountWorker) {
+    public CardTypeRepositoryImpl(ModelRowMapper<CardType> discountWorker) {
         this.discountWorker = discountWorker;
     }
 

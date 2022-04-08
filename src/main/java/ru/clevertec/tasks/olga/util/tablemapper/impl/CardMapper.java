@@ -1,10 +1,9 @@
 package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.*;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -12,12 +11,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class DiscountCardWorker extends NodeWorker<DiscountCard> {
+public class CardMapper extends ModelRowMapper<DiscountCard> {
 
-    private final NodeWorker<CardType> discTypeWorker;
+    private final ModelRowMapper<CardType> discTypeWorker;
 
     @Autowired
-    public DiscountCardWorker(NodeWorker<CardType> discTypeWorker) {
+    public CardMapper(ModelRowMapper<CardType> discTypeWorker) {
         this.discTypeWorker = discTypeWorker;
     }
 

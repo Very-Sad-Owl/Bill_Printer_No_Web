@@ -4,19 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.entity.Slot;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class SlotWorker extends NodeWorker<Slot> {
+public class SlotMapper extends ModelRowMapper<Slot> {
 
-    private final NodeWorker<Product> productWorker;
+    private final ModelRowMapper<Product> productWorker;
 
     @Autowired
-    public SlotWorker(NodeWorker<Product> productWorker) {
+    public SlotMapper(ModelRowMapper<Product> productWorker) {
         this.productWorker = productWorker;
     }
 

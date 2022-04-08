@@ -1,16 +1,15 @@
 package ru.clevertec.tasks.olga.util.tablemapper.impl;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
-import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class ProductDiscountWorker extends NodeWorker<ProductDiscountType> {
+public class ProductDiscountMapper extends ModelRowMapper<ProductDiscountType> {
 
     @Override
     public ProductDiscountType nodeToModel(ResultSet rs, boolean isJoinQuery) throws SQLException {
