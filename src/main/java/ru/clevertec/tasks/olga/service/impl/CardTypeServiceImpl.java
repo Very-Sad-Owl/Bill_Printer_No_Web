@@ -4,15 +4,13 @@ import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.exception.crud.*;
 import ru.clevertec.tasks.olga.entity.CardType;
 import ru.clevertec.tasks.olga.dto.CardTypeDto;
-import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.CardNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.CardTypeNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.ProductNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.CardNotFoundException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.CardTypeNotFoundException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.NotFoundException;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.CardTypeRepository;
 import ru.clevertec.tasks.olga.service.CardTypeService;
 
@@ -42,12 +40,11 @@ public class CardTypeServiceImpl
             type.setId(insertedId);
             return type;
         } catch (RepositoryException e) {
-            throw new SavingExceptionHandled(e);
+            throw new SavingException(e);
         }
     }
 
     @Override
-    @SneakyThrows
     public CardType findById(long id) {
         validateId(id);
         try {
@@ -55,10 +52,10 @@ public class CardTypeServiceImpl
             if (discount.isPresent()) {
                 return discount.get();
             } else {
-                throw new CardTypeNotFoundExceptionHandled(id + "");
+                throw new CardTypeNotFoundException(id + "");
             }
         } catch (RepositoryException e) {
-            throw new CardNotFoundExceptionHandled(e);
+            throw new CardNotFoundException(e);
         }
     }
 
@@ -73,10 +70,10 @@ public class CardTypeServiceImpl
         validateId(id);
         try {
             if (!discountRepo.delete(id)) {
-                throw new CardTypeNotFoundExceptionHandled(id + "");
+                throw new DeletionException(new CardTypeNotFoundException(id + ""));
             }
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e);
+            throw new UndefinedException(e);
         }
     }
 
@@ -93,8 +90,10 @@ public class CardTypeServiceImpl
                     .build();
             discountRepo.update(toUpdate);
             return toUpdate;
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -104,11 +103,13 @@ public class CardTypeServiceImpl
         try {
             CardType updated = formDiscount(dto);
             if (!discountRepo.update(updated)) {
-                throw new UpdatingExceptionHandled(new CardTypeNotFoundExceptionHandled(dto.id + ""));
+                throw new UpdatingException(new CardTypeNotFoundException(dto.id + ""));
             }
             return updated;
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 

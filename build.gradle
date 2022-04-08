@@ -38,11 +38,12 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '11.0.2'
     implementation 'com.itextpdf:itext7-core:7.2.1'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
-
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.json:json:20171018'
-
     implementation 'org.flywaydb:flyway-core:8.5.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
+
 
 //Aspect
     implementation group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.6'

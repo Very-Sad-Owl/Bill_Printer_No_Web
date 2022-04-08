@@ -3,15 +3,11 @@ package ru.clevertec.tasks.olga.service.impl;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
 import ru.clevertec.tasks.olga.exception.crud.*;
-import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.CardNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.CashierNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.ProductNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.*;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.service.CashierService;
 
@@ -41,12 +37,11 @@ public class CashierServiceImpl
             cashier.setId(insertedId);
             return cashier;
         } catch (RepositoryException e) {
-            throw new CardNotFoundExceptionHandled(e);
+            throw new CardNotFoundException(e);
         }
     }
 
     @Override
-    @SneakyThrows
     public Cashier findById(long id) {
         validateId(id);
         try {
@@ -54,10 +49,10 @@ public class CashierServiceImpl
             if (cashier.isPresent()) {
                 return cashier.get();
             } else {
-                throw new CashierNotFoundExceptionHandled(id + "");
+                throw new CashierNotFoundException(id + "");
             }
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -72,10 +67,10 @@ public class CashierServiceImpl
         validateId(id);
         try {
             if (!cashierRepository.delete(id)) {
-                throw new BillNotFoundExceptionHandled(id + "");
+                throw new DeletionException(new CashierNotFoundException(id + ""));
             }
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e);
+            throw new UndefinedException(e);
         }
     }
 
@@ -92,14 +87,14 @@ public class CashierServiceImpl
                     .surname(dto.surname == null ? original.getSurname() : dto.surname)
                     .build();
             updated = formCashier(newCashier);
-        } catch (NotFoundExceptionHandled e) {
-            throw new UpdatingExceptionHandled(e);
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         }
         try {
             cashierRepository.update(updated);
             return updated;
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -109,11 +104,13 @@ public class CashierServiceImpl
         Cashier updated = formCashier(dto);
         try {
             if (!cashierRepository.update(updated)) {
-                throw new UpdatingExceptionHandled(new CashierNotFoundExceptionHandled(dto.id + ""));
+                throw new UpdatingException(new CashierNotFoundException(dto.id + ""));
             }
             return updated;
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 

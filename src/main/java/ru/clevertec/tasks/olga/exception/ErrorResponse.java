@@ -1,16 +1,19 @@
 package ru.clevertec.tasks.olga.exception;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 
 @Builder
+@Getter
 public class ErrorResponse {
-    Timestamp timeOccurred;
-    int status;
-    String errorName;
-    String errorMsg;
-    String excName;
+    public Timestamp timeOccurred;
+    public int status;
+    public String errorName;
+    public String errorMsg;
+    public String excName;
 
 }

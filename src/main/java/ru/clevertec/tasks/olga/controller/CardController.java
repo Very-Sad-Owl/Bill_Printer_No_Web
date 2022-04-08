@@ -18,61 +18,49 @@ import java.util.Locale;
 @RequestMapping("/cards")
 public class CardController {
 
-    private final Gson gson;
     private final MessageSource messageSource;
     private final DiscountCardService cardService;
 
     @Autowired
-    public CardController(Gson gson, MessageSource messageSource, DiscountCardService cardService) {
-        this.gson = gson;
+    public CardController(MessageSource messageSource, DiscountCardService cardService) {
         this.messageSource = messageSource;
         this.cardService = cardService;
     }
 
-    @GetMapping(produces = {"application/json"})
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String welcome(Locale loc) {
-        return gson.toJson(
-                messageSource.getMessage("label.guide",
-                        null, loc));
+        return messageSource.getMessage("label.guide", null, loc);
     }
 
     @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+    public List<DiscountCard> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
                       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
-        List<DiscountCard> cards = cardService.getAll(nodesPerPage, page);
-        return gson.toJson(cards);
+        return cardService.getAll(nodesPerPage, page);
     }
 
     @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id) {
-        DiscountCard card = cardService.findById(id);
-        return gson.toJson(card);
+    public DiscountCard find(@RequestParam Integer id) {
+        return cardService.findById(id);
     }
 
     @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public String save(@RequestBody String json) {
-        CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
-        DiscountCard card = cardService.save(cardParamsDTO);
-        return gson.toJson(card);
+    public DiscountCard save(@RequestBody CardParamsDTO params) {
+        return cardService.save(params);
     }
 
     @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String patch(@RequestBody String json) {
-        CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
-        DiscountCard card = cardService.patch(cardParamsDTO);
-        return gson.toJson(card);
+    public DiscountCard patch(@RequestBody CardParamsDTO params) {
+        return cardService.patch(params);
     }
 
     @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json) {
-        CardParamsDTO cardParamsDTO = gson.fromJson(json, CardParamsDTO.class);
-        DiscountCard card = cardService.put(cardParamsDTO);
-        return gson.toJson(card);
+    public DiscountCard update(@RequestBody CardParamsDTO params) {
+        return cardService.put(params);
     }
 
     @DeleteMapping("/delete")

@@ -18,61 +18,49 @@ import java.util.Locale;
 @RequestMapping("/card_types")
 public class CardTypeController {
 
-    private final Gson gson;
     private final MessageSource messageSource;
     private final CardTypeService cardTypeService;
 
     @Autowired
-    public CardTypeController(Gson gson, MessageSource messageSource, CardTypeService cardTypeService) {
-        this.gson = gson;
+    public CardTypeController(MessageSource messageSource, CardTypeService cardTypeService) {
         this.messageSource = messageSource;
         this.cardTypeService = cardTypeService;
     }
 
-    @GetMapping(produces = {"application/json"})
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String welcome(Locale loc) {
-        return gson.toJson(
-                messageSource.getMessage("label.guide",
-                        null, loc));
+        return messageSource.getMessage("label.guide", null, loc);
     }
 
     @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
-        List<CardType> cashiers = cardTypeService.getAll(nodesPerPage, page);
-        return gson.toJson(cashiers);
+    public List<CardType> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+                              @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
+        return cardTypeService.getAll(nodesPerPage, page);
     }
 
     @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id) {
-        CardType cardType = cardTypeService.findById(id);
-        return gson.toJson(cardType);
+    public CardType find(@RequestParam Integer id) {
+        return cardTypeService.findById(id);
     }
 
     @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public String save(@RequestBody String json) {
-        CardTypeDto cardTypeDto = gson.fromJson(json, CardTypeDto.class);
-        CardType cardType = cardTypeService.save(cardTypeDto);
-        return gson.toJson(cardType);
+    public CardType save(@RequestBody CardTypeDto params) {
+        return cardTypeService.save(params);
     }
 
     @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String patch(@RequestBody String json) {
-        CardTypeDto cardTypeDto = gson.fromJson(json, CardTypeDto.class);
-        CardType cardType = cardTypeService.patch(cardTypeDto);
-        return gson.toJson(cardType);
+    public CardType patch(@RequestBody CardTypeDto params) {
+        return cardTypeService.patch(params);
     }
 
     @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json) {
-        CardTypeDto cardTypeDto = gson.fromJson(json, CardTypeDto.class);
-        CardType cardType = cardTypeService.put(cardTypeDto);
-        return gson.toJson(cardType);
+    public CardType update(@RequestBody CardTypeDto params) {
+        return cardTypeService.put(params);
     }
 
     @DeleteMapping("/delete")

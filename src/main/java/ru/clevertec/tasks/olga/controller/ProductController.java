@@ -18,61 +18,49 @@ import java.util.Locale;
 @RequestMapping("/products")
 public class ProductController {
 
-    private final Gson gson;
     private final MessageSource messageSource;
     private final ProductService productService;
 
     @Autowired
-    public ProductController(Gson gson, MessageSource messageSource, ProductService productService) {
-        this.gson = gson;
+    public ProductController(MessageSource messageSource, ProductService productService) {
         this.messageSource = messageSource;
         this.productService = productService;
     }
 
-    @GetMapping(produces = {"application/json"})
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String welcome(Locale loc) {
-        return gson.toJson(
-                messageSource.getMessage("label.guide",
-                        null, loc));
+        return messageSource.getMessage("label.guide", null, loc);
     }
 
     @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
-        List<Product> products = productService.getAll(nodesPerPage, page);
-        return gson.toJson(products);
+    public List<Product> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+                             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
+        return productService.getAll(nodesPerPage, page);
     }
 
     @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id) {
-        Product product = productService.findById(id);
-        return gson.toJson(product);
+    public Product find(@RequestParam Integer id) {
+        return productService.findById(id);
     }
 
     @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public String save(@RequestBody String json) {
-        ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);
-        Product product = productService.save(productParams);
-        return gson.toJson(product);
+    public Product save(@RequestBody ProductParamsDto params) {
+        return productService.save(params);
     }
 
     @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String patch(@RequestBody String json) {
-        ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);
-        Product product = productService.patch(productParams);
-        return gson.toJson(product);
+    public Product patch(@RequestBody ProductParamsDto params) {
+        return productService.patch(params);
     }
 
     @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json) {
-        ProductParamsDto productParams = gson.fromJson(json, ProductParamsDto.class);
-        Product product = productService.put(productParams);
-        return gson.toJson(product);
+    public Product update(@RequestBody ProductParamsDto params) {
+        return productService.put(params);
     }
 
     @DeleteMapping("/delete")

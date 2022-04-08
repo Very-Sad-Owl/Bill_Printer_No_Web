@@ -1,4 +1,4 @@
-package ru.clevertec.tasks.olga.exception.repository;
+package ru.clevertec.tasks.olga.repository.exception;
 
 public class ReadingException extends RepositoryException {
     public ReadingException() {

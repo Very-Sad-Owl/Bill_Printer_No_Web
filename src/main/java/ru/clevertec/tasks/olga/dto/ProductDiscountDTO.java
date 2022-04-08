@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -12,8 +13,8 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper=true)
 public class ProductDiscountDTO extends AbstractDto{
     public String title;
-    @SerializedName("discount")
+    @JsonProperty("discount")
     public double val;
-    @SerializedName("required_quantity")
+    @JsonProperty("required_quantity")
     public int requiredQuantity;
 }

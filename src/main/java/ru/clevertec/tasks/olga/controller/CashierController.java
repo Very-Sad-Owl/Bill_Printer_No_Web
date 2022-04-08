@@ -18,61 +18,49 @@ import java.util.Locale;
 @RequestMapping("/cashiers")
 public class CashierController {
 
-    private final Gson gson;
     private final MessageSource messageSource;
     private final CashierService cashierService;
 
     @Autowired
-    public CashierController(Gson gson, MessageSource messageSource, CashierService cashierService) {
-        this.gson = gson;
+    public CashierController(MessageSource messageSource, CashierService cashierService) {
         this.messageSource = messageSource;
         this.cashierService = cashierService;
     }
 
-    @GetMapping(produces = {"application/json"})
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String welcome(Locale loc) {
-        return gson.toJson(
-                messageSource.getMessage("label.guide",
-                        null, loc));
+        return messageSource.getMessage("label.guide", null, loc);
     }
 
     @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
-        List<Cashier> cashiers = cashierService.getAll(nodesPerPage, page);
-        return gson.toJson(cashiers);
+    public List<Cashier> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+                             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
+        return cashierService.getAll(nodesPerPage, page);
     }
 
     @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id) {
-        Cashier cashier = cashierService.findById(id);
-        return gson.toJson(cashier);
+    public Cashier find(@RequestParam Integer id) {
+        return cashierService.findById(id);
     }
 
     @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public String save(@RequestBody String json) {
-        CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);
-        Cashier cashier = cashierService.save(cashierParams);
-        return gson.toJson(cashier);
+    public Cashier save(@RequestBody CashierParamsDTO params) {
+        return cashierService.save(params);
     }
 
     @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String patch(@RequestBody String json) {
-        CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);
-        Cashier updatedCashier = cashierService.patch(cashierParams);
-        return gson.toJson(updatedCashier);
+    public Cashier patch(@RequestBody CashierParamsDTO params) {
+        return cashierService.patch(params);
     }
 
     @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json) {
-        CashierParamsDTO cashierParams = gson.fromJson(json, CashierParamsDTO.class);
-        Cashier updatedCashier = cashierService.put(cashierParams);
-        return gson.toJson(updatedCashier);
+    public Cashier update(@RequestBody CashierParamsDTO params) {
+        return cashierService.put(params);
     }
 
     @DeleteMapping("/delete")

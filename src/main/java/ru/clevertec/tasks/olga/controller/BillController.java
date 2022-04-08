@@ -1,6 +1,5 @@
 package ru.clevertec.tasks.olga.controller;
 
-import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
 import ru.clevertec.tasks.olga.entity.Cart;
-import ru.clevertec.tasks.olga.exception.repository.WritingException;
+import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.service.CartService;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,40 +25,34 @@ import java.util.Locale;
 @RequestMapping("/bills")
 public class BillController {
 
-    private final Gson gson;
     private final MessageSource messageSource;
     private final CartService cartService;
 
     @Autowired
-    public BillController(Gson gson, MessageSource messageSource, CartService cartService) {
-        this.gson = gson;
+    public BillController(MessageSource messageSource, CartService cartService) {
         this.messageSource = messageSource;
         this.cartService = cartService;
     }
 
-    @GetMapping(produces = {"application/json"})
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String welcome(Locale loc) {
-        return gson.toJson(
-                messageSource.getMessage("label.guide",
-                        null, loc));
+        return messageSource.getMessage("label.guide",null, loc);
     }
 
     @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
-        List<Cart> carts = cartService.getAll(nodesPerPage, page);
-        return gson.toJson(carts);
+    public List<Cart> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
+        return cartService.getAll(nodesPerPage, page);
     }
 
     @SneakyThrows
-    @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.OK)
-    public Object find(@RequestParam (value = "id") Integer id, Locale locale,
-                       @RequestParam (value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
+    @GetMapping("/find")
+    public ResponseEntity<?> find(@RequestParam(value = "id") Integer id, Locale locale,
+                                  @RequestParam(value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
         Cart cart = cartService.findById(id);
         if (!printPdf) {
-            return gson.toJson(cart);
+            return formResponse(cart, MediaType.APPLICATION_JSON, HttpStatus.OK);
         } else {
             Path savedBillPath = cartService.printBill(cart, locale);
             return formPdf(savedBillPath);
@@ -66,14 +60,12 @@ public class BillController {
     }
 
     @SneakyThrows
-    @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
-    @ResponseStatus(HttpStatus.CREATED)
-    public Object save(@RequestBody String json, Locale locale,
-                       @RequestParam (value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
-        CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);
-        Cart cart = cartService.save(cartParamsDTO);
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody CartParamsDTO params, Locale locale,
+                                  @RequestParam(value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
+        Cart cart = cartService.save(params);
         if (!printPdf) {
-            return gson.toJson(cart);
+            return formResponse(cart, MediaType.APPLICATION_JSON, HttpStatus.CREATED);
         } else {
             Path savedBillPath = cartService.printBill(cart, locale);
             return formPdf(savedBillPath);
@@ -82,18 +74,14 @@ public class BillController {
 
     @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String patch(@RequestBody String json) {
-        CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);
-        Cart cart = cartService.patch(cartParamsDTO);
-        return gson.toJson(cart);
+    public Cart patch(@RequestBody CartParamsDTO params) {
+        return cartService.patch(params);
     }
 
     @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json) {
-        CartParamsDTO cartParamsDTO = gson.fromJson(json, CartParamsDTO.class);
-        Cart cart = cartService.put(cartParamsDTO);
-        return gson.toJson(cart);
+    public Cart update(@RequestBody CartParamsDTO params) {
+        return cartService.put(params);
     }
 
     @DeleteMapping("/delete")
@@ -103,7 +91,7 @@ public class BillController {
     }
 
     @SneakyThrows
-    private ResponseEntity<byte[]> formPdf(Path savedBillPath){
+    private ResponseEntity<byte[]> formPdf(Path savedBillPath) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
@@ -113,5 +101,12 @@ public class BillController {
         } catch (IOException e) {
             throw new WritingException(e);
         }
+    }
+
+    @SneakyThrows
+    private ResponseEntity<Cart> formResponse(Cart model, MediaType mediaType, HttpStatus status) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(mediaType);
+        return new ResponseEntity<>(model, headers, status);
     }
 }

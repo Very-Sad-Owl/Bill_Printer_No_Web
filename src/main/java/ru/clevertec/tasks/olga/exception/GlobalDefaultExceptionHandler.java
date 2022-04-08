@@ -2,20 +2,19 @@ package ru.clevertec.tasks.olga.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.clevertec.tasks.olga.exception.crud.*;
-import ru.clevertec.tasks.olga.util.localization.messagesprovider.MessageProvider;
+import ru.clevertec.tasks.olga.exception.crud.notfound.NotFoundException;
+import ru.clevertec.tasks.olga.util.localization.MessageProvider;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Locale;
 
 
 @Slf4j
@@ -23,48 +22,42 @@ import java.util.Locale;
 public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final MessageProvider messageProvider;
-    private final MessageSource messageSource;
-    private static final String ERROR_REASON_PATTERN = "(%s)";
+    private static final String ERROR_REASON_PATTERN = "(id = %s)";
 
     @Autowired
-    public GlobalDefaultExceptionHandler(MessageProvider messageProvider, MessageSource messageSource) {
+    public GlobalDefaultExceptionHandler(MessageProvider messageProvider) {
         this.messageProvider = messageProvider;
-        this.messageSource = messageSource;
     }
 
     @ExceptionHandler(Exception.class)
     public void handlerGlobal(Exception e, HttpServletResponse response, PrintWriter writer) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        writer.print(messageProvider.getMessage(UndefinedExceptionHandled.class.getSimpleName())
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        writer.print(messageProvider.getMessage(UndefinedException.class.getSimpleName())
                 + e.getMessage());
     }
 
-    @ExceptionHandler({NoRequiredArgsExceptionHandled.class, InvalidArgExceptionHandled.class})
-    public ResponseEntity<?> badRequestHandler(HandledGeneralException e) {
+    @ExceptionHandler({NoRequiredArgsException.class, InvalidArgException.class})
+    public ResponseEntity<?> badRequestHandler(GeneralException e) {
         return createResponseEntity(HttpStatus.BAD_REQUEST, e);
     }
 
-    @ExceptionHandler({DeletionExceptionHandled.class, UpdatingExceptionHandled.class, SavingExceptionHandled.class})
-    public ResponseEntity<?> postHandler(HandledGeneralException e, Locale locale) {
-        if (e.getCause().getClass() == NotFoundExceptionHandled.class) {
+    @ExceptionHandler({DeletionException.class, UpdatingException.class, SavingException.class})
+    public ResponseEntity<?> postHandler(GeneralException e) {
+        if (e.getCause() instanceof NotFoundException) {
             String msg = messageProvider.getMessage(e.getClass().getSimpleName())
-                    + ((NotFoundExceptionHandled) e.getCause().getCause()).getReasonMessage(messageSource, locale);
-            return createResponseEntity(HttpStatus.NOT_FOUND, msg, (Exception) e.getCause());
-        } else if (e.getCause() instanceof NotFoundExceptionHandled){
-            String msg =  messageProvider.getMessage(e.getClass().getSimpleName())
-                    + messageProvider.getMessage(NotFoundExceptionHandled.class.getSimpleName())
-                    + ((NotFoundExceptionHandled) e.getCause()).getReasonMessage(messageSource, locale);
-            return createResponseEntity(HttpStatus.NOT_FOUND, msg, new NotFoundExceptionHandled(e));
+                    + messageProvider.getMessage(e.getCause().getClass().getSimpleName())
+                    + String.format(ERROR_REASON_PATTERN, e.getCause().getMessage());
+            return createResponseEntity(HttpStatus.NOT_FOUND, msg, e);
         } else {
             return createResponseEntity(HttpStatus.NOT_FOUND, e);
         }
     }
 
-    @ExceptionHandler({NotFoundExceptionHandled.class})
-    public ResponseEntity<?> notFoundHandler(NotFoundExceptionHandled e, Locale locale) {
+    @ExceptionHandler({NotFoundException.class})
+    public ResponseEntity<?> notFoundHandler(NotFoundException e) {
         String msg = messageProvider.getMessage(e.getClass().getSimpleName())
-                + e.getReasonMessage(messageSource, locale);
-        return createResponseEntity(HttpStatus.NOT_FOUND, msg, new NotFoundExceptionHandled(e));
+                + String.format(ERROR_REASON_PATTERN, e.getMessage());
+        return createResponseEntity(HttpStatus.NOT_FOUND, msg, new NotFoundException(e));
     }
 
     private ResponseEntity<?> createResponseEntity(HttpStatus status, Exception e) {

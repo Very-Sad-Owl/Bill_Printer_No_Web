@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -11,6 +12,6 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper=true)
 public class CardParamsDTO extends AbstractDto{
     public String birthday;
-    @SerializedName("discount_id")
+    @JsonProperty("discount_id")
     public long discountId;
 }

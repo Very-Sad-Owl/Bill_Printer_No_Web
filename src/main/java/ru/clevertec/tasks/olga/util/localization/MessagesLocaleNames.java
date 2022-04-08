@@ -1,9 +1,15 @@
-package ru.clevertec.tasks.olga.util.localization.messagesprovider;
+package ru.clevertec.tasks.olga.util.localization;
 
 public interface MessagesLocaleNames {
     String READING_EXC_MSG = "error.reading";
     String WRITING_EXC_MSG = "error.writing";
     String NOT_FOUND_MSG = "error.not_found";
+    String NOT_FOUND_BILL_MSG = "error.bill_not_found";
+    String NOT_FOUND_CARD_MSG = "error.card_not_found";
+    String NOT_FOUND_CASHIER_MSG = "error.cashier_not_found";
+    String NOT_FOUND_PRODUCT_MSG = "error.product_not_found";
+    String NOT_FOUND_PRODUCT_DISCOUNT_MSG = "error.product_discount_not_found";
+    String NOT_FOUND_CARD_TYPE_MSG = "error.card_type_not_found";
     String UPDATING_MSG = "error.update";
     String DELETING_MSG = "error.delete";
     String SAVING_MSG = "error.save";

@@ -23,7 +23,7 @@ public class Controller {
         this.gson = gson;
     }
 
-    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String welcome(Locale loc) {
         return gson.toJson(
                 messageSource.getMessage("label.guide",

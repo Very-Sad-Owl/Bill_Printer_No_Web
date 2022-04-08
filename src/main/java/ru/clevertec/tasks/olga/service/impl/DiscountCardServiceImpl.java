@@ -4,14 +4,13 @@ import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.exception.crud.*;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
 import ru.clevertec.tasks.olga.dto.CardParamsDTO;
-import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.CardNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.ProductNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.CardNotFoundException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.NotFoundException;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
 import ru.clevertec.tasks.olga.service.CardTypeService;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
@@ -44,13 +43,12 @@ public class DiscountCardServiceImpl
             long insertedId = cardRepo.save(card);
             card.setId(insertedId);
             return card;
-        } catch (RepositoryException | NotFoundExceptionHandled e) {
-            throw new SavingExceptionHandled(e);
+        } catch (RepositoryException | NotFoundException e) {
+            throw new SavingException(e);
         }
     }
 
     @Override
-    @SneakyThrows
     public DiscountCard findById(long id) {
         validateId(id);
         try {
@@ -58,10 +56,10 @@ public class DiscountCardServiceImpl
             if (card.isPresent()) {
                 return card.get();
             } else {
-                throw new CardNotFoundExceptionHandled(id + "");
+                throw new CardNotFoundException(id + "");
             }
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -76,10 +74,10 @@ public class DiscountCardServiceImpl
         validateId(id);
         try {
             if (!cardRepo.delete(id)) {
-                throw new BillNotFoundExceptionHandled(id + "");
+                throw new DeletionException(new BillNotFoundException(id + ""));
             }
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e);
+            throw new UndefinedException(e);
         }
     }
 
@@ -99,14 +97,14 @@ public class DiscountCardServiceImpl
                             : params.discountId)
                     .build();
             updated = formCard(newProduct);
-        } catch (NotFoundExceptionHandled e) {
-            throw new UpdatingExceptionHandled(e);
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         }
         try {
             cardRepo.update(updated);
             return updated;
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -116,24 +114,22 @@ public class DiscountCardServiceImpl
         try {
             DiscountCard updated = formCard(dto);
             if (!cardRepo.update(updated)) {
-                throw new UpdatingExceptionHandled(new CardNotFoundExceptionHandled(dto.id + ""));
+                throw new UpdatingException(new CardNotFoundException(dto.id + ""));
             }
             return updated;
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
     @Override
     public DiscountCard formCard(CardParamsDTO dto) {
-        try {
-            return DiscountCard.builder()
-                    .id(dto.id)
-                    .birthday(LocalDate.parse(dto.birthday))
-                    .cardType(discountService.findById(dto.discountId))
-                    .build();
-        } catch (NotFoundExceptionHandled e) {
-            throw new NotFoundExceptionHandled(e);
-        }
+        return DiscountCard.builder()
+                .id(dto.id)
+                .birthday(LocalDate.parse(dto.birthday))
+                .cardType(discountService.findById(dto.discountId))
+                .build();
     }
 }

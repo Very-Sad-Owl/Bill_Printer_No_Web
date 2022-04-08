@@ -9,9 +9,9 @@ import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
 import ru.clevertec.tasks.olga.exception.crud.*;
-import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.ProductNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.NotFoundException;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.util.printer.impl.PdfPrinter;
 import ru.clevertec.tasks.olga.repository.CartRepository;
 import ru.clevertec.tasks.olga.service.CartService;
@@ -58,8 +58,8 @@ public class CartServiceImpl
             long insertedId = cartRepository.save(cart);
             cart.setId(insertedId);
             return cart;
-        } catch (RepositoryException | NotFoundExceptionHandled e) {
-            throw new SavingExceptionHandled(e);
+        } catch (RepositoryException | NotFoundException e) {
+            throw new SavingException(e);
         }
     }
 
@@ -71,10 +71,10 @@ public class CartServiceImpl
             if (cart.isPresent()) {
                 return cart.get();
             } else {
-                throw new BillNotFoundExceptionHandled(id + "");
+                throw new BillNotFoundException(id + "");
             }
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -89,10 +89,10 @@ public class CartServiceImpl
         validateId(id);
         try {
             if (!cartRepository.delete(id)) {
-                throw new BillNotFoundExceptionHandled(id + "");
+                throw new DeletionException(new BillNotFoundException(id + ""));
             }
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e);
+            throw new UndefinedException(e);
         }
     }
 
@@ -102,11 +102,13 @@ public class CartServiceImpl
         try {
             Cart updated = formCart(dto);
             if (!cartRepository.update(updated)) {
-                throw new UpdatingExceptionHandled(new BillNotFoundExceptionHandled(dto.id + ""));
+                throw new UpdatingException(new BillNotFoundException(dto.id + ""));
             }
             return updated;
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -128,8 +130,8 @@ public class CartServiceImpl
                     .build();
             newCart.products = dto.products;
             updated = formCart(newCart);
-        } catch (NotFoundExceptionHandled e) {
-            throw new UpdatingExceptionHandled(e);
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         }
 
         if (dto.products == null || dto.products.isEmpty()) {
@@ -148,7 +150,7 @@ public class CartServiceImpl
             cartRepository.update(updated);
             return updated;
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -172,7 +174,6 @@ public class CartServiceImpl
 
     @Override
     public Cart formCart(CartParamsDTO cartParamsDTO) {
-        try {
             Cart cart = Cart.builder()
                     .id(cartParamsDTO.id)
                     .positions(formSlots(cartParamsDTO.products))
@@ -181,9 +182,6 @@ public class CartServiceImpl
                     .build();
             cart.calculatePrice();
             return cart;
-        } catch (NotFoundExceptionHandled e) {
-            throw new NotFoundExceptionHandled(e);
-        }
     }
 
     @Override

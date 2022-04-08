@@ -19,61 +19,49 @@ import java.util.Locale;
 @RequestMapping("/product_discounts")
 public class ProductDiscountController {
 
-    private final Gson gson;
     private final MessageSource messageSource;
     private final ProductDiscountService productDiscountService;
 
     @Autowired
-    public ProductDiscountController(Gson gson, MessageSource messageSource, CashierService cashierService, ProductDiscountService productDiscountService) {
-        this.gson = gson;
+    public ProductDiscountController(MessageSource messageSource, ProductDiscountService productDiscountService) {
         this.messageSource = messageSource;
         this.productDiscountService = productDiscountService;
     }
 
-    @GetMapping(produces = {"application/json"})
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String welcome(Locale loc) {
-        return gson.toJson(
-                messageSource.getMessage("label.guide",
-                        null, loc));
+        return messageSource.getMessage("label.guide", null, loc);
     }
 
     @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
-                      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
-        List<ProductDiscountType> productDiscountTypes = productDiscountService.getAll(nodesPerPage, page);
-        return gson.toJson(productDiscountTypes);
+    public List<ProductDiscountType> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+                                         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
+        return productDiscountService.getAll(nodesPerPage, page);
     }
 
     @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String find(@RequestParam Integer id) {
-        ProductDiscountType discountType = productDiscountService.findById(id);
-        return gson.toJson(discountType);
+    public ProductDiscountType find(@RequestParam Integer id) {
+        return productDiscountService.findById(id);
     }
 
     @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public String save(@RequestBody String json) {
-        ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
-        ProductDiscountType discountType = productDiscountService.save(paramsDTO);
-        return gson.toJson(discountType);
+    public ProductDiscountType save(@RequestBody ProductDiscountDTO params) {
+        return productDiscountService.save(params);
     }
 
     @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String patch(@RequestBody String json) {
-        ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
-        ProductDiscountType discountType = productDiscountService.patch(paramsDTO);
-        return gson.toJson(discountType);
+    public ProductDiscountType patch(@RequestBody ProductDiscountDTO params) {
+        return productDiscountService.patch(params);
     }
 
     @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public String update(@RequestBody String json) {
-        ProductDiscountDTO paramsDTO = gson.fromJson(json, ProductDiscountDTO.class);
-        ProductDiscountType discountType = productDiscountService.put(paramsDTO);
-        return gson.toJson(discountType);
+    public ProductDiscountType update(@RequestBody ProductDiscountDTO params) {
+        return productDiscountService.put(params);
     }
 
     @DeleteMapping("/delete")

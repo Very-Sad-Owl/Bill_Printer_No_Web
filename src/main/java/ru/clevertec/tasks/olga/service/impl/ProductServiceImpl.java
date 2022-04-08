@@ -5,13 +5,13 @@ import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.dto.ProductParamsDto;
 import ru.clevertec.tasks.olga.exception.crud.*;
-import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.crud.notfound.ProductNotFoundExceptionHandled;
-import ru.clevertec.tasks.olga.exception.repository.RepositoryException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.NotFoundException;
+import ru.clevertec.tasks.olga.exception.crud.notfound.ProductNotFoundException;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 import ru.clevertec.tasks.olga.service.ProductService;
@@ -43,13 +43,12 @@ public class ProductServiceImpl
             long insertedId = productRepository.save(product);
             product.setId(insertedId);
             return product;
-        } catch (RepositoryException | NotFoundExceptionHandled e) {
-            throw new SavingExceptionHandled(e);
+        } catch (RepositoryException | NotFoundException e) {
+            throw new SavingException(e);
         }
     }
 
     @Override
-    @SneakyThrows
     public Product findById(long id) {
         validateId(id);
         try {
@@ -57,10 +56,10 @@ public class ProductServiceImpl
             if (product.isPresent()) {
                 return product.get();
             } else {
-                throw new ProductNotFoundExceptionHandled(id + "");
+                throw new ProductNotFoundException(id + "");
             }
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -75,10 +74,10 @@ public class ProductServiceImpl
         validateId(id);
         try {
             if (!productRepository.delete(id)) {
-                throw new BillNotFoundExceptionHandled(id + "");
+                throw new DeletionException(new BillNotFoundException(id + ""));
             }
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e);
+            throw new UndefinedException(e);
         }
     }
 
@@ -101,14 +100,14 @@ public class ProductServiceImpl
                             : params.discount_id)
                     .build();
             updated = formProduct(newProduct);
-        } catch (NotFoundExceptionHandled e) {
-            throw new UpdatingExceptionHandled(e);
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         }
         try {
             productRepository.update(updated);
             return updated;
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -118,25 +117,23 @@ public class ProductServiceImpl
         try {
             Product updated = formProduct(dto);
             if (!productRepository.update(updated)) {
-                throw new UpdatingExceptionHandled(new ProductNotFoundExceptionHandled(dto.id + ""));
+                throw new UpdatingException(new ProductNotFoundException(dto.id + ""));
             }
             return updated;
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
         } catch (RepositoryException e) {
-            throw new UndefinedExceptionHandled(e.getMessage());
+            throw new UndefinedException(e.getMessage());
         }
     }
 
     @Override
     public Product formProduct(ProductParamsDto params) {
-        try {
-            return Product.builder()
-                    .id(params.id)
-                    .title(params.title)
-                    .price(params.price)
-                    .discountType(discountService.findById(params.discount_id))
-                    .build();
-        } catch (NotFoundExceptionHandled e) {
-            throw new NotFoundExceptionHandled(e);
-        }
+        return Product.builder()
+                .id(params.id)
+                .title(params.title)
+                .price(params.price)
+                .discountType(discountService.findById(params.discount_id))
+                .build();
     }
 }
