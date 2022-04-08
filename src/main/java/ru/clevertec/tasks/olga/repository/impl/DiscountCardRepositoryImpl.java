@@ -1,65 +1,77 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import by.epam.training.jwd.task03.entity.Node;
-import by.epam.training.jwd.task03.service.exception.ServiceException;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.CardNotFoundException;
-import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.model.DiscountCard;
-import ru.clevertec.tasks.olga.repository.DiscountRepository;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import ru.clevertec.tasks.olga.entity.DiscountCard;
+import ru.clevertec.tasks.olga.repository.exception.ReadingException;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
+import ru.clevertec.tasks.olga.repository.exception.WritingException;
+import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
+import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
+import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
+import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Optional;
+
+import static ru.clevertec.tasks.olga.repository.Query.*;
 
 
-public class DiscountCardRepositoryImpl extends AbstractRepository implements DiscountRepository {
+@Slf4j
+@Repository
+public class DiscountCardRepositoryImpl implements DiscountCardRepository {
 
-    @UseCache
-    @Override
-    public void save(DiscountCard discountCard, String fileName) {
+    private final NodeWorker<DiscountCard> discountWorker;
 
-    }
-
-    @UseCache
-    @Override
-    public DiscountCard findById(long id, String path) {
-        List<DiscountCard> nodes = getAll(path);
-        for (DiscountCard product : nodes){
-            if (product.getId() == id){
-                return product;
-            }
-        }
-        throw new CardNotFoundException("error.card_not_found");
+    @Autowired
+    public DiscountCardRepositoryImpl(NodeWorker<DiscountCard> discountWorker) {
+        this.discountWorker = discountWorker;
     }
 
     @Override
-    public List<DiscountCard> getAll(String path) {
-        Node node;
-        NodeWorker<DiscountCard> worker = workerFactory.getDiscountWorker();
-        List<DiscountCard> products = new ArrayListImpl<>();
-        String fileName = path + ResourceBundle.getBundle("db").getString("path.card");
+    public long save(DiscountCard discountCard) throws RepositoryException {
         try {
-            node = nodeTreeBuilder.parseXML(fileName);
-            worker.nodeToList(node, products);
-        } catch (ServiceException e) {
-            throw new ReadingException("error.reading");
+            return CRUDHelper.save(discountCard, INSERT_DISCOUNT, discountWorker);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new WritingException(e.getMessage());
         }
-        return products;
     }
 
-    @UseCache
     @Override
-    public boolean delete(DiscountCard discountCard, String filePath) {
-        return false;
+    public Optional<DiscountCard> findById(long id) throws RepositoryException {
+        try {
+            return CRUDHelper.findById(FIND_DISCOUNT_BY_ID, id, discountWorker);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new ReadingException(e.getMessage());
+        }
     }
 
-    @UseCache
     @Override
-    public DiscountCard update(DiscountCard discountCard, String filePath) {
-        return null;
+    public List<DiscountCard> getAll(int limit, int offset) throws RepositoryException {
+        try {
+            return CRUDHelper.getAll(GET_DISCOUNTS, discountWorker, limit, offset);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new ReadingException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean update(DiscountCard discountCard) throws RepositoryException {
+        try {
+            return CRUDHelper.update(discountCard, UPDATE_DISCOUNT, discountWorker);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new WritingException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean delete(long id) throws RepositoryException {
+        try {
+            return CRUDHelper.delete(DELETE_DISCOUNT, id);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new WritingException(e.getMessage());
+        }
     }
 }

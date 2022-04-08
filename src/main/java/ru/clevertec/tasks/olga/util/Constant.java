@@ -1,30 +1,56 @@
 package ru.clevertec.tasks.olga.util;
 
 public interface Constant {
+    //config
+    public static final String BASE_PACKAGES_TO_SCAN = "ru.clevertec.tasks.olga";
+
+    //common
+    String PAGINATION_PARAM = "pagination";
+    String OFFSET_PARAM = "offset";
+    String CATEGORY = "table";
+    String ACTION_PARAM = "command";
+    String LANGUAGE = "language";
+
+    //card
+    String CARD_ID_PARAM = "id";
+    String CARD_BIRTHDAY = "birthday";
+    String CART_CARD_TYPE_ID = "discountId";
+
+    //card type
+    String CARD_TYPE_ID = "id";
+    String CARD_TYPE_TITLE = "title";
+    String CARD_TYPE_DISCOUNT_VAL = "discountVal";
+
+    //cart
     String BILL_ID_PARAM = "id";
-    String CARD_ID_PARAM = "card_uid";
-    String CASHIER_ID_PARAM = "cashier_uid";
-    String PATH_PARAM = "path";
-    String ACTION_PARAM = "action";
+    String BILL_CARD_ID_PARAM = "card_uid";
+    String BILL_CASHIER_ID_PARAM = "cashier_uid";
+    String BILL_PRODUCTS = "products";
+
+    //product
+    String PRODUCT_ID_PARAM = "id";
+    String PRODUCT_DISCOUNT_PARAM = "discount_id";
+    String PRODUCT_TITLE_PARAM = "title";
+    String PRODUCT_PRICE_PARAM = "price";
+
+    //product discount
+    String PRODUCT_DISCOUNT_ID = "id";
+    String PRODUCT_DISCOUNT_TITLE = "title";
+    String PRODUCT_DISCOUNT_VAL = "val";
+    String PRODUCT_DISCOUNT_MIN_QUANTITY = "requiredQuantity";
+
+    //cashier
+    String CASHIER_ID_PARAM = "id";
+    String CASHIER_NAME_PARAM = "name";
+    String CASHIER_SURNAME_PARAM = "surname";
+
+    //actions
     String ACTION_PRINT = "print";
     String ACTION_LOG = "log";
-    String ACTION_FIND_BY_ID = "find";
+    String ACTION_UPDATE = "update";
+    String ACTION_SAVE = "save";
+    String ACTION_DELETE = "delete";
 
-    String CASHIER_XML_NAME = "cashier";
-    String CARD_XML_NAME = "card";
-    String CART_XML_NAME = "cart";
-    String PRODUCT_XML_NAME = "product";
-    String CART_COLLECTION_XML_NAME = "carts";
-    String SLOTS_COLLECTION_XML_NAME = "slots";
-    String SLOT_XML_NAME = "slot";
-    String XML_ID_ATTR = "id";
-    String XML_NAME_ATTR = "name";
-    String XML_BDATE_ATTR = "birthday";
-    String XML_SURNAME_ATTR = "surname";
-    String XML_DISCOUNT_ATTR = "discount";
-    String XML_TITLE_ATTR = "title";
-    String XML_PRICE_ATTR = "price";
-    String XML_QUANTITY_ATTR = "quantity";
     String CACHE_ALG = "cache.algorithm";
     String CACHE_CAPACITY = "cache.capacity";
 

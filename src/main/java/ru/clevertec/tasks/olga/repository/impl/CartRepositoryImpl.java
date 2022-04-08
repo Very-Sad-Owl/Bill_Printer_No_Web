@@ -1,127 +1,177 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import by.epam.training.jwd.task03.entity.Node;
-import by.epam.training.jwd.task03.service.exception.ServiceException;
+import com.google.common.base.Defaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.CartNotFoundException;
-import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.exception.WritingException;
-import ru.clevertec.tasks.olga.model.Cart;
+import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.entity.Slot;
+import ru.clevertec.tasks.olga.repository.exception.ReadingException;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
+import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.CartRepository;
-import ru.clevertec.tasks.olga.util.formatter.PseudographicBillFormatter;
-import ru.clevertec.tasks.olga.util.formatter.AbstractBillFormatter;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.orm.impl.CartWorker;
-import lombok.AllArgsConstructor;
-import java.io.*;
+import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
+import ru.clevertec.tasks.olga.repository.connection.ConnectionPool;
+import ru.clevertec.tasks.olga.repository.connection.ConnectionProvider;
+import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
+import ru.clevertec.tasks.olga.util.tablemapper.NodeWorker;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Optional;
 
-@AllArgsConstructor
-public class CartRepositoryImpl extends AbstractRepository implements CartRepository {
+import static ru.clevertec.tasks.olga.repository.Query.*;
 
-    private AbstractBillFormatter formatter;
+@Repository
+@Slf4j
+public class CartRepositoryImpl implements CartRepository {
 
-    public CartRepositoryImpl(){
-        this.formatter = new PseudographicBillFormatter();
+    private final NodeWorker<Cart> cartWorker;
+    private final NodeWorker<Slot> slotWorker;
+
+    @Autowired
+    public CartRepositoryImpl(NodeWorker<Cart> cartWorker, NodeWorker<Slot> slotWorker) {
+        this.cartWorker = cartWorker;
+        this.slotWorker = slotWorker;
     }
 
-    @UseCache
     @Override
-    public void save(Cart cart, String path) {
-        NodeWorker<Cart> worker = workerFactory.getCartWorker();
-        Node cartNode = worker.modelToNode(cart);
-        String fileName = path + ResourceBundle.getBundle("db").getString("path.bill_log");
+    public long save(Cart cart) throws RepositoryException {
+        PreparedStatement st = null;
+        PreparedStatement slotSt;
+        ConnectionPool pool = null;
+        Connection con = null;
         try {
-            boolean isAppend = !isEmpty(fileName);
-            if (isAppend){
-                cartNode = cartNode.getChildNodes().get(0);
+            pool = ConnectionProvider.getConnectionPool();
+            con = pool.takeConnection();
+            con.setAutoCommit(false);
+            st = CRUDHelper.save(cart, INSERT_CART, cartWorker, con);
+            long insertedId = CRUDHelper.getGeneratedKey(st);
+            for (Slot el : cart.getPositions()) {
+                slotSt = CRUDHelper.save(el, INSERT_SLOT, slotWorker, con);
+                long insertedSlotId = CRUDHelper.getGeneratedKey(slotSt);
+                setSlotCartId(insertedSlotId, insertedId, con, slotSt);
             }
-            nodeTreeBuilder.writeXML(fileName, cartNode, isAppend);
-        } catch (ServiceException e) {
-            throw new WritingException("error.writing");
-        } catch (IOException e) {
-            throw new ReadingException("error.writing");
+            con.commit();
+            return insertedId;
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new WritingException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.closeConnection(con, st);
+            }
         }
     }
 
-
-    @UseCache
-    @Override
-    public Cart findById(long id, String filePath){
-        List<Cart> carts = getAll(filePath);
-        for (Cart cart : carts){
-            if (cart.getId() == id){
-                return cart;
-            }
-        }
-        throw new CartNotFoundException("error.bill_not_found");
-    }
-
-    @Override
-    public List<Cart> getAll(String path){
-        Node node;
-        CartWorker worker = (CartWorker) workerFactory.getCartWorker();
-        List<Cart> log = new ArrayListImpl<>();
-        String fileName = path + ResourceBundle.getBundle("db").getString("path.bill_log");
+    public Optional<Cart> findById(long id) throws RepositoryException {
+        Optional<Cart> cart;
+        PreparedStatement ps = null;
+        ConnectionPool pool = null;
+        Connection con = null;
+        ResultSet rs = null;
         try {
-            node = nodeTreeBuilder.parseXML(fileName);
-            worker.nodeToList(node, log);
-        } catch (ServiceException e) {
-            throw new ReadingException("error.reading");
-        }
-        return log;
-    }
-
-    @UseCache
-    @Override
-    public boolean delete(Cart cart, String filePath) {
-        return false;
-    }
-
-    @UseCache
-    @Override
-    public Cart update(Cart cart, String filePath) {
-        return null;
-    }
-
-    @Override
-    public void setFormatter(AbstractBillFormatter formatter) {
-        this.formatter = formatter;
-    }
-
-    @Override
-    public void printBill(Cart cart, String fileURI) {
-        File file = new File(fileURI);
-        try (
-                FileWriter fwriter = new FileWriter(file, false);
-                BufferedWriter bfwriter = new BufferedWriter(fwriter)
-             ){
-            List<String> content = formatter.format(cart);
-
-            for (String line : content){
-                bfwriter.write(line);
-                bfwriter.newLine();
+            pool = ConnectionProvider.getConnectionPool();
+            con = pool.takeConnection();
+            con.setAutoCommit(false);
+            cart = CRUDHelper.findById(FIND_CART_BY_ID, id, cartWorker, con, ps, rs);
+            rs = findSlotsByCartId(id, con, ps);
+            List<Slot> slots = new ArrayListImpl<>();
+            while (rs.next()){
+                slots.add(slotWorker.nodeToModel(rs, false));
             }
-            bfwriter.flush();
-        } catch (IOException e) {
-            throw new WritingException("error.writing");
-        }
-    }
-
-    private boolean isEmpty(String filePath) throws IOException {
-        File file = new File(filePath);
-        FileReader fileReader = new FileReader(file);
-        BufferedReader br = new BufferedReader(fileReader);
-        String line;
-        while ((line = br.readLine()) != null) {
-            if (!line.isEmpty()){
-                br.close();
-                return false;
+            if (cart.isPresent()) cart.get().setPositions(slots);
+            con.commit();
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new ReadingException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.closeConnection(con, ps, rs);
             }
         }
-        br.close();
+        return cart;
+    }
+
+    @Override
+    public List<Cart> getAll(int limit, int offset) throws RepositoryException {
+        PreparedStatement ps = null;
+        ConnectionPool pool = null;
+        Connection con = null;
+        ResultSet rs = null;
+        List<Cart> bills;
+        List<Slot> slots;
+        try {
+            pool = ConnectionProvider.getConnectionPool();
+            con = pool.takeConnection();
+            con.setAutoCommit(false);
+            bills = CRUDHelper.getAll(GET_CARTS, cartWorker, con, ps, rs, limit, offset);
+            for (Cart cart : bills){
+                slots = CRUDHelper.findAllById(FIND_SLOTS_BY_CART_ID, cart.getId(), slotWorker, con, ps, rs);
+                cart.setPositions(slots);
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new ReadingException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.closeConnection(con, ps, rs);
+            }
+        }
+        return bills;
+    }
+
+    @Override
+    public boolean update(Cart cart) throws RepositoryException {
+        PreparedStatement st = null;
+        ConnectionPool pool = null;
+        Connection con = null;
+        try {
+            pool = ConnectionProvider.getConnectionPool();
+            con = pool.takeConnection();
+            con.setAutoCommit(false);
+            st = CRUDHelper.prepareToUpdate(cart, UPDATE_CART, cartWorker, con);
+            if (!CRUDHelper.update(cart, cartWorker, st)) return false;
+            for (Slot el : cart.getPositions()){
+                if (el.getId() == Defaults.defaultValue(Long.TYPE)){
+                    st = CRUDHelper.save(el, INSERT_SLOT, slotWorker, con);
+                } else {
+                    st = CRUDHelper.prepareToUpdate(el, UPDATE_SLOT, slotWorker, con);
+                    if (!CRUDHelper.update(el, slotWorker, st)) return false;
+                }
+            }
+            con.commit();
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new WritingException(e.getMessage());
+        } finally {
+            if (pool != null) {
+                pool.closeConnection(con, st);
+            }
+        }
         return true;
     }
+
+    @Override
+    public boolean delete(long id) throws RepositoryException {
+        try {
+            return CRUDHelper.delete(DELETE_CART, id);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new WritingException(e.getMessage());
+        }
+    }
+
+    private void setSlotCartId(long slotId, long cartId, Connection con, PreparedStatement ps) throws SQLException {
+        ps = con.prepareStatement(SET_SLOT_CART_ID);
+        ps.setLong(1, cartId);
+        ps.setLong(2, slotId);
+        ps.executeUpdate();
+    }
+
+    private ResultSet findSlotsByCartId(long cartId, Connection con, PreparedStatement ps) throws SQLException {
+        ps = con.prepareStatement(FIND_SLOTS_BY_CART_ID);
+        ps.setLong(1, cartId);
+        return ps.executeQuery();
+    }
+
 }

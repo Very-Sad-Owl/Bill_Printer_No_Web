@@ -1,0 +1,112 @@
+package ru.clevertec.tasks.olga.controller;
+
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import ru.clevertec.tasks.olga.dto.CartParamsDTO;
+import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.repository.exception.WritingException;
+import ru.clevertec.tasks.olga.service.CartService;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Locale;
+
+@Slf4j
+@RestController
+@RequestMapping("/bills")
+public class BillController {
+
+    private final MessageSource messageSource;
+    private final CartService cartService;
+
+    @Autowired
+    public BillController(MessageSource messageSource, CartService cartService) {
+        this.messageSource = messageSource;
+        this.cartService = cartService;
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public String welcome(Locale loc) {
+        return messageSource.getMessage("label.guide",null, loc);
+    }
+
+    @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public List<Cart> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
+        return cartService.getAll(nodesPerPage, page);
+    }
+
+    @SneakyThrows
+    @GetMapping("/find")
+    public ResponseEntity<?> find(@RequestParam(value = "id") Integer id, Locale locale,
+                                  @RequestParam(value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
+        Cart cart = cartService.findById(id);
+        if (!printPdf) {
+            return formResponse(cart, MediaType.APPLICATION_JSON, HttpStatus.OK);
+        } else {
+            Path savedBillPath = cartService.printBill(cart, locale);
+            return formPdf(savedBillPath);
+        }
+    }
+
+    @SneakyThrows
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody CartParamsDTO params, Locale locale,
+                                  @RequestParam(value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
+        Cart cart = cartService.save(params);
+        if (!printPdf) {
+            return formResponse(cart, MediaType.APPLICATION_JSON, HttpStatus.CREATED);
+        } else {
+            Path savedBillPath = cartService.printBill(cart, locale);
+            return formPdf(savedBillPath);
+        }
+    }
+
+    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public Cart patch(@RequestBody CartParamsDTO params) {
+        return cartService.patch(params);
+    }
+
+    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseStatus(HttpStatus.OK)
+    public Cart update(@RequestBody CartParamsDTO params) {
+        return cartService.put(params);
+    }
+
+    @DeleteMapping("/delete")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@RequestParam Integer id) {
+        cartService.delete(id);
+    }
+
+    @SneakyThrows
+    private ResponseEntity<byte[]> formPdf(Path savedBillPath) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            String filename = savedBillPath.getFileName().toString();
+            headers.setContentDispositionFormData(filename, filename);
+            return new ResponseEntity<>(Files.readAllBytes(savedBillPath), headers, HttpStatus.OK);
+        } catch (IOException e) {
+            throw new WritingException(e);
+        }
+    }
+
+    @SneakyThrows
+    private ResponseEntity<Cart> formResponse(Cart model, MediaType mediaType, HttpStatus status) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(mediaType);
+        return new ResponseEntity<>(model, headers, status);
+    }
+}

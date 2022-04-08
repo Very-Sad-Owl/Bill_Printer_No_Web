@@ -1,40 +1,125 @@
 package ru.clevertec.tasks.olga.service.impl;
 
-import ru.clevertec.tasks.olga.model.Cashier;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.clevertec.tasks.olga.entity.Cashier;
+import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
+import ru.clevertec.tasks.olga.exception.crud.*;
+import ru.clevertec.tasks.olga.exception.crud.notfound.*;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
 import ru.clevertec.tasks.olga.service.CashierService;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
-@NoArgsConstructor
-public class CashierServiceImpl extends AbstractService<Cashier, CashierRepository> implements CashierService {
+import static ru.clevertec.tasks.olga.util.validation.CRUDParamsValidator.*;
 
-    private CashierRepository cashierRepository = repositoryFactory.getCashierRepository();
+@Service
+public class CashierServiceImpl
+        extends AbstractService
+        implements CashierService {
 
+    private final CashierRepository cashierRepository;
 
-    @Override
-    public void save(Cashier cashier, String fileName) {
-
+    @Autowired
+    public CashierServiceImpl(CashierRepository cashierRepository) {
+        this.cashierRepository = cashierRepository;
     }
 
     @Override
-    public Cashier findById(long id, String filePath) {
-        return cashierRepository.findById(id, filePath);
+    public Cashier save(CashierParamsDTO dto) {
+        validateFullyFilledDto(dto);
+        try {
+            Cashier cashier = formCashier(dto);
+            long insertedId = cashierRepository.save(cashier);
+            cashier.setId(insertedId);
+            return cashier;
+        } catch (RepositoryException e) {
+            throw new CardNotFoundException(e);
+        }
     }
 
     @Override
-    public List<Cashier> getAll(String filePath) {
-        return cashierRepository.getAll(filePath);
+    public Cashier findById(long id) {
+        validateId(id);
+        try {
+            Optional<Cashier> cashier = cashierRepository.findById(id);
+            if (cashier.isPresent()) {
+                return cashier.get();
+            } else {
+                throw new CashierNotFoundException(id + "");
+            }
+        } catch (RepositoryException e) {
+            throw new UndefinedException(e.getMessage());
+        }
     }
 
     @Override
-    public boolean delete(Cashier cashier, String filePath) {
-        return false;
+    @SneakyThrows
+    public List<Cashier> getAll(int limit, int offset) {
+        return cashierRepository.getAll(limit, offset);
     }
 
     @Override
-    public Cashier update(Cashier cashier, String filePath) {
-        return null;
+    public void delete(long id) {
+        validateId(id);
+        try {
+            if (!cashierRepository.delete(id)) {
+                throw new DeletionException(new CashierNotFoundException(id + ""));
+            }
+        } catch (RepositoryException e) {
+            throw new UndefinedException(e);
+        }
+    }
+
+    @Override
+    public Cashier patch(CashierParamsDTO dto) {
+        validatePartlyFilledObject(dto);
+        Cashier original;
+        Cashier updated;
+        try {
+            original = findById(dto.id);
+            CashierParamsDTO newCashier = CashierParamsDTO.builder()
+                    .id(dto.id)
+                    .name(dto.name == null ? original.getName() : dto.name)
+                    .surname(dto.surname == null ? original.getSurname() : dto.surname)
+                    .build();
+            updated = formCashier(newCashier);
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
+        }
+        try {
+            cashierRepository.update(updated);
+            return updated;
+        } catch (RepositoryException e) {
+            throw new UndefinedException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Cashier put(CashierParamsDTO dto) {
+        validateFullyFilledDto(dto);
+        Cashier updated = formCashier(dto);
+        try {
+            if (!cashierRepository.update(updated)) {
+                throw new UpdatingException(new CashierNotFoundException(dto.id + ""));
+            }
+            return updated;
+        } catch (NotFoundException e) {
+            throw new UpdatingException(e);
+        } catch (RepositoryException e) {
+            throw new UndefinedException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Cashier formCashier(CashierParamsDTO params) {
+        return Cashier.builder()
+                .id(params.id)
+                .name(params.name)
+                .surname(params.surname)
+                .build();
     }
 }
