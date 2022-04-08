@@ -16,9 +16,11 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+import static ru.clevertec.tasks.olga.util.Constant.BASE_PACKAGES_TO_SCAN;
+
 
 @Slf4j
-@ControllerAdvice("ru.clevertec.tasks.olga")
+@ControllerAdvice(BASE_PACKAGES_TO_SCAN)
 public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final MessageProvider messageProvider;
@@ -61,7 +63,7 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
     }
 
     private ResponseEntity<?> createResponseEntity(HttpStatus status, Exception e) {
-        log.warn(String.format(e.getClass().getTypeName(), e.getMessage()));
+        log.error(String.format(e.getClass().getTypeName(), e.getMessage()));
         return ResponseEntity.status(status.value())
                 .body(ErrorResponse.builder()
                         .timeOccurred(Timestamp.valueOf(LocalDateTime.now()))
@@ -73,7 +75,7 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
     }
 
     private ResponseEntity<?> createResponseEntity(HttpStatus status, String message, Exception e) {
-        log.warn(String.format(e.getClass().getTypeName(), e.getMessage()));
+        log.error(String.format(e.getClass().getTypeName(), e.getMessage()));
         return ResponseEntity.status(status.value())
                 .body(ErrorResponse.builder()
                         .timeOccurred(Timestamp.valueOf(LocalDateTime.now()))
