@@ -2,7 +2,9 @@ package ru.clevertec.tasks.olga.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.entity.Slot;
@@ -21,15 +23,13 @@ public class CartRepositoryImpl implements CartRepository {
 
     private final ModelRowMapper<Cart> cartWorker;
     private final ModelRowMapper<Slot> slotWorker;
-    private final DataSource dataSource;
-    private final JdbcTemplate jdbcTemplateObject;
+    private final NamedParameterJdbcTemplate template;
 
     @Autowired
-    public CartRepositoryImpl(ModelRowMapper<Cart> cartWorker, ModelRowMapper<Slot> slotWorker, DataSource dataSource, JdbcTemplate jdbcTemplateObject) {
+    public CartRepositoryImpl(ModelRowMapper<Cart> cartWorker, ModelRowMapper<Slot> slotWorker, NamedParameterJdbcTemplate template) {
         this.cartWorker = cartWorker;
         this.slotWorker = slotWorker;
-        this.dataSource = dataSource;
-        this.jdbcTemplateObject = jdbcTemplateObject;
+        this.template = template;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
-    public List<Cart> getAll(int limit, int offset) throws RepositoryException {
+    public List<Cart> getAll(Pageable pageable) throws RepositoryException {
         return null;
     }
 

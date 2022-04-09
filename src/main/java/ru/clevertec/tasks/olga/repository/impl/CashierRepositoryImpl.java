@@ -43,7 +43,6 @@ public class CashierRepositoryImpl implements CashierRepository {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", cashier.getName());
         params.addValue("surname", cashier.getSurname());
-        params.addValue("id", cashier.getId());
         template.update(INSERT_CASHIER, params, keyHolder);
         return keyHolder.getKey().longValue();
     }
