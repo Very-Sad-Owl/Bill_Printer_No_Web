@@ -12,9 +12,9 @@ import java.sql.SQLException;
 public class CardTypeMapper extends ModelRowMapper<CardType> {
 
     @Override
-    public CardType nodeToModel(ResultSet rs, boolean isJoinQuery) throws SQLException {
+    public CardType mapRow(ResultSet rs, int rowNum) throws SQLException {
         return CardType.builder()
-                .id(rs.getLong(!isJoinQuery ? "id" : "discount_id"))
+                .id(rs.getLong("discount_id"))
                 .title(rs.getString("title"))
                 .discount(rs.getDouble("discount"))
                 .build();

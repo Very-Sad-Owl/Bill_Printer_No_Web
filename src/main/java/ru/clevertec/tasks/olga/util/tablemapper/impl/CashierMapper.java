@@ -12,9 +12,9 @@ import java.sql.SQLException;
 public class CashierMapper extends ModelRowMapper<Cashier> {
 
     @Override
-    public Cashier nodeToModel(ResultSet rs, boolean isJoin) throws SQLException {
+    public Cashier mapRow(ResultSet rs, int rowNum) throws SQLException {
         return Cashier.builder()
-                .id(rs.getLong(!isJoin ? "id" : "cashier_id"))
+                .id(rs.getLong("cashier_id"))
                 .name(rs.getString("name"))
                 .surname(rs.getString("surname"))
                 .build();

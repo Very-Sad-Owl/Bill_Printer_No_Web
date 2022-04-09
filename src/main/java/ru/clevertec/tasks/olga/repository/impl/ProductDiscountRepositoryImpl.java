@@ -2,15 +2,16 @@ package ru.clevertec.tasks.olga.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.ProductDiscountRepository;
 import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
-import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
 import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -23,54 +24,38 @@ import static ru.clevertec.tasks.olga.repository.Query.*;
 public class ProductDiscountRepositoryImpl implements ProductDiscountRepository {
 
     private final ModelRowMapper<ProductDiscountType> discountWorker;
+    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplateObject;
 
     @Autowired
-    public ProductDiscountRepositoryImpl(ModelRowMapper<ProductDiscountType> discountWorker) {
+    public ProductDiscountRepositoryImpl(ModelRowMapper<ProductDiscountType> discountWorker, DataSource dataSource, JdbcTemplate jdbcTemplateObject) {
         this.discountWorker = discountWorker;
+        this.dataSource = dataSource;
+        this.jdbcTemplateObject = jdbcTemplateObject;
     }
 
     @Override
-    public long save(ProductDiscountType discountCard) throws RepositoryException {
-        try {
-            return CRUDHelper.save(discountCard, INSERT_PRODUCT_DISCOUNT_TYPE, discountWorker);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public long save(ProductDiscountType productDiscountType) throws RepositoryException {
+        return 0;
     }
 
     @Override
     public Optional<ProductDiscountType> findById(long id) throws RepositoryException {
-        try {
-            return CRUDHelper.findById(FIND_PRODUCT_DISCOUNT_TYPE, id, discountWorker);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new RepositoryException(e.getMessage());
-        }
+        return Optional.empty();
     }
 
     @Override
     public List<ProductDiscountType> getAll(int limit, int offset) throws RepositoryException {
-        try {
-            return CRUDHelper.getAll(GET_PRODUCT_DISCOUNT_TYPES, discountWorker, limit, offset);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new RepositoryException(e.getMessage());
-        }
+        return null;
     }
 
     @Override
-    public boolean update(ProductDiscountType discountCard) throws RepositoryException {
-        try {
-            return CRUDHelper.update(discountCard, UPDATE_PRODUCT_DISCOUNT_TYPE, discountWorker);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean update(ProductDiscountType productDiscountType) throws RepositoryException {
+        return false;
     }
 
     @Override
     public boolean delete(long id) throws RepositoryException {
-        try {
-            return CRUDHelper.delete(DELETE_PRODUCT_DISCOUNT_TYPE, id);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new WritingException(e.getMessage());
-        }
+        return false;
     }
 }

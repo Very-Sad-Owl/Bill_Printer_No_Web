@@ -9,8 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public abstract class ModelRowMapper<T extends AbstractModel> {
-    public abstract T nodeToModel(ResultSet rs, boolean isJoinQuery) throws SQLException;
+public abstract class ModelRowMapper<T extends AbstractModel> implements RowMapper<T> {
     public abstract void modelToNewNode(T model, PreparedStatement st) throws SQLException;
     public abstract void modelToExisingNode(T model, PreparedStatement st) throws SQLException;
 

@@ -21,10 +21,10 @@ public class SlotMapper extends ModelRowMapper<Slot> {
     }
 
     @Override
-    public Slot nodeToModel(ResultSet rs, boolean isJoin) throws SQLException {
+    public Slot mapRow(ResultSet rs, int rowNum) throws SQLException {
         return Slot.builder()
-                .id(rs.getLong(!isJoin ? "id" : "slot_id"))
-                .product(productWorker.nodeToModel(rs, true))
+                .id(rs.getLong("slot_id"))
+                .product(productWorker.mapRow(rs, rowNum))
                 .quantity(rs.getInt("quantity"))
                 .totalPrice(rs.getDouble("price"))
                 .build();

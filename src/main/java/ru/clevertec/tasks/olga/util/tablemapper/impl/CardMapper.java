@@ -21,11 +21,11 @@ public class CardMapper extends ModelRowMapper<DiscountCard> {
     }
 
     @Override
-    public DiscountCard nodeToModel(ResultSet rs, boolean isJoinQuery) throws SQLException {
+    public DiscountCard mapRow(ResultSet rs, int rowNum) throws SQLException {
         return DiscountCard.builder()
-                .id(rs.getLong(!isJoinQuery ? "id" : "card_id"))
+                .id(rs.getLong("card_id"))
                 .birthday(rs.getDate("birthday").toLocalDate())
-                .cardType(discTypeWorker.nodeToModel(rs, true))
+                .cardType(discTypeWorker.mapRow(rs, rowNum))
                 .build();
     }
 

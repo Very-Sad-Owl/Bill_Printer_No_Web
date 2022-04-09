@@ -1,74 +1,71 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.tasks.olga.entity.CardType;
-import ru.clevertec.tasks.olga.repository.exception.ReadingException;
 import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
-import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.CardTypeRepository;
-import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
-import ru.clevertec.tasks.olga.repository.connection.ecxeption.ConnectionPoolException;
 import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
-import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
 import static ru.clevertec.tasks.olga.repository.Query.*;
 
-@Repository
+@Repository //TODO: DataAccessException
 public class CardTypeRepositoryImpl implements CardTypeRepository {
 
     private final ModelRowMapper<CardType> discountWorker;
+    private final NamedParameterJdbcTemplate template;
 
     @Autowired
-    public CardTypeRepositoryImpl(ModelRowMapper<CardType> discountWorker) {
+    public CardTypeRepositoryImpl(ModelRowMapper<CardType> discountWorker, NamedParameterJdbcTemplate template) {
         this.discountWorker = discountWorker;
+        this.template = template;
     }
 
     @Override
-    public long save(CardType discountCard) throws RepositoryException {
-        try {
-            return CRUDHelper.save(discountCard, INSERT_DISCOUNT_TYPE, discountWorker);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public long save(CardType cardType) throws RepositoryException {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", cardType.getTitle());
+        params.addValue("discount", cardType.getDiscount());
+        params.addValue("id", cardType.getId());
+        template.update(INSERT_DISCOUNT_TYPE, params, keyHolder);
+        return keyHolder.getKey().longValue();
     }
 
     @Override
     public Optional<CardType> findById(long id) throws RepositoryException {
-        try {
-            return CRUDHelper.findById(FIND_DISCOUNT_TYPE, id, discountWorker);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e.getMessage());
-        }
+        return Optional.ofNullable(template.queryForObject(FIND_DISCOUNT_TYPE,
+                new MapSqlParameterSource("id", id), discountWorker));
     }
 
     @Override
-    public List<CardType> getAll(int limit, int offset) throws RepositoryException {
-        try {
-            return CRUDHelper.getAll(GET_DISCOUNT_TYPES, discountWorker, limit, offset);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new ReadingException(e.getMessage());
-        }
+    public List<CardType> getAll(Pageable pageable) throws RepositoryException {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("page_limit", pageable.getPageSize());
+        params.addValue("page", pageable.getPageNumber());
+        return template.query(GET_DISCOUNT_TYPES, params, discountWorker);
     }
 
     @Override
-    public boolean update(CardType discountCard) throws RepositoryException {
-        try {
-            return CRUDHelper.update(discountCard, UPDATE_DISCOUNT_TYPE, discountWorker);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean update(CardType cardType) throws RepositoryException {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", cardType.getTitle());
+        params.addValue("discount", cardType.getDiscount());
+        params.addValue("id", cardType.getId());
+        return template.update(UPDATE_DISCOUNT_TYPE, params) != 0;
     }
 
     @Override
     public boolean delete(long id) throws RepositoryException {
-        try {
-            return CRUDHelper.delete(DELETE_DISCOUNT_TYPE, id);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new WritingException(e.getMessage());
-        }
+        return template.update(DELETE_DISCOUNT_TYPE, new MapSqlParameterSource("id", id)) != 0;
     }
 }

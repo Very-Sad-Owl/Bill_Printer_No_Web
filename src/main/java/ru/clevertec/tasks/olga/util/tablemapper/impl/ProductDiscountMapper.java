@@ -12,9 +12,9 @@ import java.sql.SQLException;
 public class ProductDiscountMapper extends ModelRowMapper<ProductDiscountType> {
 
     @Override
-    public ProductDiscountType nodeToModel(ResultSet rs, boolean isJoinQuery) throws SQLException {
+    public ProductDiscountType mapRow(ResultSet rs, int rowNum) throws SQLException {
         return ProductDiscountType.builder()
-                .id(rs.getLong(!isJoinQuery ? "id" : "discount_id"))
+                .id(rs.getLong("discount_id"))
                 .requiredMinQuantity(rs.getInt("required_quantity"))
                 .discount(rs.getDouble("discount_val"))
                 .title(rs.getString("discount_title"))

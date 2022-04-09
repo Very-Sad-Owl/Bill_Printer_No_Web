@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.repository;
 
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.tasks.olga.entity.AbstractModel;
 import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 
@@ -7,10 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CRUDRepository<E extends AbstractModel> {
-
     long save(E e) throws RepositoryException;
     Optional<E> findById(long id) throws RepositoryException;
-    List<E> getAll(int limit, int offset) throws RepositoryException;
+    List<E> getAll(Pageable pageable) throws RepositoryException;
     boolean update(E e) throws RepositoryException;
     boolean delete(long id) throws RepositoryException;
 }

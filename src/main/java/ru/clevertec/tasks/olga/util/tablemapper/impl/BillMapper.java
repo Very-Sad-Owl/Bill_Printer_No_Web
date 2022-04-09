@@ -22,16 +22,6 @@ public class BillMapper extends ModelRowMapper<Cart> {
     }
 
     @Override
-    public Cart nodeToModel(ResultSet rs, boolean isJoinQuery) throws SQLException {
-        return Cart.builder()
-                .id(rs.getLong(!isJoinQuery ? "id" : "cart_id"))
-                .cashier(cashierWorker.nodeToModel(rs, true))
-                .discountCard(discountWorker.nodeToModel(rs, true))
-                .price(rs.getDouble("price"))
-                .build();
-    }
-
-    @Override
     public void modelToNewNode(Cart model, PreparedStatement st) throws SQLException {
         st.setLong(1, model.getDiscountCard().getId());
         st.setLong(2, model.getCashier().getId());
@@ -44,5 +34,15 @@ public class BillMapper extends ModelRowMapper<Cart> {
         st.setLong(2, model.getCashier().getId());
         st.setDouble(3, model.getPrice());
         st.setLong(4, model.getId());
+    }
+
+    @Override
+    public Cart mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return Cart.builder()
+                .id(rs.getLong("bill_id"))
+                .cashier(cashierWorker.mapRow(rs, rowNum))
+                .discountCard(discountWorker.mapRow(rs, rowNum))
+                .price(rs.getDouble("price"))
+                .build();
     }
 }

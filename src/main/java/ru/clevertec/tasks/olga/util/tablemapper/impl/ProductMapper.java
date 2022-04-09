@@ -21,11 +21,11 @@ public class ProductMapper extends ModelRowMapper<Product> {
     }
 
     @Override
-    public Product nodeToModel(ResultSet rs, boolean isJoin) throws SQLException {
+    public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
         Product found = new Product();
-        found.setId(rs.getLong(!isJoin ? "id" : "product_id"));
+        found.setId(rs.getLong("product_id"));
         found.setTitle(rs.getString("title"));
-        found.setDiscountType(discountWorker.nodeToModel(rs, true));
+        found.setDiscountType(discountWorker.mapRow(rs, rowNum));
         found.setPrice(rs.getDouble("price"));
         return found;
     }

@@ -18,11 +18,11 @@ public interface Query {
     String DELETE_CART = "delete from cart where id = ?;";
 
     //cashier
-    String INSERT_CASHIER = "INSERT INTO cashier(name, surname) VALUES (?, ?);";
-    String GET_CASHIERS = "select * from cashier order by id limit ? offset ?;";
-    String FIND_CASHIER_BY_ID = "select * from cashier where id = ?;";
-    String UPDATE_CASHIER = "UPDATE cashier set name=?, surname=? WHERE id = ?;";
-    String DELETE_CASHIER = "DELETE FROM cashier WHERE id = ?;";
+    String INSERT_CASHIER = "INSERT INTO cashiers(name, surname) VALUES (:name, :surname);";
+    String GET_CASHIERS = "select * from cashiers order by id limit :page_limit offset :page;";
+    String FIND_CASHIER_BY_ID = "select * from cashiers where id = :id;";
+    String UPDATE_CASHIER = "UPDATE cashiers set name = :name, surname = :surname WHERE id = :id;";
+    String DELETE_CASHIER = "DELETE FROM cashiers WHERE id = :id;";
 
     //slot
     String INSERT_SLOT = "INSERT INTO slot(product_id, quantity, price) VALUES (?, ?, ?);";
@@ -48,9 +48,9 @@ public interface Query {
     String DELETE_PRODUCT_DISCOUNT_TYPE = "delete from product_discount where id = ?;";
 
     //discount type
-    String INSERT_DISCOUNT_TYPE = "INSERT INTO general_discount(title, discount) VALUES (?, ?);";
-    String GET_DISCOUNT_TYPES = "select * from general_discount order by id limit ? offset ?;";
-    String FIND_DISCOUNT_TYPE = "select * from general_discount where id = ?;";
-    String UPDATE_DISCOUNT_TYPE = "UPDATE general_discount set title = ?, discount = ? WHERE id = ?;";
-    String DELETE_DISCOUNT_TYPE = "delete from general_discount WHERE id = ?;";
+    String INSERT_DISCOUNT_TYPE = "INSERT INTO card_types(title, discount) VALUES (:title, :discount);";
+    String GET_DISCOUNT_TYPES = "select * from card_types order by id limit :page_limit offset :page;";
+    String FIND_DISCOUNT_TYPE = "select * from card_types where id = :id;";
+    String UPDATE_DISCOUNT_TYPE = "UPDATE card_types set title = :title, discount = :discount WHERE id = :id;";
+    String DELETE_DISCOUNT_TYPE = "delete from card_types WHERE id = :id;";
 }
