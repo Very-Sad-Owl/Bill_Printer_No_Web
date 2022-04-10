@@ -36,7 +36,7 @@ public class ProductDiscountController {
 
     @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDiscountType> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
+    public List<ProductDiscountType> log(@RequestParam(value = "nodes", required = false, defaultValue = "${pagination.page_size}") Integer nodesPerPage,
                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
         PageRequest pageRequest = PageRequest.of(page, nodesPerPage);
         return productDiscountService.getAll(pageRequest);

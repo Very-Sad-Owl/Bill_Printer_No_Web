@@ -3,6 +3,7 @@ package ru.clevertec.tasks.olga.controller;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -42,7 +43,7 @@ public class BillController {
 
     @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public List<Cart> log(@RequestParam(value = "nodes", required = false, defaultValue = "5") Integer nodesPerPage,
+    public List<Cart> log(@RequestParam(value = "nodes", required = false, defaultValue = "${pagination.page_size}") Integer nodesPerPage,
                           @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
         PageRequest pageRequest = PageRequest.of(page, nodesPerPage);
         return billService.getAll(pageRequest);

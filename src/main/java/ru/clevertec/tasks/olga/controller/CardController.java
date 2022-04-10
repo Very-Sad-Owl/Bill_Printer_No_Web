@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.CardParamsDTO;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -35,8 +36,8 @@ public class CardController {
 
     @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public List<DiscountCard> log(@RequestParam(value = "nodes", required = false, defaultValue = "5") Integer nodesPerPage,
-                      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
+    public List<DiscountCard> log(@RequestParam(value = "nodes", required = false, defaultValue = "${pagination.page_size}") Integer nodesPerPage,
+                                  @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
         PageRequest pageRequest = PageRequest.of(page, nodesPerPage);
         return cardService.getAll(pageRequest);
     }
