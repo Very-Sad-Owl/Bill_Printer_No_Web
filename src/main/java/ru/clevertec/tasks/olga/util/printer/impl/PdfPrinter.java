@@ -19,13 +19,13 @@ import com.itextpdf.layout.renderer.IRenderer;
 import com.itextpdf.layout.renderer.TextRenderer;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.repository.exception.WritingException;
-import ru.clevertec.tasks.olga.util.resourceprovider.AppPropertiesService;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
 import com.itextpdf.layout.Document;
-import ru.clevertec.tasks.olga.util.resourceprovider.MessageLocaleService;
-
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -38,21 +38,30 @@ import static ru.clevertec.tasks.olga.util.Constant.FILENAME_PDF_FORMAT;
 @Component
 public class PdfPrinter extends AbstractPrinter {
 
-    private static final String PRINT_PATH = AppPropertiesService.getMessage("path.default");
-    private static final String BACKGROUND_PDF = AppPropertiesService.getMessage("bill.template");
-    private final char delimiter = MessageLocaleService
-            .getMessage("label.pseudographics_delimiter").charAt(0);
-    private final char lineDelimiter = MessageLocaleService
-            .getMessage("label.pseudographics_char").charAt(0);
+    MessageSource messageSource;
+    @Value( "${path.default}" )
+    private static String PRINT_PATH;
+    @Value( "${bill.template}" )
+    private static String BACKGROUND_PDF;
+    @Value( "${bill.delimiter}" )
+    private static char DELIMITER;
+    @Value( "${bill.line_delimiter}")
+    private static char LINE_DELIMITER;
+    @Value( "${bill.font}")
+    private static String FONT;
+    @Value( "${bill.encoding}")
+    private static String ENCODING;
+
+    @Autowired
+    public PdfPrinter(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @Override
     @SneakyThrows
     public String print(List<String> content) {
         try {
-            PdfFont font = PdfFontFactory.createFont(
-                    AppPropertiesService.getMessage("bill.font"),
-                    AppPropertiesService.getMessage("bill.encoding")
-            );
+            PdfFont font = PdfFontFactory.createFont(FONT, ENCODING);
 
             PdfDocument backPdfDocument = new PdfDocument(new PdfReader(BACKGROUND_PDF));
 
@@ -75,19 +84,19 @@ public class PdfPrinter extends AbstractPrinter {
                     .setFontSize(14f);
             for (String line : content) {
                 Cell c = new Cell().setBorder(Border.NO_BORDER);
-                if (line.charAt(0) == delimiter) {
-                    c.add(new Paragraph(printMonocharLine(delimiter, MAX_SYMBOLS_PER_LINE)));
+                if (line.charAt(0) == DELIMITER) {
+                    c.add(new Paragraph(printMonocharLine(DELIMITER, MAX_SYMBOLS_PER_LINE)));
                     receiptTable.addCell(c);
                 } else if (line.contains("%s")) {
                     int literals = StringUtils.countMatches(line, "%s");
                     char[] varargs = new char[literals];
                     for (int i = 0; i < literals; i++) {
-                        varargs[i] = delimiter;
+                        varargs[i] = DELIMITER;
                     }
                     c.add(new Paragraph(replaceFormatLiteral(line, varargs)));
                     receiptTable.addCell(c);
-                } else if (line.charAt(0) == lineDelimiter) {
-                    c.add(new Paragraph(printMonocharLine(lineDelimiter, MAX_SYMBOLS_PER_LINE)));
+                } else if (line.charAt(0) == LINE_DELIMITER) {
+                    c.add(new Paragraph(printMonocharLine(LINE_DELIMITER, MAX_SYMBOLS_PER_LINE)));
                     receiptTable.addCell(c);
                 } else {
                     c.add(new Paragraph(line));

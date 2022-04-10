@@ -1,35 +1,44 @@
 package ru.clevertec.tasks.olga.util.printer.impl;
 
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
-import ru.clevertec.tasks.olga.util.resourceprovider.MessageLocaleService;
 
 import java.util.List;
+import java.util.Locale;
 
 @Component
 public class ConsolePrinter extends AbstractPrinter {
-    private final char delimiter = MessageLocaleService
-            .getMessage("label.pseudographics_delimiter").charAt(0);
-    private final char lineDelimiter = MessageLocaleService
-            .getMessage("label.pseudographics_char").charAt(0);
+
+    MessageSource messageSource;
+    @Value( "${bill.delimiter}" )
+    private static char DELIMITER;
+    @Value( "${bill.line_delimiter}")
+    private static char LINE_DELIMITER;
+
+    @Autowired
+    public ConsolePrinter(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @Override
     public String print(List<String> content) {
         StringBuilder res = new StringBuilder();
         for (String line : content){
-          if (line.charAt(0) == delimiter){
-              res.append(printMonocharLine(delimiter, MAX_SYMBOLS_PER_LINE));
+          if (line.charAt(0) == DELIMITER){
+              res.append(printMonocharLine(DELIMITER, MAX_SYMBOLS_PER_LINE));
           } else if (line.contains("%s")){
               int literals = StringUtils.countMatches(line, "%s");
               char[] varargs = new char[literals];
               for (int i = 0 ; i < literals ; i++){
-                  varargs[i] = delimiter;
+                  varargs[i] = DELIMITER;
               }
               res.append(replaceFormatLiteral(line, varargs));
-          } else if (line.charAt(0) == lineDelimiter){
-              res.append(printMonocharLine(lineDelimiter, MAX_SYMBOLS_PER_LINE));
+          } else if (line.charAt(0) == LINE_DELIMITER){
+              res.append(printMonocharLine(LINE_DELIMITER, MAX_SYMBOLS_PER_LINE));
           }
         }
         return res.toString();

@@ -5,16 +5,24 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.cache.Cache;
-import ru.clevertec.tasks.olga.cache.CacheFactory;
 import ru.clevertec.tasks.olga.entity.AbstractModel;
 
 import java.util.Optional;
 
 @Slf4j
 @Aspect
+@Component
 public class CacheAspect {
-    private final Cache<Long, AbstractModel> cache = CacheFactory.getInstance().getCache();
+
+    private final Cache<Long, AbstractModel> cache;
+
+    @Autowired
+    public CacheAspect(Cache<Long, AbstractModel> cache) {
+        this.cache = cache;
+    }
 
     @Pointcut("@annotation(ru.clevertec.tasks.olga.annotation.UseCache)")
     public void useCache() {

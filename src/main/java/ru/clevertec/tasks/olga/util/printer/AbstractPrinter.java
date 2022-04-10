@@ -1,23 +1,13 @@
 package ru.clevertec.tasks.olga.util.printer;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.clevertec.tasks.olga.util.resourceprovider.AppPropertiesService;
-
 import java.util.List;
-import java.util.ResourceBundle;
 
 @Component
 public abstract class AbstractPrinter {
+    @Value( "${bill.line_len}" )
     public static int MAX_SYMBOLS_PER_LINE;
-
-    static {
-        try {
-            MAX_SYMBOLS_PER_LINE = Integer.parseInt(
-                    AppPropertiesService.getMessage("bill.line_len"));
-        } catch (Exception e){
-            MAX_SYMBOLS_PER_LINE = 90;
-        }
-    }
 
     public abstract String print(List<String> content);
 }

@@ -55,27 +55,5 @@ public class WebConfig implements WebMvcConfigurer {
         configurer.enable();
     }
 
-    @Bean
-    public Gson gson() {
-        return new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class,
-                        (JsonSerializer<LocalDate>) (localDateTime, srcType, context) ->
-                                new JsonPrimitive(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(localDateTime)))
-                .registerTypeAdapter(LocalDate.class,
-                        (JsonDeserializer<LocalDate>) (json, typeOfT, context) ->
-                                LocalDate.parse(json.getAsString(),
-                                        DateTimeFormatter.ofPattern("dd-MM-yyyy").withLocale(Locale.ENGLISH)))
-                .create();
-    }
-
-    @Bean
-    public ObjectMapper mapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper;
-    }
-
 }
 

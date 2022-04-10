@@ -13,7 +13,7 @@ import static ru.clevertec.tasks.olga.util.Constant.BASE_PACKAGES_TO_SCAN;
 public class AppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[]{JdbcConfig.class};
+        return new Class[]{AppConfig.class, JdbcConfig.class};
     }
 
     @Override

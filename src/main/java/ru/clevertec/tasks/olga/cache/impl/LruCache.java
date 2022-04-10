@@ -1,5 +1,6 @@
 package ru.clevertec.tasks.olga.cache.impl;
 
+import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.cache.Cache;
 
 import java.util.Collection;

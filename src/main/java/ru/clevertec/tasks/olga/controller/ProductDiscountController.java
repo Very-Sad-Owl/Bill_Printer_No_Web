@@ -38,7 +38,7 @@ public class ProductDiscountController {
     @ResponseStatus(HttpStatus.OK)
     public List<ProductDiscountType> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
-        PageRequest pageRequest = PageRequest.of(0, 3);
+        PageRequest pageRequest = PageRequest.of(page, nodesPerPage);
         return productDiscountService.getAll(pageRequest);
     }
 

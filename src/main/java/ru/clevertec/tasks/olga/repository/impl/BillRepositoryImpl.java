@@ -61,7 +61,7 @@ public class BillRepositoryImpl implements BillRepository {
     @Override
     public Optional<Cart> findById(long id) throws RepositoryException {
         List<Slot> slots = template.query(FIND_SLOTS_BY_CART_ID,
-                new MapSqlParameterSource("id", id), slotWorker);
+                new MapSqlParameterSource("cart", id), slotWorker);
         Optional<Cart> cart = Optional.ofNullable(template.queryForObject(FIND_CART_BY_ID,
                 new MapSqlParameterSource("id", id), cartWorker));
         cart.ifPresent(value -> value.setPositions(slots));
@@ -76,7 +76,7 @@ public class BillRepositoryImpl implements BillRepository {
         List<Cart> bills = template.query(GET_CARTS, params, cartWorker);
         for (Cart bill : bills) {
             List<Slot> slots = template.query(FIND_SLOTS_BY_CART_ID,
-                    new MapSqlParameterSource("id", bill.getId()), slotWorker);
+                    new MapSqlParameterSource("cart", bill.getId()), slotWorker);
             bill.setPositions(slots);
         }
         return bills;
