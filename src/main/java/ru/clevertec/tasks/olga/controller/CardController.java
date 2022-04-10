@@ -1,6 +1,5 @@
 package ru.clevertec.tasks.olga.controller;
 
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -14,6 +13,8 @@ import ru.clevertec.tasks.olga.service.DiscountCardService;
 
 import java.util.List;
 import java.util.Locale;
+
+import static ru.clevertec.tasks.olga.util.Constant.*;
 
 @Slf4j
 @RestController
@@ -34,7 +35,7 @@ public class CardController {
         return messageSource.getMessage("label.guide", null, loc);
     }
 
-    @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ACTION_LOG, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public List<DiscountCard> log(@RequestParam(value = "nodes", required = false, defaultValue = "${pagination.page_size}") Integer nodesPerPage,
                                   @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
@@ -42,31 +43,31 @@ public class CardController {
         return cardService.getAll(pageRequest);
     }
 
-    @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ACTION_FIND, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public DiscountCard find(@RequestParam Integer id) {
         return cardService.findById(id);
     }
 
-    @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = ACTION_SAVE, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public DiscountCard save(@RequestBody CardParamsDTO params) {
         return cardService.save(params);
     }
 
-    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = ACTION_PATCH, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public DiscountCard patch(@RequestBody CardParamsDTO params) {
         return cardService.patch(params);
     }
 
-    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = ACTION_PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public DiscountCard update(@RequestBody CardParamsDTO params) {
         return cardService.put(params);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping(ACTION_DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam Integer id) {
         cardService.delete(id);

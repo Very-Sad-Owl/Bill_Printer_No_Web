@@ -14,6 +14,8 @@ import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.service.ProductDiscountService;
 import java.util.List;
 import java.util.Locale;
+import static ru.clevertec.tasks.olga.util.Constant.*;
+import static ru.clevertec.tasks.olga.util.Constant.*;
 
 @Slf4j
 @RestController
@@ -34,7 +36,7 @@ public class ProductDiscountController {
         return messageSource.getMessage("label.guide", null, loc);
     }
 
-    @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ACTION_LOG, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public List<ProductDiscountType> log(@RequestParam(value = "nodes", required = false, defaultValue = "${pagination.page_size}") Integer nodesPerPage,
                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
@@ -42,31 +44,31 @@ public class ProductDiscountController {
         return productDiscountService.getAll(pageRequest);
     }
 
-    @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ACTION_FIND, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public ProductDiscountType find(@RequestParam Integer id) {
         return productDiscountService.findById(id);
     }
 
-    @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = ACTION_SAVE, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public ProductDiscountType save(@RequestBody ProductDiscountDTO params) {
         return productDiscountService.save(params);
     }
 
-    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = ACTION_PATCH, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public ProductDiscountType patch(@RequestBody ProductDiscountDTO params) {
         return productDiscountService.patch(params);
     }
 
-    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = ACTION_PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public ProductDiscountType update(@RequestBody ProductDiscountDTO params) {
         return productDiscountService.put(params);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping(ACTION_DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam Integer id) {
         productDiscountService.delete(id);

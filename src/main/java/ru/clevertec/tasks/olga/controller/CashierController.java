@@ -13,6 +13,7 @@ import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.service.CashierService;
 import java.util.List;
 import java.util.Locale;
+import static ru.clevertec.tasks.olga.util.Constant.*;
 
 @Slf4j
 @RestController
@@ -33,7 +34,7 @@ public class CashierController {
         return messageSource.getMessage("label.guide", null, loc);
     }
 
-    @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ACTION_LOG, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public List<Cashier> log(@RequestParam(value = "nodes", required = false, defaultValue = "${pagination.page_size}") Integer nodesPerPage,
                              @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
@@ -41,31 +42,31 @@ public class CashierController {
         return cashierService.getAll(pageRequest);
     }
 
-    @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ACTION_FIND, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Cashier find(@RequestParam Integer id) {
         return cashierService.findById(id);
     }
 
-    @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = ACTION_SAVE, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public Cashier save(@RequestBody CashierParamsDTO params) {
         return cashierService.save(params);
     }
 
-    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = ACTION_PATCH, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Cashier patch(@RequestBody CashierParamsDTO params) {
         return cashierService.patch(params);
     }
 
-    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = ACTION_PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Cashier update(@RequestBody CashierParamsDTO params) {
         return cashierService.put(params);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping(ACTION_DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam Integer id) {
         cashierService.delete(id);

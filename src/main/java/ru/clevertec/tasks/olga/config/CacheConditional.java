@@ -9,13 +9,14 @@ import org.springframework.util.MultiValueMap;
 import ru.clevertec.tasks.olga.cache.CacheStrategy;
 import java.util.Objects;
 
+import static ru.clevertec.tasks.olga.util.Constant.CACHE_ALG;
 import static ru.clevertec.tasks.olga.util.Constant.CACHING_ALG_ANNOTATION_PACKAGE;
 
 public class CacheConditional implements Condition {
     @SneakyThrows
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        String algorithmProperty = context.getEnvironment().getProperty("cache.algorithm");
+        String algorithmProperty = context.getEnvironment().getProperty(CACHE_ALG);
         MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
                 CACHING_ALG_ANNOTATION_PACKAGE);
         if (Objects.nonNull(attributes)) {

@@ -3,7 +3,6 @@ package ru.clevertec.tasks.olga.controller;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+
+import static ru.clevertec.tasks.olga.util.Constant.*;
 
 @Slf4j
 @RestController
@@ -41,7 +42,7 @@ public class BillController {
         return messageSource.getMessage("label.guide",null, loc);
     }
 
-    @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ACTION_LOG, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public List<Cart> log(@RequestParam(value = "nodes", required = false, defaultValue = "${pagination.page_size}") Integer nodesPerPage,
                           @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
@@ -50,7 +51,7 @@ public class BillController {
     }
 
     @SneakyThrows
-    @GetMapping("/find")
+    @GetMapping(ACTION_FIND)
     public ResponseEntity<?> find(@RequestParam(value = "id") Integer id, Locale locale,
                                   @RequestParam(value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
         Cart cart = billService.findById(id);
@@ -63,7 +64,7 @@ public class BillController {
     }
 
     @SneakyThrows
-    @PostMapping("/save")
+    @PostMapping(ACTION_SAVE)
     public ResponseEntity<?> save(@RequestBody CartParamsDTO params, Locale locale,
                                   @RequestParam(value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
         Cart cart = billService.save(params);
@@ -75,19 +76,19 @@ public class BillController {
         }
     }
 
-    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = ACTION_PATCH, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Cart patch(@RequestBody CartParamsDTO params) {
         return billService.patch(params);
     }
 
-    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = ACTION_PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Cart update(@RequestBody CartParamsDTO params) {
         return billService.put(params);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping(ACTION_DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam Integer id) {
         billService.delete(id);

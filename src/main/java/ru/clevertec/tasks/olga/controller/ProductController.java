@@ -13,6 +13,7 @@ import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.service.ProductService;
 import java.util.List;
 import java.util.Locale;
+import static ru.clevertec.tasks.olga.util.Constant.*;
 
 @Slf4j
 @RestController
@@ -33,7 +34,7 @@ public class ProductController {
         return messageSource.getMessage("label.guide", null, loc);
     }
 
-    @GetMapping(value = "/log", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ACTION_LOG, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public List<Product> log(@RequestParam(value = "nodes", required = false, defaultValue = "${pagination.page_size}") Integer nodesPerPage,
                              @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
@@ -41,31 +42,31 @@ public class ProductController {
         return productService.getAll(pageRequest);
     }
 
-    @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = ACTION_FIND, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Product find(@RequestParam Integer id) {
         return productService.findById(id);
     }
 
-    @PostMapping(value = "/save", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = ACTION_SAVE, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public Product save(@RequestBody ProductParamsDto params) {
         return productService.save(params);
     }
 
-    @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(value = ACTION_PATCH, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Product patch(@RequestBody ProductParamsDto params) {
         return productService.patch(params);
     }
 
-    @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = ACTION_PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Product update(@RequestBody ProductParamsDto params) {
         return productService.put(params);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping(ACTION_DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam Integer id) {
         productService.delete(id);
