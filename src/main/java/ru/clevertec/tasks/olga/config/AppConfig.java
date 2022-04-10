@@ -5,18 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import ru.clevertec.tasks.olga.cache.Cache;
-import ru.clevertec.tasks.olga.cache.CacheStrategy;
-import ru.clevertec.tasks.olga.cache.impl.LfuCache;
-import ru.clevertec.tasks.olga.cache.impl.LruCache;
-import ru.clevertec.tasks.olga.entity.AbstractModel;
-import ru.clevertec.tasks.olga.exception.crud.UndefinedException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,10 +22,7 @@ import static ru.clevertec.tasks.olga.util.Constant.BASE_PACKAGES_TO_SCAN;
                 type = FilterType.ANNOTATION,
                 value = EnableWebMvc.class
         ))
-@PropertySources({
-        @PropertySource("classpath:application.properties"),
-        @PropertySource("classpath:cache.yml")
-})
+@PropertySource("classpath:application.yml")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public class AppConfig {
 
@@ -61,10 +49,8 @@ public class AppConfig {
     }
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer createPropertyConfigurer() {
-        PropertySourcesPlaceholderConfigurer propertyConfigurer = new PropertySourcesPlaceholderConfigurer();
-        propertyConfigurer.setTrimValues(true);
-        return propertyConfigurer;
+    public static PropertySourcesPlaceholderConfigurer configurer() {
+        return new PropertySourcesPlaceholderConfigurer();
     }
 
 //    @Bean

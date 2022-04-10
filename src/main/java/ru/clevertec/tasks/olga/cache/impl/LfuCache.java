@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
-import ru.clevertec.tasks.olga.annotation.CacheAlgorithm;
+import ru.clevertec.tasks.olga.annotation.CachingAlgorithm;
 import ru.clevertec.tasks.olga.cache.Cache;
 import ru.clevertec.tasks.olga.cache.CacheStrategy;
 import ru.clevertec.tasks.olga.config.CacheConditional;
@@ -12,7 +12,7 @@ import ru.clevertec.tasks.olga.config.CacheConditional;
 import java.util.*;
 
 @Component
-@CacheAlgorithm(CacheStrategy.LFU)
+@CachingAlgorithm(CacheStrategy.LFU)
 @Conditional(CacheConditional.class)
 @RequiredArgsConstructor
 public class LfuCache<K, V> implements Cache<K, V> {
@@ -20,22 +20,8 @@ public class LfuCache<K, V> implements Cache<K, V> {
     /**
      * Cache's capacity.
      */
-    @Value( "${cache.capacity:0}")
+    @Value( "${cache.capacity}")
     private int capacity;
-
-//    /**
-//     * Constructs a {@link LfuCache} with the specified capacity.
-//     //     * @param capacity the cache capacity.
-//     * @throws IllegalArgumentException if the capacity is less than one.
-//     */
-//    public LfuCache() {
-//        if (capacity < 1) {
-//            throw new IllegalArgumentException("Illegal capacity: " + capacity);
-//        }
-////        this.capacity = capacity;
-//        cache = new HashMap<>(capacity);
-//        frequencyTails = new HashMap<>(capacity);
-//    }
 
     /**
      * The map for mapping keys and related nodes.

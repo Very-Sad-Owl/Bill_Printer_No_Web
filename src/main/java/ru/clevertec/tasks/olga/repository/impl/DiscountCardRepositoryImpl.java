@@ -39,62 +39,42 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
     }
 
     @Override
-    public long save(DiscountCard discountCard) throws RepositoryException {
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("bday", discountCard.getBirthday());
-            params.addValue("disc_id", discountCard.getCardType().getId());
-            template.update(INSERT_DISCOUNT, params, keyHolder, new String[]{"card_id"});
-            return keyHolder.getKey().longValue();
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public long save(DiscountCard discountCard) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("bday", discountCard.getBirthday());
+        params.addValue("disc_id", discountCard.getCardType().getId());
+        template.update(INSERT_DISCOUNT, params, keyHolder, new String[]{"card_id"});
+        return keyHolder.getKey().longValue();
     }
 
     @Override
-    public Optional<DiscountCard> findById(long id) throws RepositoryException {
-        try {
-            return Optional.ofNullable(template.queryForObject(FIND_DISCOUNT_BY_ID,
-                    new MapSqlParameterSource("id", id), discountWorker));
-        } catch (DataAccessException e) {
-            throw new ReadingException(e.getMessage());
-        }
+    public Optional<DiscountCard> findById(long id) {
+        return Optional.ofNullable(template.queryForObject(FIND_DISCOUNT_BY_ID,
+                new MapSqlParameterSource("id", id), discountWorker));
     }
 
     @Override
-    public List<DiscountCard> getAll(Pageable pageable) throws RepositoryException {
-        try {
-            pageable = pageable.previousOrFirst();
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("page_limit", pageable.getPageSize());
-            params.addValue("page", pageable.getPageNumber());
-            return template.query(GET_DISCOUNTS, params, discountWorker);
-        } catch (DataAccessException e) {
-            throw new ReadingException(e.getMessage());
-        }
+    public List<DiscountCard> getAll(Pageable pageable) {
+        pageable = pageable.previousOrFirst();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("page_limit", pageable.getPageSize());
+        params.addValue("page", pageable.getPageNumber());
+        return template.query(GET_DISCOUNTS, params, discountWorker);
     }
 
     @Override
-    public boolean update(DiscountCard discountCard) throws RepositoryException {
-        try {
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("bday", discountCard.getBirthday());
-            params.addValue("disc_id", discountCard.getCardType().getId());
-            params.addValue("id", discountCard.getId());
-            return template.update(UPDATE_DISCOUNT, params) != 0;
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean update(DiscountCard discountCard) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("bday", discountCard.getBirthday());
+        params.addValue("disc_id", discountCard.getCardType().getId());
+        params.addValue("id", discountCard.getId());
+        return template.update(UPDATE_DISCOUNT, params) != 0;
     }
 
     @Override
-    public boolean delete(long id) throws RepositoryException {
-        try {
-            return template.update(DELETE_DISCOUNT, new MapSqlParameterSource("id", id)) != 0;
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean delete(long id) {
+        return template.update(DELETE_DISCOUNT, new MapSqlParameterSource("id", id)) != 0;
     }
 
 }

@@ -37,63 +37,43 @@ public class ProductDiscountRepositoryImpl implements ProductDiscountRepository 
     }
 
     @Override
-    public long save(ProductDiscountType productDiscountType) throws RepositoryException {
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("title", productDiscountType.getTitle());
-            params.addValue("val", productDiscountType.getDiscount());
-            params.addValue("quantity", productDiscountType.getRequiredMinQuantity());
-            template.update(INSERT_PRODUCT_DISCOUNT_TYPE, params, keyHolder, new String[]{"discount_id"});
-            return keyHolder.getKey().longValue();
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public long save(ProductDiscountType productDiscountType) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", productDiscountType.getTitle());
+        params.addValue("val", productDiscountType.getDiscount());
+        params.addValue("quantity", productDiscountType.getRequiredMinQuantity());
+        template.update(INSERT_PRODUCT_DISCOUNT_TYPE, params, keyHolder, new String[]{"discount_id"});
+        return keyHolder.getKey().longValue();
     }
 
     @Override
-    public Optional<ProductDiscountType> findById(long id) throws RepositoryException {
-        try {
-            return Optional.ofNullable(template.queryForObject(FIND_PRODUCT_DISCOUNT_TYPE,
-                    new MapSqlParameterSource("id", id), discountWorker));
-        } catch (DataAccessException e) {
-            throw new ReadingException(e.getMessage());
-        }
+    public Optional<ProductDiscountType> findById(long id) {
+        return Optional.ofNullable(template.queryForObject(FIND_PRODUCT_DISCOUNT_TYPE,
+                new MapSqlParameterSource("id", id), discountWorker));
     }
 
     @Override
-    public List<ProductDiscountType> getAll(Pageable pageable) throws RepositoryException {
-        try {
-            pageable = pageable.previousOrFirst();
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("page_limit", pageable.getPageSize());
-            params.addValue("page", pageable.getPageNumber());
-            return template.query(GET_PRODUCT_DISCOUNT_TYPES, params, discountWorker);
-        } catch (DataAccessException e) {
-            throw new ReadingException(e.getMessage());
-        }
+    public List<ProductDiscountType> getAll(Pageable pageable) {
+        pageable = pageable.previousOrFirst();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("page_limit", pageable.getPageSize());
+        params.addValue("page", pageable.getPageNumber());
+        return template.query(GET_PRODUCT_DISCOUNT_TYPES, params, discountWorker);
     }
 
     @Override
-    public boolean update(ProductDiscountType productDiscountType) throws RepositoryException {
-        try {
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("title", productDiscountType.getTitle());
-            params.addValue("val", productDiscountType.getDiscount());
-            params.addValue("quantity", productDiscountType.getRequiredMinQuantity());
-            params.addValue("id", productDiscountType.getId());
-            return template.update(UPDATE_PRODUCT_DISCOUNT_TYPE, params) != 0;
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean update(ProductDiscountType productDiscountType) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", productDiscountType.getTitle());
+        params.addValue("val", productDiscountType.getDiscount());
+        params.addValue("quantity", productDiscountType.getRequiredMinQuantity());
+        params.addValue("id", productDiscountType.getId());
+        return template.update(UPDATE_PRODUCT_DISCOUNT_TYPE, params) != 0;
     }
 
     @Override
-    public boolean delete(long id) throws RepositoryException {
-        try {
-            return template.update(DELETE_PRODUCT_DISCOUNT_TYPE, new MapSqlParameterSource("id", id)) != 0;
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean delete(long id) {
+        return template.update(DELETE_PRODUCT_DISCOUNT_TYPE, new MapSqlParameterSource("id", id)) != 0;
     }
 }

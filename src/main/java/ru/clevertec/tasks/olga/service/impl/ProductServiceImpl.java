@@ -4,6 +4,8 @@ package ru.clevertec.tasks.olga.service.impl;
 import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.entity.Product;
@@ -44,8 +46,10 @@ public class ProductServiceImpl
             long insertedId = productRepository.save(product);
             product.setId(insertedId);
             return product;
-        } catch (RepositoryException | NotFoundException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
             throw new SavingException(e);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -59,7 +63,9 @@ public class ProductServiceImpl
             } else {
                 throw new ProductNotFoundException(id + "");
             }
-        } catch (RepositoryException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
+            throw new ProductNotFoundException(id + "");
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -67,7 +73,11 @@ public class ProductServiceImpl
     @Override
     @SneakyThrows
     public List<Product> getAll(Pageable pageable) {
+        try {
         return productRepository.getAll(pageable);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
+        }
     }
 
     @Override
@@ -77,8 +87,10 @@ public class ProductServiceImpl
             if (!productRepository.delete(id)) {
                 throw new DeletionException(new BillNotFoundException(id + ""));
             }
-        } catch (RepositoryException e) {
-            throw new UndefinedException(e);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DeletionException(new ProductNotFoundException(id + ""));
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -107,7 +119,7 @@ public class ProductServiceImpl
         try {
             productRepository.update(updated);
             return updated;
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -123,7 +135,7 @@ public class ProductServiceImpl
             return updated;
         } catch (NotFoundException e) {
             throw new UpdatingException(e);
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }

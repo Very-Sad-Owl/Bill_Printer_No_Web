@@ -2,7 +2,8 @@ package ru.clevertec.tasks.olga.util;
 
 public interface Constant {
     //config
-    public static final String BASE_PACKAGES_TO_SCAN = "ru.clevertec.tasks.olga";
+    String BASE_PACKAGES_TO_SCAN = "ru.clevertec.tasks.olga";
+    String CACHING_ALG_ANNOTATION_PACKAGE = "ru.clevertec.tasks.olga.annotation.CachingAlgorithm";
 
     //common
     String PAGINATION_PARAM = "pagination";

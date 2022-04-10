@@ -39,7 +39,7 @@ import static ru.clevertec.tasks.olga.util.Constant.FILENAME_PDF_FORMAT;
 public class PdfPrinter extends AbstractPrinter {
 
     MessageSource messageSource;
-    @Value( "${path.default}" )
+    @Value( "${bill.path}" )
     private String PRINT_PATH;
     @Value( "${bill.template}" )
     private String BACKGROUND_PDF;

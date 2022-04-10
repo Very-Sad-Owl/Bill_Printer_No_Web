@@ -36,61 +36,41 @@ public class CashierRepositoryImpl implements CashierRepository {
     }
 
     @Override
-    public long save(Cashier cashier) throws RepositoryException {
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("name", cashier.getName());
-            params.addValue("surname", cashier.getSurname());
-            template.update(INSERT_CASHIER, params, keyHolder, new String[]{"cashier_id"});
-            return keyHolder.getKey().longValue();
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public long save(Cashier cashier) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", cashier.getName());
+        params.addValue("surname", cashier.getSurname());
+        template.update(INSERT_CASHIER, params, keyHolder, new String[]{"cashier_id"});
+        return keyHolder.getKey().longValue();
     }
 
     @Override
-    public Optional<Cashier> findById(long id) throws RepositoryException {
-        try {
-            return Optional.ofNullable(template.queryForObject(FIND_CASHIER_BY_ID,
-                    new MapSqlParameterSource("id", id), cashierWorker));
-        } catch (DataAccessException e) {
-            throw new ReadingException(e.getMessage());
-        }
+    public Optional<Cashier> findById(long id) {
+        return Optional.ofNullable(template.queryForObject(FIND_CASHIER_BY_ID,
+                new MapSqlParameterSource("id", id), cashierWorker));
     }
 
     @Override
-    public List<Cashier> getAll(Pageable pageable) throws RepositoryException {
-        try {
-            pageable = pageable.previousOrFirst();
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("page_limit", pageable.getPageSize());
-            params.addValue("page", pageable.getPageNumber());
-            return template.query(GET_CASHIERS, params, cashierWorker);
-        } catch (DataAccessException e) {
-            throw new ReadingException(e.getMessage());
-        }
+    public List<Cashier> getAll(Pageable pageable) {
+        pageable = pageable.previousOrFirst();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("page_limit", pageable.getPageSize());
+        params.addValue("page", pageable.getPageNumber());
+        return template.query(GET_CASHIERS, params, cashierWorker);
     }
 
     @Override
-    public boolean update(Cashier cashier) throws RepositoryException {
-        try {
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("name", cashier.getName());
-            params.addValue("surname", cashier.getSurname());
-            params.addValue("id", cashier.getId());
-            return template.update(UPDATE_CASHIER, params) != 0;
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean update(Cashier cashier) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", cashier.getName());
+        params.addValue("surname", cashier.getSurname());
+        params.addValue("id", cashier.getId());
+        return template.update(UPDATE_CASHIER, params) != 0;
     }
 
     @Override
-    public boolean delete(long id) throws RepositoryException {
-        try {
-            return template.update(DELETE_CASHIER, new MapSqlParameterSource("id", id)) != 0;
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean delete(long id) {
+        return template.update(DELETE_CASHIER, new MapSqlParameterSource("id", id)) != 0;
     }
 }

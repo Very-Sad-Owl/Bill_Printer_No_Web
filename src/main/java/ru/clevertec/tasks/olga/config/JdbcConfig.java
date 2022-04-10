@@ -16,7 +16,6 @@ import javax.sql.DataSource;
 import static ru.clevertec.tasks.olga.util.Constant.BASE_PACKAGES_TO_SCAN;
 
 @Configuration
-//@ComponentScan(basePackages = BASE_PACKAGES_TO_SCAN)
 @PropertySource("classpath:db.properties")
 @EnableTransactionManagement
 public class JdbcConfig {

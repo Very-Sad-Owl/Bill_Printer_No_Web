@@ -38,66 +38,46 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     @UseCache
-    public long save(Product product) throws RepositoryException {
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("title", product.getTitle());
-            params.addValue("price", product.getPrice());
-            params.addValue("disc_id", product.getDiscountType().getId());
-            template.update(INSERT_PRODUCT, params, keyHolder, new String[]{"product_id"});
-            return keyHolder.getKey().longValue();
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public long save(Product product) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", product.getTitle());
+        params.addValue("price", product.getPrice());
+        params.addValue("disc_id", product.getDiscountType().getId());
+        template.update(INSERT_PRODUCT, params, keyHolder, new String[]{"product_id"});
+        return keyHolder.getKey().longValue();
     }
 
     @Override
     @UseCache
-    public Optional<Product> findById(long id) throws RepositoryException {
-        try {
-            return Optional.ofNullable(template.queryForObject(FIND_PRODUCT_BY_ID,
-                    new MapSqlParameterSource("id", id), productWorker));
-        } catch (DataAccessException e) {
-            throw new ReadingException(e.getMessage());
-        }
+    public Optional<Product> findById(long id) {
+        return Optional.ofNullable(template.queryForObject(FIND_PRODUCT_BY_ID,
+                new MapSqlParameterSource("id", id), productWorker));
     }
 
     @Override
-    public List<Product> getAll(Pageable pageable) throws RepositoryException {
-        try {
-            pageable = pageable.previousOrFirst();
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("page_limit", pageable.getPageSize());
-            params.addValue("page", pageable.getPageNumber());
-            return template.query(GET_PRODUCTS, params, productWorker);
-        } catch (DataAccessException e) {
-            throw new ReadingException(e.getMessage());
-        }
+    public List<Product> getAll(Pageable pageable) {
+        pageable = pageable.previousOrFirst();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("page_limit", pageable.getPageSize());
+        params.addValue("page", pageable.getPageNumber());
+        return template.query(GET_PRODUCTS, params, productWorker);
     }
 
     @Override
     @UseCache
-    public boolean update(Product product) throws RepositoryException {
-        try {
-            MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("title", product.getTitle());
-            params.addValue("price", product.getPrice());
-            params.addValue("disc_id", product.getDiscountType().getId());
-            params.addValue("id", product.getId());
-            return template.update(UPDATE_PRODUCT, params) != 0;
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean update(Product product) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", product.getTitle());
+        params.addValue("price", product.getPrice());
+        params.addValue("disc_id", product.getDiscountType().getId());
+        params.addValue("id", product.getId());
+        return template.update(UPDATE_PRODUCT, params) != 0;
     }
 
     @Override
     @UseCache
-    public boolean delete(long id) throws RepositoryException {
-        try {
-            return template.update(DELETE_PRODUCT, new MapSqlParameterSource("id", id)) != 0;
-        } catch (DataAccessException e) {
-            throw new WritingException(e.getMessage());
-        }
+    public boolean delete(long id) {
+        return template.update(DELETE_PRODUCT, new MapSqlParameterSource("id", id)) != 0;
     }
 }

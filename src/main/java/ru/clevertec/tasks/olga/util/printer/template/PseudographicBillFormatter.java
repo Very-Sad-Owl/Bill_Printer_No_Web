@@ -1,7 +1,9 @@
 package ru.clevertec.tasks.olga.util.printer.template;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
@@ -15,10 +17,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PseudographicBillFormatter extends AbstractBillFormatter {
 
     private MessageSource messageSource;
+    @Value( "${bill.delimiter}" )
+    private String DELIMITER;
+    @Value( "${bill.line_delimiter}")
+    private String LINE_DELIMITER;
 
     @Autowired
     public void setMessageSource(MessageSource messageSource) {
@@ -61,13 +67,13 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
 
     @Override
     public void drawMetaInfo(long cartId, List<String> billBuilder, Locale locale) {
-        billBuilder.add(messageSource.getMessage("label.pseudographics_char", null, locale));
+        billBuilder.add(LINE_DELIMITER);
         billBuilder.add(centreLine(messageSource.getMessage("info.shop_title", null, locale)));
         billBuilder.add(centreLine(messageSource.getMessage("info.address", null, locale)));
-        billBuilder.add(messageSource.getMessage("label.pseudographics_char", null, locale));
+        billBuilder.add(LINE_DELIMITER);
         billBuilder.add(centreLine(
                 messageSource.getMessage("label.receipt_uid", null, locale) + " " + cartId));
-        billBuilder.add(messageSource.getMessage("label.pseudographics_char", null, locale));
+        billBuilder.add(LINE_DELIMITER);
     }
 
     @Override
@@ -84,7 +90,7 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
                         cashier.getFullName(), locale
                 )
         );
-        billBuilder.add(drawLine(messageSource.getMessage("label.pseudographics_char", null, locale).charAt(0)));
+        billBuilder.add(drawLine(LINE_DELIMITER.charAt(0)));
 
     }
 
@@ -111,7 +117,7 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
                                 slot.getRawPrice(), locale
                 )
         );
-        billBuilder.add(drawLine(messageSource.getMessage("label.pseudographics_char", null, locale).charAt(0)));
+        billBuilder.add(drawLine(LINE_DELIMITER.charAt(0)));
     }
 
     @Override
@@ -137,7 +143,7 @@ public class PseudographicBillFormatter extends AbstractBillFormatter {
                         cart.getPrice() + "", locale
                 )
         );
-        billBuilder.add(drawLine(messageSource.getMessage("label.pseudographics_char", null, locale).charAt(0)));
+        billBuilder.add(drawLine(LINE_DELIMITER.charAt(0)));
 
     }
 }

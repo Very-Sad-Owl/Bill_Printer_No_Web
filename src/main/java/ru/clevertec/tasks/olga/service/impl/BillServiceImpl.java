@@ -3,6 +3,8 @@ package ru.clevertec.tasks.olga.service.impl;
 import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
@@ -59,8 +61,10 @@ public class BillServiceImpl
             long insertedId = billRepository.save(cart);
             cart.setId(insertedId);
             return cart;
-        } catch (RepositoryException | NotFoundException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
             throw new SavingException(e);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -74,7 +78,9 @@ public class BillServiceImpl
             } else {
                 throw new BillNotFoundException(id + "");
             }
-        } catch (RepositoryException e) {
+        } catch (EmptyResultDataAccessException e) {
+            throw new BillNotFoundException(id + "");
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -82,7 +88,11 @@ public class BillServiceImpl
     @Override
     @SneakyThrows
     public List<Cart> getAll(Pageable pageable) {
-        return billRepository.getAll(pageable);
+        try {
+            return billRepository.getAll(pageable);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
+        }
     }
 
     @Override
@@ -92,8 +102,10 @@ public class BillServiceImpl
             if (!billRepository.delete(id)) {
                 throw new DeletionException(new BillNotFoundException(id + ""));
             }
-        } catch (RepositoryException e) {
-            throw new UndefinedException(e);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DeletionException(e);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -106,9 +118,9 @@ public class BillServiceImpl
                 throw new UpdatingException(new BillNotFoundException(dto.id + ""));
             }
             return updated;
-        } catch (NotFoundException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
             throw new UpdatingException(e);
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -150,7 +162,7 @@ public class BillServiceImpl
         try {
             billRepository.update(updated);
             return updated;
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
-import ru.clevertec.tasks.olga.annotation.CacheAlgorithm;
+import ru.clevertec.tasks.olga.annotation.CachingAlgorithm;
 import ru.clevertec.tasks.olga.cache.Cache;
 import ru.clevertec.tasks.olga.cache.CacheStrategy;
 import ru.clevertec.tasks.olga.config.CacheConditional;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
-@CacheAlgorithm(CacheStrategy.LRU)
+@CachingAlgorithm(CacheStrategy.LRU)
 @Conditional(CacheConditional.class)
 @RequiredArgsConstructor
 public class LruCache<K, V> implements Cache<K, V> {
@@ -23,27 +23,13 @@ public class LruCache<K, V> implements Cache<K, V> {
     /**
      * Cache's capacity.
      */
-    @Value( "${cache.capacity:5}")
+    @Value( "${cache.capacity}")
     private int capacity;
 
     /**
      * Map for mapping keys and their values.
      */
     final Map<K, V> cache = new LinkedHashMap<>(capacity);
-
-//    /**
-//     * Constructs a {@link LruCache} with the specified capacity.
-//     *
-////     * @param capacity the cache capacity.
-//     * @throws IllegalArgumentException if the capacity is less than one.
-//     */
-//
-//    public LruCache() {
-//        if (capacity < 1) {
-//            throw new IllegalArgumentException();
-//        }
-//        cache = new LinkedHashMap<>(capacity);
-//    }
 
 
     public int size() {

@@ -2,6 +2,8 @@ package ru.clevertec.tasks.olga.service.impl;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.entity.Cashier;
@@ -37,8 +39,10 @@ public class CashierServiceImpl
             long insertedId = cashierRepository.save(cashier);
             cashier.setId(insertedId);
             return cashier;
-        } catch (RepositoryException e) {
-            throw new CardNotFoundException(e);
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
+            throw new SavingException(e);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -52,7 +56,9 @@ public class CashierServiceImpl
             } else {
                 throw new CashierNotFoundException(id + "");
             }
-        } catch (RepositoryException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
+            throw new CashierNotFoundException(id + "");
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -60,7 +66,11 @@ public class CashierServiceImpl
     @Override
     @SneakyThrows
     public List<Cashier> getAll(Pageable pageable) {
-        return cashierRepository.getAll(pageable);
+        try {
+            return cashierRepository.getAll(pageable);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
+        }
     }
 
     @Override
@@ -70,8 +80,10 @@ public class CashierServiceImpl
             if (!cashierRepository.delete(id)) {
                 throw new DeletionException(new CashierNotFoundException(id + ""));
             }
-        } catch (RepositoryException e) {
-            throw new UndefinedException(e);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DeletionException(new CashierNotFoundException(id + ""));
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -94,7 +106,7 @@ public class CashierServiceImpl
         try {
             cashierRepository.update(updated);
             return updated;
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -110,7 +122,7 @@ public class CashierServiceImpl
             return updated;
         } catch (NotFoundException e) {
             throw new UpdatingException(e);
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }

@@ -3,6 +3,8 @@ package ru.clevertec.tasks.olga.service.impl;
 import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.exception.crud.*;
@@ -44,8 +46,10 @@ public class DiscountCardServiceImpl
             long insertedId = cardRepo.save(card);
             card.setId(insertedId);
             return card;
-        } catch (RepositoryException | NotFoundException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
             throw new SavingException(e);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -59,7 +63,9 @@ public class DiscountCardServiceImpl
             } else {
                 throw new CardNotFoundException(id + "");
             }
-        } catch (RepositoryException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
+            throw new CardNotFoundException(id + "");
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -67,7 +73,11 @@ public class DiscountCardServiceImpl
     @Override
     @SneakyThrows
     public List<DiscountCard> getAll(Pageable pageable) {
+        try {
         return cardRepo.getAll(pageable);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
+        }
     }
 
     @Override
@@ -77,8 +87,10 @@ public class DiscountCardServiceImpl
             if (!cardRepo.delete(id)) {
                 throw new DeletionException(new BillNotFoundException(id + ""));
             }
-        } catch (RepositoryException e) {
-            throw new UndefinedException(e);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DeletionException(new CardNotFoundException(id + ""));
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -104,7 +116,7 @@ public class DiscountCardServiceImpl
         try {
             cardRepo.update(updated);
             return updated;
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -120,7 +132,7 @@ public class DiscountCardServiceImpl
             return updated;
         } catch (NotFoundException e) {
             throw new UpdatingException(e);
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }

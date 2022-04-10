@@ -1,0 +1,12 @@
+cache.capacity: 5
+cache.algorithm: LRU
+
+bill.path: bills/printed/
+bill.template: bill_background.pdf
+bill.font: times_new_roman.ttf
+bill.encoding: CP1251
+bill.line_len: 90
+bill.delimiter: \u00A0
+bill.line_delimiter: \-
+
+pagination.page_size: 10

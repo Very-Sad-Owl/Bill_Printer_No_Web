@@ -3,6 +3,8 @@ package ru.clevertec.tasks.olga.service.impl;
 import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.exception.crud.*;
@@ -40,8 +42,10 @@ public class ProductDiscountServiceImpl
             long insertedId = discountRepo.save(type);
             type.setId(insertedId);
             return type;
-        } catch (RepositoryException | NotFoundException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
             throw new SavingException(e);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -55,7 +59,9 @@ public class ProductDiscountServiceImpl
             } else {
                 throw new ProductDiscountNotFoundException(id + "");
             }
-        } catch (RepositoryException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
+            throw new ProductDiscountNotFoundException(id + "");
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -63,7 +69,11 @@ public class ProductDiscountServiceImpl
     @Override
     @SneakyThrows
     public List<ProductDiscountType> getAll(Pageable pageable) {
+        try {
         return discountRepo.getAll(pageable);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
+        }
     }
 
     @Override
@@ -73,8 +83,10 @@ public class ProductDiscountServiceImpl
             if (!discountRepo.delete(id)) {
                 throw new DeletionException(new BillNotFoundException(id + ""));
             }
-        } catch (RepositoryException e) {
-            throw new UndefinedException(e);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DeletionException(new ProductDiscountNotFoundException(id + ""));
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -100,7 +112,7 @@ public class ProductDiscountServiceImpl
         try {
             discountRepo.update(updated);
             return updated;
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -116,7 +128,7 @@ public class ProductDiscountServiceImpl
             return updated;
         } catch (NotFoundException e) {
             throw new UpdatingException(e);
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }

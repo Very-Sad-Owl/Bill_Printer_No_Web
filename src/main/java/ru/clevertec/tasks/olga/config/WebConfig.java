@@ -23,11 +23,7 @@ import static ru.clevertec.tasks.olga.util.Constant.BASE_PACKAGES_TO_SCAN;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = BASE_PACKAGES_TO_SCAN,
-        excludeFilters =
-        @ComponentScan.Filter(
-                type = FilterType.ANNOTATION,
-                value = Configuration.class))
+@ComponentScan(basePackages = BASE_PACKAGES_TO_SCAN)
 public class WebConfig implements WebMvcConfigurer {
 
     @Bean

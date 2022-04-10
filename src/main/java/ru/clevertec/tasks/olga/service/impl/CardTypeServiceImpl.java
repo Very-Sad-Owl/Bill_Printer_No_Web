@@ -3,6 +3,8 @@ package ru.clevertec.tasks.olga.service.impl;
 import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.exception.crud.*;
@@ -40,8 +42,10 @@ public class CardTypeServiceImpl
             long insertedId = discountRepo.save(type);
             type.setId(insertedId);
             return type;
-        } catch (RepositoryException e) {
+        } catch (EmptyResultDataAccessException | NotFoundException e) {
             throw new SavingException(e);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -55,15 +59,21 @@ public class CardTypeServiceImpl
             } else {
                 throw new CardTypeNotFoundException(id + "");
             }
-        } catch (RepositoryException e) {
-            throw new CardNotFoundException(e);
+        } catch (EmptyResultDataAccessException e) {
+            throw new CardTypeNotFoundException(id + "");
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
     @Override
     @SneakyThrows
     public List<CardType> getAll(Pageable pageable) {
-        return discountRepo.getAll(pageable);
+        try {
+            return discountRepo.getAll(pageable);
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
+        }
     }
 
     @Override
@@ -73,8 +83,10 @@ public class CardTypeServiceImpl
             if (!discountRepo.delete(id)) {
                 throw new DeletionException(new CardTypeNotFoundException(id + ""));
             }
-        } catch (RepositoryException e) {
-            throw new UndefinedException(e);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DeletionException(new NotFoundException(id + ""));
+        } catch (DataAccessException e) {
+            throw new UndefinedException(e.getMessage());
         }
     }
 
@@ -93,7 +105,7 @@ public class CardTypeServiceImpl
             return toUpdate;
         } catch (NotFoundException e) {
             throw new UpdatingException(e);
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
@@ -109,7 +121,7 @@ public class CardTypeServiceImpl
             return updated;
         } catch (NotFoundException e) {
             throw new UpdatingException(e);
-        } catch (RepositoryException e) {
+        } catch (DataAccessException e) {
             throw new UndefinedException(e.getMessage());
         }
     }
