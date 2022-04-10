@@ -1,63 +1,83 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import by.epam.training.jwd.task03.entity.Node;
-import by.epam.training.jwd.task03.service.exception.ServiceException;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.ProductNotFoundException;
-import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.model.Product;
+import ru.clevertec.tasks.olga.entity.Product;
+import ru.clevertec.tasks.olga.repository.exception.ReadingException;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
+import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Optional;
 
-public class ProductRepositoryImpl extends AbstractRepository implements ProductRepository {
+import static ru.clevertec.tasks.olga.repository.Query.*;
 
-    @UseCache
-    @Override
-    public void save(Product product, String fileName) {
-        
-    }
+@Slf4j
+@Repository
+public class ProductRepositoryImpl implements ProductRepository {
 
-    @UseCache
-    @Override
-    public Product findById(long id, String filePath) {
-        List<Product> nodes = getAll(filePath);
-        for (Product product : nodes){
-            if (product.getId() == id){
-                return product;
-            }
-        }
-        throw new ProductNotFoundException("error.product_not_found");
+    private final ModelRowMapper<Product> productWorker;
+    private final NamedParameterJdbcTemplate template;
+
+    @Autowired
+    public ProductRepositoryImpl(ModelRowMapper<Product> productWorker, NamedParameterJdbcTemplate template) {
+        this.productWorker = productWorker;
+        this.template = template;
     }
 
     @Override
-    public List<Product> getAll(String path) {
-        Node node;
-        NodeWorker<Product> worker = workerFactory.getProductWorker();
-        List<Product> products = new ArrayListImpl<>();
-        String fileName = path + ResourceBundle.getBundle("db").getString("path.product");
-        try {
-            node = nodeTreeBuilder.parseXML(fileName);
-            worker.nodeToList(node, products);
-        } catch (ServiceException e) {
-            throw new ReadingException("error.reading");
-        }
-        return products;
+    @UseCache
+    public long save(Product product) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", product.getTitle());
+        params.addValue("price", product.getPrice());
+        params.addValue("disc_id", product.getDiscountType().getId());
+        template.update(INSERT_PRODUCT, params, keyHolder, new String[]{"product_id"});
+        return keyHolder.getKey().longValue();
     }
 
-    @UseCache
     @Override
-    public boolean delete(Product product, String filePath) {
-        return false;
+    @UseCache
+    public Optional<Product> findById(long id) {
+        return Optional.ofNullable(template.queryForObject(FIND_PRODUCT_BY_ID,
+                new MapSqlParameterSource("id", id), productWorker));
     }
 
-    @UseCache
     @Override
-    public Product update(Product product, String filePath) {
-        return null;
+    public List<Product> getAll(Pageable pageable) {
+        pageable = pageable.previousOrFirst();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("page_limit", pageable.getPageSize());
+        params.addValue("page", pageable.getPageNumber());
+        return template.query(GET_PRODUCTS, params, productWorker);
+    }
+
+    @Override
+    @UseCache
+    public boolean update(Product product) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", product.getTitle());
+        params.addValue("price", product.getPrice());
+        params.addValue("disc_id", product.getDiscountType().getId());
+        params.addValue("id", product.getId());
+        return template.update(UPDATE_PRODUCT, params) != 0;
+    }
+
+    @Override
+    @UseCache
+    public boolean delete(long id) {
+        return template.update(DELETE_PRODUCT, new MapSqlParameterSource("id", id)) != 0;
     }
 }

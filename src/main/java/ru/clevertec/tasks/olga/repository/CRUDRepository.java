@@ -1,18 +1,16 @@
 package ru.clevertec.tasks.olga.repository;
 
-import ru.clevertec.tasks.olga.model.AbstractModel;
+import org.springframework.data.domain.Pageable;
+import ru.clevertec.tasks.olga.entity.AbstractModel;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CRUDRepository<E extends AbstractModel> {
-
-    void save(E e, String path);
-
-    E findById(long id, String filePath);
-
-    List<E> getAll(String filePath);
-
-    boolean delete(E e, String filePath);
-
-    E update(E e, String filePath);
+    long save(E e);
+    Optional<E> findById(long id);
+    List<E> getAll(Pageable pageable);
+    boolean update(E e);
+    boolean delete(long id);
 }

@@ -1,6 +1,0 @@
-<products>
-    <product id = "1" title = "milk" price = "1.43" discount = "more_than_five">
-    </product>
-    <product id = "2" title = "bread" price = "1.20" discount = "none">
-    </product>
-</products>

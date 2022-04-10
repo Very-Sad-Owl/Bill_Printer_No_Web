@@ -1,65 +1,80 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import by.epam.training.jwd.task03.entity.Node;
-import by.epam.training.jwd.task03.service.exception.ServiceException;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.CardNotFoundException;
-import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.model.DiscountCard;
-import ru.clevertec.tasks.olga.repository.DiscountRepository;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import ru.clevertec.tasks.olga.entity.Cashier;
+import ru.clevertec.tasks.olga.entity.DiscountCard;
+import ru.clevertec.tasks.olga.repository.exception.ReadingException;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
+import ru.clevertec.tasks.olga.repository.DiscountCardRepository;
+import ru.clevertec.tasks.olga.repository.exception.WritingException;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
-import java.util.ArrayList;
+import javax.sql.DataSource;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Optional;
+
+import static ru.clevertec.tasks.olga.repository.Query.*;
 
 
-public class DiscountCardRepositoryImpl extends AbstractRepository implements DiscountRepository {
+@Slf4j
+@Repository
+public class DiscountCardRepositoryImpl implements DiscountCardRepository {
 
-    @UseCache
-    @Override
-    public void save(DiscountCard discountCard, String fileName) {
+    private final ModelRowMapper<DiscountCard> discountWorker;
+    private final NamedParameterJdbcTemplate template;
 
-    }
-
-    @UseCache
-    @Override
-    public DiscountCard findById(long id, String path) {
-        List<DiscountCard> nodes = getAll(path);
-        for (DiscountCard product : nodes){
-            if (product.getId() == id){
-                return product;
-            }
-        }
-        throw new CardNotFoundException("error.card_not_found");
+    @Autowired
+    public DiscountCardRepositoryImpl(ModelRowMapper<DiscountCard> discountWorker, NamedParameterJdbcTemplate template) {
+        this.discountWorker = discountWorker;
+        this.template = template;
     }
 
     @Override
-    public List<DiscountCard> getAll(String path) {
-        Node node;
-        NodeWorker<DiscountCard> worker = workerFactory.getDiscountWorker();
-        List<DiscountCard> products = new ArrayListImpl<>();
-        String fileName = path + ResourceBundle.getBundle("db").getString("path.card");
-        try {
-            node = nodeTreeBuilder.parseXML(fileName);
-            worker.nodeToList(node, products);
-        } catch (ServiceException e) {
-            throw new ReadingException("error.reading");
-        }
-        return products;
+    public long save(DiscountCard discountCard) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("bday", discountCard.getBirthday());
+        params.addValue("disc_id", discountCard.getCardType().getId());
+        template.update(INSERT_DISCOUNT, params, keyHolder, new String[]{"card_id"});
+        return keyHolder.getKey().longValue();
     }
 
-    @UseCache
     @Override
-    public boolean delete(DiscountCard discountCard, String filePath) {
-        return false;
+    public Optional<DiscountCard> findById(long id) {
+        return Optional.ofNullable(template.queryForObject(FIND_DISCOUNT_BY_ID,
+                new MapSqlParameterSource("id", id), discountWorker));
     }
 
-    @UseCache
     @Override
-    public DiscountCard update(DiscountCard discountCard, String filePath) {
-        return null;
+    public List<DiscountCard> getAll(Pageable pageable) {
+        pageable = pageable.previousOrFirst();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("page_limit", pageable.getPageSize());
+        params.addValue("page", pageable.getPageNumber());
+        return template.query(GET_DISCOUNTS, params, discountWorker);
     }
+
+    @Override
+    public boolean update(DiscountCard discountCard) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("bday", discountCard.getBirthday());
+        params.addValue("disc_id", discountCard.getCardType().getId());
+        params.addValue("id", discountCard.getId());
+        return template.update(UPDATE_DISCOUNT, params) != 0;
+    }
+
+    @Override
+    public boolean delete(long id) {
+        return template.update(DELETE_DISCOUNT, new MapSqlParameterSource("id", id)) != 0;
+    }
+
 }

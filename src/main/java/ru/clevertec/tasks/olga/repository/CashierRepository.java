@@ -1,7 +1,7 @@
 package ru.clevertec.tasks.olga.repository;
 
-import ru.clevertec.tasks.olga.model.Cashier;
-import ru.clevertec.tasks.olga.repository.CRUDRepository;
+import org.springframework.stereotype.Component;
+import ru.clevertec.tasks.olga.entity.Cashier;
 
 public interface CashierRepository extends CRUDRepository<Cashier> {
 }

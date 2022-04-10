@@ -1,63 +1,76 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
-import by.epam.training.jwd.task03.entity.Node;
-import by.epam.training.jwd.task03.service.exception.ServiceException;
-import ru.clevertec.custom_collection.my_list.ArrayListImpl;
-import ru.clevertec.tasks.olga.annotation.UseCache;
-import ru.clevertec.tasks.olga.exception.CashierNotFoundException;
-import ru.clevertec.tasks.olga.exception.ReadingException;
-import ru.clevertec.tasks.olga.model.Cashier;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import ru.clevertec.tasks.olga.entity.Cashier;
+import ru.clevertec.tasks.olga.repository.exception.ReadingException;
+import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
-import ru.clevertec.tasks.olga.util.orm.NodeWorker;
-import ru.clevertec.tasks.olga.util.MessageLocaleService;
-import java.util.ArrayList;
+import ru.clevertec.tasks.olga.repository.exception.WritingException;
+import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
+
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Optional;
 
-public class CashierRepositoryImpl extends AbstractRepository implements CashierRepository {
+import static ru.clevertec.tasks.olga.repository.Query.*;
 
-    @UseCache
-    @Override
-    public void save(Cashier cashier, String fileName) {
+@Slf4j
+@Repository
+public class CashierRepositoryImpl implements CashierRepository {
 
-    }
+    private final ModelRowMapper<Cashier> cashierWorker;
+    private final NamedParameterJdbcTemplate template;
 
-    @UseCache
-    @Override
-    public Cashier findById(long id, String path) {
-        List<Cashier> nodes = getAll(path);
-        for (Cashier product : nodes){
-            if (product.getId() == id){
-                return product;
-            }
-        }
-        throw new CashierNotFoundException(MessageLocaleService.getMessage("error.cashier_not_found"));
+    @Autowired
+    public CashierRepositoryImpl(ModelRowMapper<Cashier> cashierWorker, NamedParameterJdbcTemplate template) {
+        this.cashierWorker = cashierWorker;
+        this.template = template;
     }
 
     @Override
-    public List<Cashier> getAll(String path) {
-        Node node;
-        NodeWorker<Cashier> worker = workerFactory.getCashierWorker();
-        List<Cashier> products = new ArrayListImpl<>();
-        String fileName = path + ResourceBundle.getBundle("db").getString("path.cashier");
-        try {
-            node = nodeTreeBuilder.parseXML(fileName);
-            worker.nodeToList(node, products);
-        } catch (ServiceException e) {
-            throw new ReadingException("error.reading");
-        }
-        return products;
+    public long save(Cashier cashier) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", cashier.getName());
+        params.addValue("surname", cashier.getSurname());
+        template.update(INSERT_CASHIER, params, keyHolder, new String[]{"cashier_id"});
+        return keyHolder.getKey().longValue();
     }
 
-    @UseCache
     @Override
-    public boolean delete(Cashier cashier, String filePath) {
-        return false;
+    public Optional<Cashier> findById(long id) {
+        return Optional.ofNullable(template.queryForObject(FIND_CASHIER_BY_ID,
+                new MapSqlParameterSource("id", id), cashierWorker));
     }
 
-    @UseCache
     @Override
-    public Cashier update(Cashier cashier, String filePath) {
-        return null;
+    public List<Cashier> getAll(Pageable pageable) {
+        pageable = pageable.previousOrFirst();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("page_limit", pageable.getPageSize());
+        params.addValue("page", pageable.getPageNumber());
+        return template.query(GET_CASHIERS, params, cashierWorker);
+    }
+
+    @Override
+    public boolean update(Cashier cashier) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", cashier.getName());
+        params.addValue("surname", cashier.getSurname());
+        params.addValue("id", cashier.getId());
+        return template.update(UPDATE_CASHIER, params) != 0;
+    }
+
+    @Override
+    public boolean delete(long id) {
+        return template.update(DELETE_CASHIER, new MapSqlParameterSource("id", id)) != 0;
     }
 }
