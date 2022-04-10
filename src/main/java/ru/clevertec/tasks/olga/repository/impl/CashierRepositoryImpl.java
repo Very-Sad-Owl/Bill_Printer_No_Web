@@ -2,6 +2,7 @@ package ru.clevertec.tasks.olga.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,9 +11,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.tasks.olga.entity.Cashier;
+import ru.clevertec.tasks.olga.repository.exception.ReadingException;
 import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.CashierRepository;
+import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -33,40 +37,60 @@ public class CashierRepositoryImpl implements CashierRepository {
 
     @Override
     public long save(Cashier cashier) throws RepositoryException {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", cashier.getName());
-        params.addValue("surname", cashier.getSurname());
-        template.update(INSERT_CASHIER, params, keyHolder, new String[]{"cashier_id"});
-        return keyHolder.getKey().longValue();
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("name", cashier.getName());
+            params.addValue("surname", cashier.getSurname());
+            template.update(INSERT_CASHIER, params, keyHolder, new String[]{"cashier_id"});
+            return keyHolder.getKey().longValue();
+        } catch (DataAccessException e) {
+            throw new WritingException(e.getMessage());
+        }
     }
 
     @Override
     public Optional<Cashier> findById(long id) throws RepositoryException {
-        return Optional.ofNullable(template.queryForObject(FIND_CASHIER_BY_ID,
-                new MapSqlParameterSource("id", id), cashierWorker));
+        try {
+            return Optional.ofNullable(template.queryForObject(FIND_CASHIER_BY_ID,
+                    new MapSqlParameterSource("id", id), cashierWorker));
+        } catch (DataAccessException e) {
+            throw new ReadingException(e.getMessage());
+        }
     }
 
     @Override
     public List<Cashier> getAll(Pageable pageable) throws RepositoryException {
-        pageable = pageable.previousOrFirst();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("page_limit", pageable.getPageSize());
-        params.addValue("page", pageable.getPageNumber());
-        return template.query(GET_CASHIERS, params, cashierWorker);
+        try {
+            pageable = pageable.previousOrFirst();
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("page_limit", pageable.getPageSize());
+            params.addValue("page", pageable.getPageNumber());
+            return template.query(GET_CASHIERS, params, cashierWorker);
+        } catch (DataAccessException e) {
+            throw new ReadingException(e.getMessage());
+        }
     }
 
     @Override
     public boolean update(Cashier cashier) throws RepositoryException {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", cashier.getName());
-        params.addValue("surname", cashier.getSurname());
-        params.addValue("id", cashier.getId());
-        return template.update(UPDATE_CASHIER, params) != 0;
+        try {
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("name", cashier.getName());
+            params.addValue("surname", cashier.getSurname());
+            params.addValue("id", cashier.getId());
+            return template.update(UPDATE_CASHIER, params) != 0;
+        } catch (DataAccessException e) {
+            throw new WritingException(e.getMessage());
+        }
     }
 
     @Override
     public boolean delete(long id) throws RepositoryException {
-        return template.update(DELETE_CASHIER, new MapSqlParameterSource("id", id)) != 0;
+        try {
+            return template.update(DELETE_CASHIER, new MapSqlParameterSource("id", id)) != 0;
+        } catch (DataAccessException e) {
+            throw new WritingException(e.getMessage());
+        }
     }
 }

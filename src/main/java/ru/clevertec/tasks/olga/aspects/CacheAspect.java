@@ -1,15 +1,21 @@
 package ru.clevertec.tasks.olga.aspects;
 
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.cache.Cache;
 import ru.clevertec.tasks.olga.entity.AbstractModel;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -17,10 +23,10 @@ import java.util.Optional;
 @Component
 public class CacheAspect {
 
-    private final Cache<Long, AbstractModel> cache;
+    Cache<Long, AbstractModel> cache;
 
     @Autowired
-    public CacheAspect(Cache<Long, AbstractModel> cache) {
+    public void setCache(Cache<Long, AbstractModel> cache) {
         this.cache = cache;
     }
 
@@ -38,6 +44,7 @@ public class CacheAspect {
         } else {
             Optional<AbstractModel> entity = (Optional<AbstractModel>)joinPoint.proceed(arguments);
             entity.ifPresent(abstractModel -> cache.put(abstractModel.getId(), abstractModel));
+            entity.ifPresent(abstractModel -> log.info(abstractModel + "put to cache"));
             return entity;
         }
     }
@@ -49,15 +56,15 @@ public class CacheAspect {
         AbstractModel model = (AbstractModel) arguments[0];
         model.setId(res);
         cache.put(res, model);
+        log.info(model + "put to cache");
         return res;
     }
 
     @Around("useCache() && execution(* *..delete*(..))")
     public Object deleteTriggered(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] arguments = joinPoint.getArgs();
-
         boolean result = (boolean) joinPoint.proceed(arguments);
-
+        log.info(cache.get((Long)arguments[0]) + "removed from cache");
         cache.remove((Long)arguments[0]);
         return result;
     }
@@ -66,10 +73,9 @@ public class CacheAspect {
     public Object updateTriggered(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] arguments = joinPoint.getArgs();
         AbstractModel entity = (AbstractModel)arguments[0];
-
         boolean res = (boolean) joinPoint.proceed(arguments);
-
         cache.put(entity.getId(), entity);
+        log.info(entity + "put to cache");
         return res;
     }
 

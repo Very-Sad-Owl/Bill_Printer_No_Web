@@ -9,18 +9,25 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+
 import static ru.clevertec.tasks.olga.util.Constant.BASE_PACKAGES_TO_SCAN;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = BASE_PACKAGES_TO_SCAN)
+@ComponentScan(basePackages = BASE_PACKAGES_TO_SCAN,
+        excludeFilters =
+        @ComponentScan.Filter(
+                type = FilterType.ANNOTATION,
+                value = Configuration.class))
 public class WebConfig implements WebMvcConfigurer {
 
     @Bean

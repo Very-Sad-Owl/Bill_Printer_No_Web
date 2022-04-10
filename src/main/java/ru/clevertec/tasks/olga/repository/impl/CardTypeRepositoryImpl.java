@@ -1,6 +1,7 @@
 package ru.clevertec.tasks.olga.repository.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -8,8 +9,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.tasks.olga.entity.CardType;
+import ru.clevertec.tasks.olga.repository.exception.ReadingException;
 import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.CardTypeRepository;
+import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
 
 import javax.sql.DataSource;
@@ -32,40 +35,60 @@ public class CardTypeRepositoryImpl implements CardTypeRepository {
 
     @Override
     public long save(CardType cardType) throws RepositoryException {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("title", cardType.getTitle());
-        params.addValue("discount", cardType.getDiscount());
-        template.update(INSERT_DISCOUNT_TYPE, params, keyHolder, new String[]{"type_id"});
-        return keyHolder.getKey().longValue();
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("title", cardType.getTitle());
+            params.addValue("discount", cardType.getDiscount());
+            template.update(INSERT_DISCOUNT_TYPE, params, keyHolder, new String[]{"type_id"});
+            return keyHolder.getKey().longValue();
+        } catch (DataAccessException e) {
+            throw new WritingException(e.getMessage());
+        }
     }
 
     @Override
     public Optional<CardType> findById(long id) throws RepositoryException {
-        return Optional.ofNullable(template.queryForObject(FIND_DISCOUNT_TYPE,
-                new MapSqlParameterSource("id", id), discountWorker));
+        try {
+            return Optional.ofNullable(template.queryForObject(FIND_DISCOUNT_TYPE,
+                    new MapSqlParameterSource("id", id), discountWorker));
+        } catch (DataAccessException e) {
+            throw new ReadingException(e.getMessage());
+        }
     }
 
     @Override
     public List<CardType> getAll(Pageable pageable) throws RepositoryException {
-        pageable = pageable.previousOrFirst();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("page_limit", pageable.getPageSize());
-        params.addValue("page", pageable.getPageNumber());
-        return template.query(GET_DISCOUNT_TYPES, params, discountWorker);
+        try {
+            pageable = pageable.previousOrFirst();
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("page_limit", pageable.getPageSize());
+            params.addValue("page", pageable.getPageNumber());
+            return template.query(GET_DISCOUNT_TYPES, params, discountWorker);
+        } catch (DataAccessException e) {
+            throw new ReadingException(e.getMessage());
+        }
     }
 
     @Override
     public boolean update(CardType cardType) throws RepositoryException {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("title", cardType.getTitle());
-        params.addValue("discount", cardType.getDiscount());
-        params.addValue("id", cardType.getId());
-        return template.update(UPDATE_DISCOUNT_TYPE, params) != 0;
+        try {
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("title", cardType.getTitle());
+            params.addValue("discount", cardType.getDiscount());
+            params.addValue("id", cardType.getId());
+            return template.update(UPDATE_DISCOUNT_TYPE, params) != 0;
+        } catch (DataAccessException e) {
+            throw new WritingException(e.getMessage());
+        }
     }
 
     @Override
     public boolean delete(long id) throws RepositoryException {
-        return template.update(DELETE_DISCOUNT_TYPE, new MapSqlParameterSource("id", id)) != 0;
+        try {
+            return template.update(DELETE_DISCOUNT_TYPE, new MapSqlParameterSource("id", id)) != 0;
+        } catch (DataAccessException e) {
+            throw new WritingException(e.getMessage());
+        }
     }
 }

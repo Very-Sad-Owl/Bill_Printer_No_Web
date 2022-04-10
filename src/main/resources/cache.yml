@@ -1,2 +1,2 @@
 cache.capacity: 5
-cache.algorithm: LFU
+cache.algorithm: LRU

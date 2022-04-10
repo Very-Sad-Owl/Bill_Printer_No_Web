@@ -1,12 +1,10 @@
 package ru.clevertec.tasks.olga.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -18,21 +16,27 @@ import javax.sql.DataSource;
 import static ru.clevertec.tasks.olga.util.Constant.BASE_PACKAGES_TO_SCAN;
 
 @Configuration
-@ComponentScan(basePackages = BASE_PACKAGES_TO_SCAN)
+//@ComponentScan(basePackages = BASE_PACKAGES_TO_SCAN)
 @PropertySource("classpath:db.properties")
 @EnableTransactionManagement
 public class JdbcConfig {
 
-    @Autowired
-    private Environment env;
+    @Value("${db.driver}")
+    private String driver;
+    @Value("${db.url}")
+    private String url;
+    @Value("${db.user}")
+    private String username;
+    @Value("${db.password}")
+    private String password;
 
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("db.driver"));
-        dataSource.setUrl(env.getProperty("db.url"));
-        dataSource.setUsername(env.getProperty("db.user"));
-        dataSource.setPassword(env.getProperty("db.password"));
+        dataSource.setDriverClassName(driver);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
         return dataSource;
     }
 

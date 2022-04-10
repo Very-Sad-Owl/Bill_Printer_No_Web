@@ -1,25 +1,51 @@
 package ru.clevertec.tasks.olga.cache.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
+import ru.clevertec.tasks.olga.annotation.CacheAlgorithm;
 import ru.clevertec.tasks.olga.cache.Cache;
+import ru.clevertec.tasks.olga.cache.CacheStrategy;
+import ru.clevertec.tasks.olga.config.CacheConditional;
+
 import java.util.*;
 
+@Component
+@CacheAlgorithm(CacheStrategy.LFU)
+@Conditional(CacheConditional.class)
+@RequiredArgsConstructor
 public class LfuCache<K, V> implements Cache<K, V> {
 
     /**
      * Cache's capacity.
      */
-    final int capacity;
+    @Value( "${cache.capacity:0}")
+    private int capacity;
+
+//    /**
+//     * Constructs a {@link LfuCache} with the specified capacity.
+//     //     * @param capacity the cache capacity.
+//     * @throws IllegalArgumentException if the capacity is less than one.
+//     */
+//    public LfuCache() {
+//        if (capacity < 1) {
+//            throw new IllegalArgumentException("Illegal capacity: " + capacity);
+//        }
+////        this.capacity = capacity;
+//        cache = new HashMap<>(capacity);
+//        frequencyTails = new HashMap<>(capacity);
+//    }
 
     /**
      * The map for mapping keys and related nodes.
      */
-    final Map<K, Node<K, V>> cache;
+    final Map<K, Node<K, V>> cache = new HashMap<>(capacity);
 
     /**
      * The map for mapping the most recently used nodes for each frequency.
      */
-    final Map<Integer, Node<K, V>> frequencyTails;
+    final Map<Integer, Node<K, V>> frequencyTails = new HashMap<>(capacity);
 
     /**
      * The head of the queue.
@@ -378,20 +404,6 @@ public class LfuCache<K, V> implements Cache<K, V> {
         public final Map.Entry<K, V> next() {
             return nextNode();
         }
-    }
-
-    /**
-     * Constructs a {@link LfuCache} with the specified capacity.
-     * @param capacity the cache capacity.
-     * @throws IllegalArgumentException if the capacity is less than one.
-     */
-    public LfuCache(int capacity) {
-        if (capacity < 1) {
-            throw new IllegalArgumentException("Illegal capacity: " + capacity);
-        }
-        this.capacity = capacity;
-        cache = new HashMap<>(capacity);
-        frequencyTails = new HashMap<>(capacity);
     }
 
 
