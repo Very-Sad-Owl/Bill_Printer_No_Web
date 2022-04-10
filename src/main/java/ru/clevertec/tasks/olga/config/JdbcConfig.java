@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
@@ -15,7 +16,7 @@ import static ru.clevertec.tasks.olga.util.Constant.BASE_PACKAGES_TO_SCAN;
 
 @Configuration
 @ComponentScan(basePackages = BASE_PACKAGES_TO_SCAN)
-
+@EnableTransactionManagement
 public class JdbcConfig {
     @Bean
     public DataSource dataSource() {

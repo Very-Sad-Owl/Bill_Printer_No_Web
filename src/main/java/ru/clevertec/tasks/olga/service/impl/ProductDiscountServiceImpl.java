@@ -3,6 +3,7 @@ package ru.clevertec.tasks.olga.service.impl;
 import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.exception.crud.*;
 import ru.clevertec.tasks.olga.entity.ProductDiscountType;
@@ -61,8 +62,8 @@ public class ProductDiscountServiceImpl
 
     @Override
     @SneakyThrows
-    public List<ProductDiscountType> getAll(int limit, int offset) {
-        return discountRepo.getAll(limit, offset);
+    public List<ProductDiscountType> getAll(Pageable pageable) {
+        return discountRepo.getAll(pageable);
     }
 
     @Override

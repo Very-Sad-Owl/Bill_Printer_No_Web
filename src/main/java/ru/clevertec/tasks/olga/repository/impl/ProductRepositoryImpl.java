@@ -15,11 +15,7 @@ import ru.clevertec.tasks.olga.repository.exception.ReadingException;
 import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.ProductRepository;
-import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +42,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         params.addValue("title", product.getTitle());
         params.addValue("price", product.getPrice());
         params.addValue("disc_id", product.getDiscountType().getId());
-        template.update(INSERT_PRODUCT, params, keyHolder);
+        template.update(INSERT_PRODUCT, params, keyHolder, new String[]{"product_id"});
         return keyHolder.getKey().longValue();
     }
 

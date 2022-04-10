@@ -13,11 +13,7 @@ import ru.clevertec.tasks.olga.entity.ProductDiscountType;
 import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.repository.ProductDiscountRepository;
-import ru.clevertec.tasks.olga.repository.common.CRUDHelper;
 import ru.clevertec.tasks.olga.util.tablemapper.ModelRowMapper;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +40,7 @@ public class ProductDiscountRepositoryImpl implements ProductDiscountRepository 
         params.addValue("title", productDiscountType.getTitle());
         params.addValue("val", productDiscountType.getDiscount());
         params.addValue("quantity", productDiscountType.getRequiredMinQuantity());
-        template.update(INSERT_PRODUCT_DISCOUNT_TYPE, params, keyHolder);
+        template.update(INSERT_PRODUCT_DISCOUNT_TYPE, params, keyHolder, new String[]{"discount_id"});
         return keyHolder.getKey().longValue();
     }
 

@@ -30,8 +30,7 @@ public interface Query {
             "where bill_id = :id;";
 
     //slot
-    String INSERT_SLOT = "INSERT INTO slot(product_id, quantity, price) " +
-            "VALUES (:product, :quantity, :price);";
+    String INSERT_SLOT = "INSERT INTO slots(product_id, quantity, price, cart_id) VALUES(:product, :quantity, :price, :cart);";
     String GET_SLOTS = "select * from slots " +
             "join products using(product_id) " +
             "join product_discounts using(discount_id) " +
@@ -50,6 +49,7 @@ public interface Query {
             "join products on slots.product_id = products.product_id " +
             "join product_discounts on products.discount_id = product_discounts.discount_id " +
             "where cart_id = :cart;";
+    String DELETE_SLOTS = "DELETE FROM slots WHERE cart_id IS NULL;";
 
     //cashier
     String INSERT_CASHIER = "INSERT INTO cashiers(name, surname) VALUES (:name, :surname);";

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,8 @@ public class ProductDiscountController {
     @ResponseStatus(HttpStatus.OK)
     public List<ProductDiscountType> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
-        return productDiscountService.getAll(nodesPerPage, page);
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        return productDiscountService.getAll(pageRequest);
     }
 
     @GetMapping(value = "/find", produces = {MediaType.APPLICATION_JSON_VALUE})

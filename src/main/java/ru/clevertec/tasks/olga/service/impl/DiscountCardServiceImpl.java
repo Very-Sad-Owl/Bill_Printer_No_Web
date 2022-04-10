@@ -3,6 +3,7 @@ package ru.clevertec.tasks.olga.service.impl;
 import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.exception.crud.*;
 import ru.clevertec.tasks.olga.entity.DiscountCard;
@@ -65,8 +66,8 @@ public class DiscountCardServiceImpl
 
     @Override
     @SneakyThrows
-    public List<DiscountCard> getAll(int limit, int offset) {
-        return cardRepo.getAll(limit, offset);
+    public List<DiscountCard> getAll(Pageable pageable) {
+        return cardRepo.getAll(pageable);
     }
 
     @Override

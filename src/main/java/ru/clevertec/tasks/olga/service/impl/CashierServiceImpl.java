@@ -2,6 +2,7 @@ package ru.clevertec.tasks.olga.service.impl;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.entity.Cashier;
 import ru.clevertec.tasks.olga.dto.CashierParamsDTO;
@@ -58,8 +59,8 @@ public class CashierServiceImpl
 
     @Override
     @SneakyThrows
-    public List<Cashier> getAll(int limit, int offset) {
-        return cashierRepository.getAll(limit, offset);
+    public List<Cashier> getAll(Pageable pageable) {
+        return cashierRepository.getAll(pageable);
     }
 
     @Override

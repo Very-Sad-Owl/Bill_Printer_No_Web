@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
 import ru.clevertec.tasks.olga.entity.Cart;
 import ru.clevertec.tasks.olga.repository.exception.WritingException;
-import ru.clevertec.tasks.olga.service.CartService;
+import ru.clevertec.tasks.olga.service.BillService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,12 +27,12 @@ import java.util.Locale;
 public class BillController {
 
     private final MessageSource messageSource;
-    private final CartService cartService;
+    private final BillService billService;
 
     @Autowired
-    public BillController(MessageSource messageSource, CartService cartService) {
+    public BillController(MessageSource messageSource, BillService billService) {
         this.messageSource = messageSource;
-        this.cartService = cartService;
+        this.billService = billService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,18 +44,19 @@ public class BillController {
     @ResponseStatus(HttpStatus.OK)
     public List<Cart> log(@RequestParam(value = "nodes", required = false, defaultValue = "0") Integer nodesPerPage,
                           @RequestParam(value = "page", required = false, defaultValue = "0") Integer page) {
-        return cartService.getAll(nodesPerPage, page);
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        return billService.getAll(pageRequest);
     }
 
     @SneakyThrows
     @GetMapping("/find")
     public ResponseEntity<?> find(@RequestParam(value = "id") Integer id, Locale locale,
                                   @RequestParam(value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
-        Cart cart = cartService.findById(id);
+        Cart cart = billService.findById(id);
         if (!printPdf) {
             return formResponse(cart, MediaType.APPLICATION_JSON, HttpStatus.OK);
         } else {
-            Path savedBillPath = cartService.printBill(cart, locale);
+            Path savedBillPath = billService.printBill(cart, locale);
             return formPdf(savedBillPath);
         }
     }
@@ -63,11 +65,11 @@ public class BillController {
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody CartParamsDTO params, Locale locale,
                                   @RequestParam(value = "pdf", defaultValue = "false", required = false) boolean printPdf) {
-        Cart cart = cartService.save(params);
+        Cart cart = billService.save(params);
         if (!printPdf) {
             return formResponse(cart, MediaType.APPLICATION_JSON, HttpStatus.CREATED);
         } else {
-            Path savedBillPath = cartService.printBill(cart, locale);
+            Path savedBillPath = billService.printBill(cart, locale);
             return formPdf(savedBillPath);
         }
     }
@@ -75,19 +77,19 @@ public class BillController {
     @PatchMapping(value = "/patch", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Cart patch(@RequestBody CartParamsDTO params) {
-        return cartService.patch(params);
+        return billService.patch(params);
     }
 
     @PutMapping(value = "/put", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.OK)
     public Cart update(@RequestBody CartParamsDTO params) {
-        return cartService.put(params);
+        return billService.put(params);
     }
 
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam Integer id) {
-        cartService.delete(id);
+        billService.delete(id);
     }
 
     @SneakyThrows

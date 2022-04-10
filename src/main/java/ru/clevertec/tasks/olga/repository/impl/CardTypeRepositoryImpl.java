@@ -36,7 +36,7 @@ public class CardTypeRepositoryImpl implements CardTypeRepository {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("title", cardType.getTitle());
         params.addValue("discount", cardType.getDiscount());
-        template.update(INSERT_DISCOUNT_TYPE, params, keyHolder);
+        template.update(INSERT_DISCOUNT_TYPE, params, keyHolder, new String[]{"type_id"});
         return keyHolder.getKey().longValue();
     }
 

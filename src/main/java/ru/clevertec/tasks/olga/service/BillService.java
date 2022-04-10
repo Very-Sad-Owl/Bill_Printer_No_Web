@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public interface CartService extends CRUDService<Cart, CartParamsDTO> {
+public interface BillService extends CRUDService<Cart, CartParamsDTO> {
 
     List<Slot> formSlots(Map<Long, Integer> goods);
     Slot formSlot(Map.Entry<Long, Integer> pair);

@@ -40,7 +40,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("bday", discountCard.getBirthday());
         params.addValue("disc_id", discountCard.getCardType().getId());
-        template.update(INSERT_DISCOUNT, params, keyHolder);
+        template.update(INSERT_DISCOUNT, params, keyHolder, new String[]{"card_id"});
         return keyHolder.getKey().longValue();
     }
 

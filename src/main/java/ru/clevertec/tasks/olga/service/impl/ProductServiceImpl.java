@@ -4,6 +4,7 @@ package ru.clevertec.tasks.olga.service.impl;
 import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.tasks.olga.entity.Product;
 import ru.clevertec.tasks.olga.dto.ProductParamsDto;
@@ -65,8 +66,8 @@ public class ProductServiceImpl
 
     @Override
     @SneakyThrows
-    public List<Product> getAll(int limit, int offset) {
-        return productRepository.getAll(limit, offset);
+    public List<Product> getAll(Pageable pageable) {
+        return productRepository.getAll(pageable);
     }
 
     @Override

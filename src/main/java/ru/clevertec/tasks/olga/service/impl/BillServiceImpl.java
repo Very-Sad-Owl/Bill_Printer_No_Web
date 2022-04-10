@@ -3,6 +3,7 @@ package ru.clevertec.tasks.olga.service.impl;
 import com.google.common.base.Defaults;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.clevertec.custom_collection.my_list.ArrayListImpl;
 import ru.clevertec.tasks.olga.entity.Cart;
@@ -13,8 +14,8 @@ import ru.clevertec.tasks.olga.exception.crud.notfound.BillNotFoundException;
 import ru.clevertec.tasks.olga.exception.crud.notfound.NotFoundException;
 import ru.clevertec.tasks.olga.repository.exception.RepositoryException;
 import ru.clevertec.tasks.olga.util.printer.impl.PdfPrinter;
-import ru.clevertec.tasks.olga.repository.CartRepository;
-import ru.clevertec.tasks.olga.service.CartService;
+import ru.clevertec.tasks.olga.repository.BillRepository;
+import ru.clevertec.tasks.olga.service.BillService;
 import ru.clevertec.tasks.olga.service.CashierService;
 import ru.clevertec.tasks.olga.service.DiscountCardService;
 import ru.clevertec.tasks.olga.service.ProductService;
@@ -27,11 +28,11 @@ import java.util.*;
 import static ru.clevertec.tasks.olga.util.validation.CRUDParamsValidator.*;
 
 @Service
-public class CartServiceImpl
+public class BillServiceImpl
         extends AbstractService
-        implements CartService {
+        implements BillService {
 
-    private final CartRepository cartRepository;
+    private final BillRepository billRepository;
     private final ProductService productService;
     private final CashierService cashierService;
     private final DiscountCardService cardService;
@@ -39,9 +40,9 @@ public class CartServiceImpl
     private final AbstractBillFormatter formatter;
 
     @Autowired
-    public CartServiceImpl(CartRepository cartRepository, ProductService productService, CashierService cashierService,
+    public BillServiceImpl(BillRepository billRepository, ProductService productService, CashierService cashierService,
                            DiscountCardService cardService, PdfPrinter pdfPrinter, AbstractBillFormatter formatter) {
-        this.cartRepository = cartRepository;
+        this.billRepository = billRepository;
         this.productService = productService;
         this.cashierService = cashierService;
         this.cardService = cardService;
@@ -55,7 +56,7 @@ public class CartServiceImpl
         validateFullyFilledDto(dto);
         try {
             Cart cart = formCart(dto);
-            long insertedId = cartRepository.save(cart);
+            long insertedId = billRepository.save(cart);
             cart.setId(insertedId);
             return cart;
         } catch (RepositoryException | NotFoundException e) {
@@ -67,7 +68,7 @@ public class CartServiceImpl
     public Cart findById(long id) {
         validateId(id);
         try {
-            Optional<Cart> cart = cartRepository.findById(id);
+            Optional<Cart> cart = billRepository.findById(id);
             if (cart.isPresent()) {
                 return cart.get();
             } else {
@@ -80,15 +81,15 @@ public class CartServiceImpl
 
     @Override
     @SneakyThrows
-    public List<Cart> getAll(int limit, int offset) {
-        return cartRepository.getAll(limit, offset);
+    public List<Cart> getAll(Pageable pageable) {
+        return billRepository.getAll(pageable);
     }
 
     @Override
     public void delete(long id) {
         validateId(id);
         try {
-            if (!cartRepository.delete(id)) {
+            if (!billRepository.delete(id)) {
                 throw new DeletionException(new BillNotFoundException(id + ""));
             }
         } catch (RepositoryException e) {
@@ -101,7 +102,7 @@ public class CartServiceImpl
         validateFullyFilledDto(dto);
         try {
             Cart updated = formCart(dto);
-            if (!cartRepository.update(updated)) {
+            if (!billRepository.update(updated)) {
                 throw new UpdatingException(new BillNotFoundException(dto.id + ""));
             }
             return updated;
@@ -147,7 +148,7 @@ public class CartServiceImpl
         }
         updated.calculatePrice();
         try {
-            cartRepository.update(updated);
+            billRepository.update(updated);
             return updated;
         } catch (RepositoryException e) {
             throw new UndefinedException(e.getMessage());

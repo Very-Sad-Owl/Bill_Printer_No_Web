@@ -14,7 +14,7 @@ public class CardTypeMapper extends ModelRowMapper<CardType> {
     @Override
     public CardType mapRow(ResultSet rs, int rowNum) throws SQLException {
         return CardType.builder()
-                .id(rs.getLong("discount_id"))
+                .id(rs.getLong("type_id"))
                 .title(rs.getString("title"))
                 .discount(rs.getDouble("discount"))
                 .build();
