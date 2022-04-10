@@ -40,17 +40,17 @@ public class PdfPrinter extends AbstractPrinter {
 
     MessageSource messageSource;
     @Value( "${path.default}" )
-    private static String PRINT_PATH;
+    private String PRINT_PATH;
     @Value( "${bill.template}" )
-    private static String BACKGROUND_PDF;
+    private String BACKGROUND_PDF;
     @Value( "${bill.delimiter}" )
-    private static char DELIMITER;
+    private char DELIMITER;
     @Value( "${bill.line_delimiter}")
-    private static char LINE_DELIMITER;
+    private char LINE_DELIMITER;
     @Value( "${bill.font}")
-    private static String FONT;
+    private String FONT;
     @Value( "${bill.encoding}")
-    private static String ENCODING;
+    private String ENCODING;
 
     @Autowired
     public PdfPrinter(MessageSource messageSource) {

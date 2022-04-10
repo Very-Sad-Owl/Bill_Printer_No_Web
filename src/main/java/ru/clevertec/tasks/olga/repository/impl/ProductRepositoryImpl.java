@@ -55,6 +55,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public List<Product> getAll(Pageable pageable) throws RepositoryException {
+        pageable = pageable.previousOrFirst();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("page_limit", pageable.getPageSize());
         params.addValue("page", pageable.getPageNumber());

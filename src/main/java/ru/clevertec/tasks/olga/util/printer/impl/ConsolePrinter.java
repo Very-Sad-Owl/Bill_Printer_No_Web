@@ -6,18 +6,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.clevertec.tasks.olga.util.printer.AbstractPrinter;
-
 import java.util.List;
-import java.util.Locale;
 
 @Component
 public class ConsolePrinter extends AbstractPrinter {
 
     MessageSource messageSource;
     @Value( "${bill.delimiter}" )
-    private static char DELIMITER;
+    private char DELIMITER;
     @Value( "${bill.line_delimiter}")
-    private static char LINE_DELIMITER;
+    private char LINE_DELIMITER;
 
     @Autowired
     public ConsolePrinter(MessageSource messageSource) {

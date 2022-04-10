@@ -70,9 +70,10 @@ public class BillRepositoryImpl implements BillRepository {
 
     @Override
     public List<Cart> getAll(Pageable pageable) throws RepositoryException {
+        pageable = pageable.previousOrFirst();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("page_limit", pageable.getPageSize());
-        params.addValue("page", pageable.getPageNumber());
+        params.addValue("page", pageable.getOffset());
         List<Cart> bills = template.query(GET_CARTS, params, cartWorker);
         for (Cart bill : bills) {
             List<Slot> slots = template.query(FIND_SLOTS_BY_CART_ID,
@@ -94,9 +95,10 @@ public class BillRepositoryImpl implements BillRepository {
 
         for (Slot slot : cart.getPositions()) {
             MapSqlParameterSource slotParams = new MapSqlParameterSource();
-            billParams.addValue("product", slot.getProduct());
-            billParams.addValue("quantity", slot.getQuantity());
-            billParams.addValue("price", slot.getTotalPrice());
+            slotParams.addValue("product", slot.getProduct().getId());
+            slotParams.addValue("quantity", slot.getQuantity());
+            slotParams.addValue("price", slot.getTotalPrice());
+            slotParams.addValue("cart", cart.getId());
             if (template.update(INSERT_SLOT, slotParams) == 0) return false;
         }
         return true;

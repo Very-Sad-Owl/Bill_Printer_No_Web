@@ -49,6 +49,7 @@ public class CashierRepositoryImpl implements CashierRepository {
 
     @Override
     public List<Cashier> getAll(Pageable pageable) throws RepositoryException {
+        pageable = pageable.previousOrFirst();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("page_limit", pageable.getPageSize());
         params.addValue("page", pageable.getPageNumber());

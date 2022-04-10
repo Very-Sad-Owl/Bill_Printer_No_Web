@@ -7,7 +7,7 @@ import java.util.List;
 @Component
 public abstract class AbstractPrinter {
     @Value( "${bill.line_len}" )
-    public static int MAX_SYMBOLS_PER_LINE;
+    public int MAX_SYMBOLS_PER_LINE;
 
     public abstract String print(List<String> content);
 }

@@ -48,6 +48,7 @@ public class CardTypeRepositoryImpl implements CardTypeRepository {
 
     @Override
     public List<CardType> getAll(Pageable pageable) throws RepositoryException {
+        pageable = pageable.previousOrFirst();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("page_limit", pageable.getPageSize());
         params.addValue("page", pageable.getPageNumber());

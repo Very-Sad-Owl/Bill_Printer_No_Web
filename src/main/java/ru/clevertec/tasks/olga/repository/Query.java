@@ -16,8 +16,8 @@ public interface Query {
             "VALUES (:card, :cashier, :price);";
     String FIND_CART_BY_ID = "select * from bills " +
             "join cashiers on bills.cashier_id = cashiers.cashier_id " +
-            "join cards on bills.card_id  = card.card_id " +
-            "join card_types on bills.discount_id = card_types.type_id " +
+            "join cards on bills.card_id  = cards.card_id " +
+            "join card_types on cards.discount_id = card_types.type_id " +
             "where bills.bill_id = :id;";
     String GET_CARTS = "select * from bills " +
             "join cashiers on bills.cashier_id = cashiers.cashier_id " +
@@ -25,7 +25,7 @@ public interface Query {
             "join card_types on cards.discount_id = card_types.type_id " +
             "order by bills.bill_id limit :page_limit offset :page;";
     String UPDATE_CART = "update bills set card_id = :card, cashier_id = :cashier, price = :price " +
-            "WHERE bill_id = ?;";
+            "WHERE bill_id = :id;";
     String DELETE_CART = "delete from bills " +
             "where bill_id = :id;";
 

@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.*;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -42,8 +44,10 @@ import static ru.clevertec.tasks.olga.util.Constant.BASE_PACKAGES_TO_SCAN;
         @PropertySource("classpath:application.properties"),
         @PropertySource("classpath:cache.yml")
 })
-@ComponentScan(basePackages = BASE_PACKAGES_TO_SCAN)
 public class AppConfig {
+
+    @Autowired
+    private Environment environment;
 
     @Bean
     public Gson gson() {
@@ -67,19 +71,28 @@ public class AppConfig {
         return mapper;
     }
 
+//    @Bean
+//    public Cache<Long, AbstractModel> cacheStrategy() {
+//        String strategy = environment.getProperty("cache.algorithm");
+//        int capacity = Integer.parseInt(environment.getProperty("cache.capacity"));
+//        switch (CacheStrategy.valueOf(strategy)) {
+//            case LFU:
+//                return new LfuCache<>(capacity);
+//            case LRU:
+//                return new LruCache<>(capacity);
+//            default:
+//                throw new IllegalArgumentException();
+//        }
+//    }
+
     @Bean
-    public Cache<Long, AbstractModel> cacheStrategy(Environment environment) {
-        String strategy = environment.getProperty("cache.algorithm");
-        int capacity = Integer.parseInt(environment.getProperty("cache.capacity"));
-        switch (CacheStrategy.valueOf(strategy)) {
-            case LFU:
-                return new LfuCache<>(capacity);
-            case LRU:
-                return new LruCache<>(capacity);
-            default:
-                throw new IllegalArgumentException();
-        }
+    public static PropertySourcesPlaceholderConfigurer createPropertyConfigurer()
+    {
+        PropertySourcesPlaceholderConfigurer propertyConfigurer = new PropertySourcesPlaceholderConfigurer();
+        propertyConfigurer.setTrimValues(false);
+        return propertyConfigurer;
     }
+
 
 }
 

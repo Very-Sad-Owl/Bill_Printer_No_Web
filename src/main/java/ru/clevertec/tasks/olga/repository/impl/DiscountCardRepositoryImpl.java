@@ -52,6 +52,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
 
     @Override
     public List<DiscountCard> getAll(Pageable pageable) throws RepositoryException {
+        pageable = pageable.previousOrFirst();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("page_limit", pageable.getPageSize());
         params.addValue("page", pageable.getPageNumber());

@@ -52,6 +52,7 @@ public class ProductDiscountRepositoryImpl implements ProductDiscountRepository 
 
     @Override
     public List<ProductDiscountType> getAll(Pageable pageable) throws RepositoryException {
+        pageable = pageable.previousOrFirst();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("page_limit", pageable.getPageSize());
         params.addValue("page", pageable.getPageNumber());
