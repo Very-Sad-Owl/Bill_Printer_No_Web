@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.clevertec.tasks.olga.dto.CartParamsDTO;
 import ru.clevertec.tasks.olga.entity.Cart;
+import ru.clevertec.tasks.olga.exception.crud.UndefinedException;
 import ru.clevertec.tasks.olga.repository.exception.WritingException;
 import ru.clevertec.tasks.olga.service.BillService;
 
@@ -103,7 +104,7 @@ public class BillController {
             headers.setContentDispositionFormData(filename, filename);
             return new ResponseEntity<>(Files.readAllBytes(savedBillPath), headers, HttpStatus.OK);
         } catch (IOException e) {
-            throw new WritingException(e);
+            throw new UndefinedException(e.getMessage());
         }
     }
 
